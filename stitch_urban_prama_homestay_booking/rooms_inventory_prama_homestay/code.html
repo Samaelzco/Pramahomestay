@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Prama Homestay - Rooms Administration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-secondary": "#ffffff",
+                            "on-surface": "#1a1c1c",
+                            "tertiary-container": "#121c29",
+                            "on-primary-fixed-variant": "#474746",
+                            "inverse-on-surface": "#f1f1f1",
+                            "surface": "#f9f9f9",
+                            "surface-dim": "#dadada",
+                            "inverse-primary": "#c8c6c5",
+                            "surface-tint": "#5f5e5e",
+                            "primary-fixed-dim": "#c8c6c5",
+                            "surface-bright": "#f9f9f9",
+                            "tertiary-fixed-dim": "#bdc7d9",
+                            "error": "#ba1a1a",
+                            "on-tertiary-container": "#7a8495",
+                            "on-secondary-fixed-variant": "#5f411b",
+                            "on-tertiary-fixed": "#121c29",
+                            "on-secondary-fixed": "#2b1700",
+                            "primary": "#000000",
+                            "surface-container-low": "#f3f3f3",
+                            "on-error-container": "#93000a",
+                            "surface-container-high": "#e8e8e8",
+                            "secondary-fixed": "#ffddb9",
+                            "outline-variant": "#c4c7c7",
+                            "on-secondary-container": "#7a5930",
+                            "tertiary": "#000000",
+                            "on-error": "#ffffff",
+                            "background": "#f9f9f9",
+                            "surface-variant": "#e2e2e2",
+                            "on-surface-variant": "#444748",
+                            "on-tertiary": "#ffffff",
+                            "outline": "#747878",
+                            "on-primary-fixed": "#1c1b1b",
+                            "secondary-container": "#ffd2a1",
+                            "on-primary-container": "#858383",
+                            "surface-container-lowest": "#ffffff",
+                            "primary-fixed": "#e5e2e1",
+                            "on-tertiary-fixed-variant": "#3e4756",
+                            "surface-container-highest": "#e2e2e2",
+                            "secondary-fixed-dim": "#eabf8e",
+                            "surface-container": "#eeeeee",
+                            "inverse-surface": "#2f3131",
+                            "error-container": "#ffdad6",
+                            "primary-container": "#1c1b1b",
+                            "tertiary-fixed": "#d9e3f5",
+                            "on-primary": "#ffffff",
+                            "secondary": "#795830",
+                            "on-background": "#1a1c1c"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.125rem",
+                            "lg": "0.25rem",
+                            "xl": "0.5rem",
+                            "full": "0.75rem"
+                    },
+                    "spacing": {
+                            "xl": "80px",
+                            "gutter": "24px",
+                            "sm": "12px",
+                            "container-max": "1280px",
+                            "base": "8px",
+                            "xs": "4px",
+                            "md": "24px",
+                            "lg": "48px"
+                    },
+                    "fontFamily": {
+                            "display-lg-mobile": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "button": ["Inter"],
+                            "display-lg": ["Inter"],
+                            "label-caps": ["Inter"],
+                            "headline-sm": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                            "display-lg-mobile": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                            "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                            "button": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                            "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                            "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                            "headline-sm": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                            "headline-md": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                            "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .whisper-shadow {
+            box-shadow: 0 16px 32px -4px rgba(116, 120, 120, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-50 bg-surface/80 dark:bg-inverse-surface/80 backdrop-blur-md bg-surface dark:bg-inverse-surface shadow-sm flex justify-between items-center h-16 px-gutter ml-64 hidden md:flex">
+<div class="flex items-center gap-md">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary">Dashboard</h1>
+</div>
+<div class="flex items-center gap-md">
+<!-- Search on left of actions as per JSON -->
+<div class="relative group hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-lg pr-sm py-sm bg-surface-container-low border-b border-outline-variant focus:border-primary focus:ring-0 focus:outline-none transition-colors w-64 text-on-surface font-body-md text-body-md rounded-t-DEFAULT" placeholder="Search rooms..." type="text"/>
+</div>
+<button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors focus:ring-1 focus:ring-outline outline-none group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+</button>
+<button aria-label="Settings" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors focus:ring-1 focus:ring-outline outline-none group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden border border-outline-variant cursor-pointer focus:ring-1 focus:ring-outline outline-none" tabindex="0">
+<img alt="Manager Avatar" class="w-full h-full object-cover" data-alt="A close-up, high-quality photograph of a professional manager's face, well-lit with soft natural light. The style is modern corporate, with a clean white background and minimal distractions. The aesthetic is bright, sharp, and sophisticated, reflecting a high-end hospitality environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH7OeIMTTEvnduuYDJhd7pSl_1_Z-lIm0IPezmB2v0uzXU98Y7F3owqy-1Vlv66_WyLy9JwjYyRu8Li8DB0lOtA-algM9_ZBbgdKwKcPkkOdK3HzhLk81zk4tlVGEaYDhq4eLs4xyIfx7V1RLzKQAzQU7LRmntL6g9YtPagqUEiVbdNyoHut0pNuADDOkZ7_5ZS-KZwBZOgAHdRPE460YOgx8XcV5D-v0tDSrqKiT-IXHpLVzV7kTW"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col h-full py-md px-base hidden md:flex z-40">
+<!-- Header -->
+<div class="px-md mb-xl flex items-center gap-sm">
+<div class="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary" data-icon="home_work">home_work</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary leading-tight">Urban Sanctuary</h2>
+<p class="font-label-caps text-label-caps text-on-surface-variant mt-xs">Homestay Management</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<ul class="flex flex-col gap-xs flex-grow">
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-high dark:hover:bg-surface-container-lowest transition-colors active:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-high dark:hover:bg-surface-container-lowest transition-colors active:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="calendar_month">calendar_month</span>
+<span>Bookings</span>
+</a>
+</li>
+<li>
+<!-- Active Tab -->
+<a class="flex items-center gap-sm px-md py-sm rounded-lg text-secondary dark:text-secondary-fixed-dim font-bold border-r-2 border-secondary bg-surface-container-low font-body-md text-body-md active:scale-[0.98] duration-150 group relative" href="#">
+<span class="material-symbols-outlined" data-icon="bed" data-weight="fill">bed</span>
+<span>Rooms</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-high dark:hover:bg-surface-container-lowest transition-colors active:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="group">group</span>
+<span>Guests</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant font-body-md text-body-md hover:bg-surface-container-high dark:hover:bg-surface-container-lowest transition-colors active:scale-[0.98] duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="analytics">analytics</span>
+<span>Analytics</span>
+</a>
+</li>
+</ul>
+<!-- CTA -->
+<div class="mt-auto px-base">
+<button class="w-full py-sm bg-primary text-on-primary font-button text-button rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-xs active:scale-[0.98] duration-150">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                Add New Booking
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-[calc(64px+48px)] px-gutter pb-xl max-w-container-max mx-auto min-h-screen">
+<!-- Page Header & Filters -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-lg gap-md">
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary mb-xs">Rooms Management</h1>
+<p class="text-on-surface-variant font-body-md text-body-md">Manage availability, pricing, and maintenance status.</p>
+</div>
+<div class="flex flex-wrap gap-sm">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-outline-variant text-on-surface py-sm pl-md pr-xl rounded-DEFAULT focus:outline-none focus:border-primary font-body-md text-body-md hover:bg-surface-container-high transition-colors cursor-pointer">
+<option>All Statuses</option>
+<option>Ready</option>
+<option>Occupied</option>
+<option>Cleaning</option>
+<option>Maintenance</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-outline" data-icon="expand_more">expand_more</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-outline-variant text-on-surface py-sm pl-md pr-xl rounded-DEFAULT focus:outline-none focus:border-primary font-body-md text-body-md hover:bg-surface-container-high transition-colors cursor-pointer">
+<option>All Types</option>
+<option>Studio</option>
+<option>Suite</option>
+<option>Loft</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-outline" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Room Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Room Card 1: Ready -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden whisper-shadow border border-outline-variant/30 flex flex-col group hover:-translate-y-xs transition-transform duration-300">
+<div class="relative h-48 w-full">
+<img alt="Room 101" class="w-full h-full object-cover" data-alt="A wide, bright photograph of a luxurious, minimalist homestay bedroom. Sunlight streams through large windows, highlighting clean white linens on a large bed and warm wooden flooring. The aesthetic is modern, tranquil, and high-end, utilizing natural textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-6O9mt9dFQyte1h-1-7BTNywWOoBJozNY5zDfQ0zJ52qfSqIm8RJYiYDwqbCYk1nqQWjKPy9dOiPUb_HjaEjGCvTYV8QCrzMMVFqB51LoaQ4jK1_ZHA2RaxeecsBYixhnNC9ABNtidV9UvFWEcrichMVa9lsZiIY0kfmVr4R1lPFVT93zVfw32iTiHVW7jkIORz2gyDh-judSsxcGao82bRHzzjYM9-5MYRaaWpJt8np-cNLj5fPr"/>
+<div class="absolute top-sm right-sm bg-surface/90 backdrop-blur-sm px-sm py-xs rounded-full flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-caps text-label-caps text-secondary font-bold">READY</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Unit 101</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">Studio • 2 Guests</p>
+</div>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-primary">$120</span>
+<span class="text-on-surface-variant text-sm block">/ night</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded-sm">Wi-Fi</span>
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded-sm">City View</span>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<button class="text-secondary font-button text-button hover:text-on-secondary-container transition-colors flex items-center gap-xs">
+                            Edit Details
+                        </button>
+<button aria-label="More options" class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:border-primary hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Room Card 2: Occupied -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden whisper-shadow border border-outline-variant/30 flex flex-col group hover:-translate-y-xs transition-transform duration-300">
+<div class="relative h-48 w-full">
+<img alt="Room 204" class="w-full h-full object-cover" data-alt="A stylish, modern loft apartment bedroom. Darker, moodier lighting with rich charcoal walls and warm wood accents. The bed is neatly made, and there is a small desk area visible. The image conveys sophisticated urban living and high-end design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCo7W__mpga3-lPBGEMGueV_I8JAgzKVK7THcw1SjSQue4oma_PteLjbMeSAeLZqQ_cjKepbbAY6CuXsfhfLvtGfLAl3h0vrrKDWvv8NHamrwPmzZTvG1V0EZ2qnrWESZ_zCIyWcR-e1aTdNRqnzjJjZk6W7hbuApzL4xs_ZKRnPct32W3pYAHc_I1e7RZX3Yh5PUkDHVk35ES6dYLZyWXse4ATUKgOlisqMHS9pdpPfvZd3c9K3LfE"/>
+<div class="absolute top-sm right-sm bg-surface/90 backdrop-blur-sm px-sm py-xs rounded-full flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-caps text-label-caps text-primary font-bold">OCCUPIED</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold">Unit 204</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">Premium Loft • 4 Guests</p>
+</div>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-primary">$250</span>
+<span class="text-on-surface-variant text-sm block">/ night</span>
+</div>
+</div>
+<div class="bg-surface-container py-xs px-sm rounded-DEFAULT mb-md">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">Current Guest</p>
+<p class="font-body-md text-body-md text-primary font-medium">Eleanor Vance (Checkout: Tomorrow)</p>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<button class="text-secondary font-button text-button hover:text-on-secondary-container transition-colors flex items-center gap-xs">
+                            Manage Booking
+                        </button>
+<button aria-label="More options" class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:border-primary hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Room Card 3: Cleaning -->
+<article class="bg-surface-container-lowest rounded-xl overflow-hidden whisper-shadow border border-outline-variant/30 flex flex-col group hover:-translate-y-xs transition-transform duration-300">
+<div class="relative h-48 w-full opacity-80">
+<img alt="Room 102" class="w-full h-full object-cover grayscale-[20%]" data-alt="A clean, minimalist homestay bathroom featuring a large freestanding tub and natural stone tiles. The lighting is bright and sterile, emphasizing cleanliness and modern amenities. High-contrast blacks and crisp whites dominate the palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARvJALPmRYu2h6fLC-Ouhl2cU3EZTCD0zKPIqUvtG6OYcmMaJP-tforUw6BqVBOdLAEDM9Bv5OSac5YL-hs-QEfqFEvzvzPtMLE8VNgHrd2KZdP6r--Zmn3rgysay_5FwS96aj-AU3-WRmSYr6R-iwqvA_cKlilA0GRPO8ifAcCdeH2WQ5yOKYdVCNrQzpELhs1aMzfYgK7-4tyL5qBWLOZYMPREkianyljcJ7F84iN19q8D42urNj"/>
+<div class="absolute inset-0 bg-surface/10"></div>
+<div class="absolute top-sm right-sm bg-surface/90 backdrop-blur-sm px-sm py-xs rounded-full flex items-center gap-xs border border-outline">
+<span class="material-symbols-outlined text-outline text-[16px]" data-icon="cleaning_services">cleaning_services</span>
+<span class="font-label-caps text-label-caps text-outline font-bold">CLEANING</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary font-semibold text-on-surface-variant">Unit 102</h3>
+<p class="text-outline font-body-md text-body-md">Studio • 2 Guests</p>
+</div>
+<div class="text-right opacity-70">
+<span class="font-headline-sm text-headline-sm text-primary">$120</span>
+<span class="text-outline text-sm block">/ night</span>
+</div>
+</div>
+<div class="flex items-center gap-sm mb-md p-sm bg-surface-container-low rounded-DEFAULT">
+<div class="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-outline h-full w-[60%]"></div>
+</div>
+<span class="font-label-caps text-label-caps text-outline shrink-0">Est. 20m</span>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<button class="text-outline font-button text-button hover:text-primary transition-colors flex items-center gap-xs">
+                            Mark Ready
+                        </button>
+<button aria-label="More options" class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:border-primary hover:text-primary transition-colors text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</main>
+</body></html>

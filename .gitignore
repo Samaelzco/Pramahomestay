@@ -1,0 +1,19 @@
+# Local environment
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Monorepo migration archive
+.monorepo-migration/
+
+# Root tooling
+node_modules/
+coverage/
+*.log
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

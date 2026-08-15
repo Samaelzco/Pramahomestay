@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bookings - Urban Sanctuary Dashboard</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#1a1c1c",
+                    "tertiary-container": "#121c29",
+                    "on-primary-fixed-variant": "#474746",
+                    "inverse-on-surface": "#f1f1f1",
+                    "surface": "#f9f9f9",
+                    "surface-dim": "#dadada",
+                    "inverse-primary": "#c8c6c5",
+                    "surface-tint": "#5f5e5e",
+                    "primary-fixed-dim": "#c8c6c5",
+                    "surface-bright": "#f9f9f9",
+                    "tertiary-fixed-dim": "#bdc7d9",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#7a8495",
+                    "on-secondary-fixed-variant": "#5f411b",
+                    "on-tertiary-fixed": "#121c29",
+                    "on-secondary-fixed": "#2b1700",
+                    "primary": "#000000",
+                    "surface-container-low": "#f3f3f3",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#e8e8e8",
+                    "secondary-fixed": "#ffddb9",
+                    "outline-variant": "#c4c7c7",
+                    "on-secondary-container": "#7a5930",
+                    "tertiary": "#000000",
+                    "on-error": "#ffffff",
+                    "background": "#f9f9f9",
+                    "surface-variant": "#e2e2e2",
+                    "on-surface-variant": "#444748",
+                    "on-tertiary": "#ffffff",
+                    "outline": "#747878",
+                    "on-primary-fixed": "#1c1b1b",
+                    "secondary-container": "#ffd2a1",
+                    "on-primary-container": "#858383",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#e5e2e1",
+                    "on-tertiary-fixed-variant": "#3e4756",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary-fixed-dim": "#eabf8e",
+                    "surface-container": "#eeeeee",
+                    "inverse-surface": "#2f3131",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#1c1b1b",
+                    "tertiary-fixed": "#d9e3f5",
+                    "on-primary": "#ffffff",
+                    "secondary": "#795830",
+                    "on-background": "#1a1c1c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "80px",
+                    "gutter": "24px",
+                    "sm": "12px",
+                    "container-max": "1280px",
+                    "base": "8px",
+                    "xs": "4px",
+                    "md": "24px",
+                    "lg": "48px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "button": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "display-lg-mobile": [
+                            "36px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "button": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-sm": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for minimalist feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e2e2;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c4c7c7;
+        }
+        
+        /* Whisper shadow utility */
+        .whisper-shadow {
+            box-shadow: 0 16px 48px -12px rgba(26, 28, 28, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased overflow-x-hidden">
+<div class="flex min-h-screen">
+<!-- SideNavBar Component -->
+<nav class="bg-surface h-screen w-64 fixed left-0 top-0 border-r border-outline-variant flat no shadows flex flex-col h-full py-md px-base z-40">
+<!-- Brand -->
+<div class="px-sm mb-xl">
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary tracking-tight">
+                    Urban Sanctuary
+                </div>
+<div class="font-label-caps text-label-caps text-on-surface-variant mt-1 uppercase tracking-widest">
+                    Homestay Management
+                </div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 space-y-1">
+<!-- Inactive Tab -->
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-sm py-2 text-secondary font-bold border-r-2 border-secondary font-body-md text-body-md hover:bg-surface-container-high transition-colors scale-[0.98] transition-transform duration-150 bg-surface-container-low/50" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span>Bookings</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">bed</span>
+<span>Rooms</span>
+</a>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">group</span>
+<span>Guests</span>
+</a>
+<a class="flex items-center gap-3 px-sm py-2 rounded-lg text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span>Analytics</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="mt-auto pt-md border-t border-outline-variant/30 px-sm">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-3 px-4 rounded-lg font-button text-button hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Add New Booking
+                </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col ml-64 min-w-0">
+<!-- TopNavBar Component -->
+<header class="bg-surface/80 backdrop-blur-md shadow-sm fixed top-0 right-0 w-[calc(100%-16rem)] z-30 flex justify-between items-center h-16 px-gutter">
+<!-- Product Name / Context -->
+<div class="font-headline-sm text-headline-sm font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">calendar_today</span>
+                    Dashboard
+                </div>
+<!-- Search & Actions -->
+<div class="flex items-center gap-lg">
+<!-- Search Bar -->
+<div class="relative flex items-center group hidden lg:flex">
+<span class="material-symbols-outlined absolute left-0 text-on-surface-variant group-focus-within:text-primary transition-colors pointer-events-none text-[20px]">search</span>
+<input class="pl-8 pr-4 py-1.5 bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-primary font-body-md text-body-md w-64 transition-colors placeholder:text-on-surface-variant/60" placeholder="Search reservations..." type="text"/>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-sm">
+<button class="p-2 text-on-surface-variant hover:text-primary focus:ring-1 ring-outline rounded-full transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary focus:ring-1 ring-outline rounded-full transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<!-- Profile Avatar -->
+<button class="ml-2 w-9 h-9 rounded-full overflow-hidden border border-outline-variant focus:ring-2 ring-primary ring-offset-2 ring-offset-surface transition-all">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a professional manager with a welcoming smile, soft natural lighting, minimalist bright background, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACkjfhzNmrn1-rG5GHVWMSrZfacCVZ8KjqeDefcPHu71ZBJOQh2LAdJ1APOottq3_diWTWm1x9RciXbPJhR0OaqAxyYzPaJ4RzgFIYSf_3B09Rdd1zxxeIVi7rsvyfN2KL5dzef_Dix_2RnLeM8WUP1bTKGHYvC0OR_-3lF4iSogO9Ykp0DZyhQH1_cgvaX5C1YrJH9J03Ne6enG-gj0lOVIXn2qwHpF2oi-U1rAfchXfzoMsBFGZl"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="mt-16 p-gutter md:p-xl space-y-xl max-w-container-max mx-auto w-full">
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+<div class="max-w-2xl">
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight mb-2">Reservations</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage incoming guests, confirm stays, and review booking history for all properties.</p>
+</div>
+<div class="flex-shrink-0">
+<button class="flex items-center gap-2 bg-secondary text-on-secondary py-3 px-6 rounded font-button text-button hover:bg-secondary-fixed-dim transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            New Booking
+                        </button>
+</div>
+</div>
+<!-- Filters & Controls Array -->
+<div class="bg-surface-container-lowest rounded-xl p-md whisper-shadow border border-outline-variant/30 flex flex-col lg:flex-row gap-6 items-start lg:items-end">
+<!-- Search Input (Mobile/Secondary) -->
+<div class="w-full lg:w-auto flex-1">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Guest or Reference</label>
+<div class="relative flex items-center group">
+<span class="material-symbols-outlined absolute left-0 text-on-surface-variant group-focus-within:text-primary transition-colors text-[20px]">person_search</span>
+<input class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-primary font-body-md text-body-md transition-colors placeholder:text-outline" placeholder="e.g. Eleanor Vance" type="text"/>
+</div>
+</div>
+<!-- Filter: Room -->
+<div class="w-full sm:w-auto min-w-[160px]">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Property / Room</label>
+<div class="relative">
+<select class="w-full appearance-none pl-0 pr-8 py-2 bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-primary font-body-md text-body-md cursor-pointer transition-colors">
+<option>All Properties</option>
+<option>The Glasshouse Loft</option>
+<option>Garden Suite</option>
+<option>Penthouse Sanctuary</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Filter: Status -->
+<div class="w-full sm:w-auto min-w-[140px]">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Status</label>
+<div class="relative">
+<select class="w-full appearance-none pl-0 pr-8 py-2 bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-primary font-body-md text-body-md cursor-pointer transition-colors">
+<option>All Statuses</option>
+<option>Confirmed</option>
+<option>Pending</option>
+<option>Cancelled</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Filter: Dates -->
+<div class="w-full sm:w-auto min-w-[200px]">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Date Range</label>
+<div class="relative flex items-center group">
+<span class="material-symbols-outlined absolute left-0 text-on-surface-variant group-focus-within:text-primary transition-colors text-[20px]">date_range</span>
+<input class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-primary font-body-md text-body-md transition-colors placeholder:text-outline cursor-pointer" placeholder="Oct 12 - Oct 20" readonly="" type="text"/>
+</div>
+</div>
+</div>
+<!-- Bookings Data Table -->
+<div class="bg-surface-container-lowest rounded-xl whisper-shadow border border-outline-variant/30 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/50 bg-surface/50">
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest font-semibold">Guest Details</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest font-semibold">Property</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest font-semibold">Dates</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest font-semibold">Amount</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest font-semibold">Status</th>
+<th class="py-4 px-6 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<!-- Row 1 -->
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-4 px-6">
+<div class="font-medium text-primary">Alexander Sterling</div>
+<div class="text-[13px] text-on-surface-variant mt-0.5">alex.s@example.com</div>
+</td>
+<td class="py-4 px-6 text-on-surface">The Glasshouse Loft</td>
+<td class="py-4 px-6 text-on-surface-variant">
+                                        Oct 24 <span class="mx-1 text-outline">→</span> Oct 28
+                                        <div class="text-[13px] mt-0.5">4 nights</div>
+</td>
+<td class="py-4 px-6 font-medium text-primary">$1,250.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-on-surface font-label-caps text-[11px] tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                            Confirmed
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-4 px-6">
+<div class="font-medium text-primary">Isabella Rossini</div>
+<div class="text-[13px] text-on-surface-variant mt-0.5">bella.rossini@mail.com</div>
+</td>
+<td class="py-4 px-6 text-on-surface">Garden Suite</td>
+<td class="py-4 px-6 text-on-surface-variant">
+                                        Nov 02 <span class="mx-1 text-outline">→</span> Nov 05
+                                        <div class="text-[13px] mt-0.5">3 nights</div>
+</td>
+<td class="py-4 px-6 font-medium text-primary">$840.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-outline-variant text-on-surface-variant font-label-caps text-[11px] tracking-wide bg-transparent">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                            Pending
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-4 px-6">
+<div class="font-medium text-primary">Marcus Chen</div>
+<div class="text-[13px] text-on-surface-variant mt-0.5">m.chen99@company.net</div>
+</td>
+<td class="py-4 px-6 text-on-surface">Penthouse Sanctuary</td>
+<td class="py-4 px-6 text-on-surface-variant">
+                                        Nov 15 <span class="mx-1 text-outline">→</span> Nov 22
+                                        <div class="text-[13px] mt-0.5">7 nights</div>
+</td>
+<td class="py-4 px-6 font-medium text-primary">$3,150.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-on-surface font-label-caps text-[11px] tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                            Confirmed
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-4 px-6">
+<div class="font-medium text-on-surface-variant">Elena Dubois</div>
+<div class="text-[13px] text-outline mt-0.5">elena.d@studio.fr</div>
+</td>
+<td class="py-4 px-6 text-on-surface-variant">The Glasshouse Loft</td>
+<td class="py-4 px-6 text-outline">
+                                        Dec 01 <span class="mx-1 text-outline/50">→</span> Dec 03
+                                        <div class="text-[13px] mt-0.5">2 nights</div>
+</td>
+<td class="py-4 px-6 font-medium text-on-surface-variant line-through opacity-70">$620.00</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-variant text-on-surface-variant font-label-caps text-[11px] tracking-wide opacity-80">
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+                                            Cancelled
+                                        </span>
+</td>
+<td class="py-4 px-6 text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="bg-surface/30 px-6 py-4 border-t border-outline-variant/30 flex items-center justify-between">
+<span class="font-body-md text-[14px] text-on-surface-variant">Showing 1 to 4 of 24 entries</span>
+<div class="flex items-center gap-2">
+<button class="p-1.5 text-outline hover:text-primary transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container text-primary font-medium text-[14px] flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors font-medium text-[14px] flex items-center justify-center">2</button>
+<button class="w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors font-medium text-[14px] flex items-center justify-center">3</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

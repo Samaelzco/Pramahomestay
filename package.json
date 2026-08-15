@@ -1,0 +1,26 @@
+{
+  "name": "prama-homestay",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prama Homestay frontend, API, and infrastructure monorepo.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "docker compose up",
+    "dev:detached": "docker compose up --detach --wait",
+    "stop": "docker compose down",
+    "status": "docker compose ps",
+    "logs": "docker compose logs --follow",
+    "build": "npm run build:frontend && npm run build:docker",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:docker": "docker compose build",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "lint:backend": "php backend/vendor/bin/pint --test",
+    "test": "npm run test:backend",
+    "test:backend": "composer --working-dir=backend test",
+    "docker:validate": "docker compose config --quiet",
+    "check": "npm run lint && npm run test && npm run build:frontend && npm run docker:validate"
+  }
+}

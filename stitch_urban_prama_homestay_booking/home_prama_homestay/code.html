@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Prama Homestay - Urban Sanctuary Living</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f9f9f9",
+                      "on-primary-container": "#858383",
+                      "secondary-fixed": "#ffddb9",
+                      "on-background": "#1a1c1c",
+                      "surface-variant": "#e2e2e2",
+                      "on-tertiary-fixed": "#121c29",
+                      "on-surface": "#1a1c1c",
+                      "primary-fixed": "#e5e2e1",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-highest": "#e2e2e2",
+                      "on-secondary-container": "#7a5930",
+                      "inverse-primary": "#c8c6c5",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#7a8495",
+                      "secondary-fixed-dim": "#eabf8e",
+                      "on-tertiary-fixed-variant": "#3e4756",
+                      "outline": "#747878",
+                      "secondary": "#795830",
+                      "on-primary-fixed": "#1c1b1b",
+                      "on-tertiary": "#ffffff",
+                      "surface": "#f9f9f9",
+                      "surface-container-high": "#e8e8e8",
+                      "on-surface-variant": "#444748",
+                      "surface-container": "#eeeeee",
+                      "tertiary-container": "#121c29",
+                      "on-secondary-fixed-variant": "#5f411b",
+                      "background": "#f9f9f9",
+                      "inverse-surface": "#2f3131",
+                      "tertiary-fixed": "#d9e3f5",
+                      "surface-dim": "#dadada",
+                      "tertiary-fixed-dim": "#bdc7d9",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#ffd2a1",
+                      "on-primary-fixed-variant": "#474746",
+                      "inverse-on-surface": "#f1f1f1",
+                      "on-secondary-fixed": "#2b1700",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#f3f3f3",
+                      "surface-tint": "#5f5e5e",
+                      "error": "#ba1a1a",
+                      "tertiary": "#000000",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#1c1b1b",
+                      "primary": "#000000",
+                      "outline-variant": "#c4c7c7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "sm": "12px",
+                      "gutter": "24px",
+                      "lg": "48px",
+                      "container-max": "1280px",
+                      "xs": "4px",
+                      "xl": "80px",
+                      "base": "8px",
+                      "md": "24px"
+              },
+              "fontFamily": {
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "display-lg-mobile": [
+                              "Inter"
+                      ],
+                      "button": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-sm": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "36px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "button": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-secondary selection:text-on-secondary">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface w-full top-0 sticky border-b border-outline-variant dark:border-outline-variant z-50">
+<div class="flex justify-between items-center px-gutter md:px-xl py-base max-w-container-max mx-auto">
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary">
+                Prama Homestay
+            </div>
+<div class="hidden md:flex space-x-lg">
+<a class="font-body-md text-body-md text-secondary dark:text-secondary border-b-2 border-secondary pb-1 cursor-pointer transition-all active:scale-95" href="#">Home</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200 cursor-pointer transition-all active:scale-95" href="#">Rooms</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200 cursor-pointer transition-all active:scale-95" href="#">About</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200 cursor-pointer transition-all active:scale-95" href="#">Contact</a>
+</div>
+<button class="bg-primary text-on-primary font-button text-button px-gutter py-sm rounded hover:bg-on-surface-variant transition-colors active:scale-95">
+                Book Now
+            </button>
+</div>
+</nav>
+<main>
+<!-- Hero Section -->
+<section class="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center px-gutter md:px-xl py-xl">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A highly detailed photograph of a luxurious, modern urban homestay interior. The living room features a sleek charcoal sofa, warm wood paneling, and floor-to-ceiling windows overlooking a soft-focus city skyline. Natural light streams in, creating a serene, sophisticated sanctuary mood. The color palette emphasizes clean whites, deep slate grays, and tactile warm wood tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNeesFTArVbN_kNcr4wuxDfJQ-H9vCfv4b_sAwi3uQoM6bWlXFQm0XPgZsHMgx9mWdHIPlImpPGg7ie5bnK4NywaGSU9OAqccUuB-Mp0um1o7jl_DWMdS_HKmY0H-vhvZsHIT4NgMCkKK1Dun6QHdFi96chn09k9rQekStBQ-q3_eCKlRfCDG9IOX95JT_qvrFQ7abEwDEsYtICtNXuoF1ZIyjRIUNOMBEkltfjFt1tMz03uxpqK7L"/>
+<div class="absolute inset-0 bg-surface-tint/20"></div>
+</div>
+<div class="relative z-10 w-full max-w-container-max mx-auto flex flex-col items-start gap-lg mt-xl">
+<div class="max-w-2xl bg-surface/90 backdrop-blur-md p-lg rounded shadow-[0_32px_64px_-12px_rgba(0,0,0,0.06)] border border-surface-variant">
+<h1 class="font-display-lg-mobile md:font-display-lg text-primary mb-gutter">Urban Sanctuary Living</h1>
+<p class="font-body-lg text-on-surface-variant mb-lg">Experience the perfect bridge between the city's raw energy and the organic warmth of a premium homestay.</p>
+<!-- Booking Bar -->
+<div class="flex flex-col md:flex-row gap-gutter">
+<div class="flex-1 flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Check-in</label>
+<div class="border-b border-outline-variant pb-xs flex items-center focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline mr-sm">calendar_today</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-body-md w-full placeholder-outline-variant" placeholder="Add date" type="text"/>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Check-out</label>
+<div class="border-b border-outline-variant pb-xs flex items-center focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline mr-sm">calendar_month</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-body-md w-full placeholder-outline-variant" placeholder="Add date" type="text"/>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Guests</label>
+<div class="border-b border-outline-variant pb-xs flex items-center focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline mr-sm">group</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 text-body-md w-full placeholder-outline-variant" placeholder="1 guest" type="text"/>
+</div>
+</div>
+<button class="bg-secondary text-on-secondary font-button text-button px-lg py-sm rounded hover:bg-on-secondary-container transition-colors mt-auto h-[42px] flex items-center justify-center">
+                            Search
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Signature Rooms -->
+<section class="max-w-container-max mx-auto px-gutter md:px-xl py-xl mt-xl">
+<div class="mb-lg">
+<h2 class="font-headline-md text-headline-md text-primary mb-xs">Our Signature Rooms</h2>
+<p class="font-body-md text-on-surface-variant">Curated spaces designed for clarity and calm.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Room Card 1 -->
+<div class="bg-surface rounded border border-surface-variant overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.04)]">
+<div class="h-64 relative overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A detailed photograph of a minimalist bedroom in a luxury homestay. Features a platform bed with crisp white linens, a warm wood accent wall behind the headboard, and soft ambient lighting. Large windows show a blurred cityscape. The style is sophisticated essentialism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs4O1JzOGHbRP13_t4pMMgamXoDr6MxJ5t7_ORGi_nATiR-lzoYiCfzLxODYQSQlsyyameg72m_gn8KhHxEgFhXZuhQJkzJbrPEhRlyggFL5wvGzoFjLYfEhvZIbD94yT25_Ay_jmKf6-ud3zdZC-falwaZC7ieek9_gKM8HbuNNC014NJjIgj-hhXF8qhEKeJhnwn8NhxaynZ0jyKqGueVXCh61nk_mPfnwEavrteMx9UGgWR9bn4"/>
+</div>
+<div class="p-gutter flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-sm text-headline-sm text-primary">The Studio</h3>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary mr-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-md text-body-md">4.9</span>
+</div>
+</div>
+<p class="font-body-md text-on-surface-variant flex-grow">Intimate sanctuary perfect for solo travelers or couples.</p>
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">wifi</span> Wi-Fi</span>
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">tv</span> Smart TV</span>
+</div>
+<div class="flex justify-between items-center pt-sm border-t border-surface-variant">
+<span class="font-headline-sm text-headline-sm text-primary">$120 <span class="font-body-md text-on-surface-variant">/night</span></span>
+<button class="font-button text-button text-secondary hover:text-on-secondary-container transition-colors">Details</button>
+</div>
+</div>
+</div>
+<!-- Room Card 2 -->
+<div class="bg-surface rounded border border-surface-variant overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.04)]">
+<div class="h-64 relative overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A detailed photograph of a spacious suite in a modern urban homestay. The room features a king-size bed, a comfortable slate gray reading chair, and architectural light fixtures. The mood is calm and upscale, with a color palette of white, slate, and warm oak." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYPXbEqulpGo-65aCpQvJProUKDV_FZYJmTAhUppaoAKhhNFwb5_DQOMmlbybnJNAa0YLXZo4utGUJ1QBRIt7z63VjSb9CrA4s6ofsIGPo4fVgo6gJPXUDRFpU20DqEt3WZqAQLXT3dpgYLP7dcSwHMCOGwf0AIZG4go3oElPDzZr8eXhnRytsebxe8N7pguscW1c8dYrCYlXYZEVOQhxD0YhXb6kitB9IwfvGNselt89XCxUmnVj2"/>
+</div>
+<div class="p-gutter flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-sm text-headline-sm text-primary">The Suite</h3>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary mr-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-md text-body-md">5.0</span>
+</div>
+</div>
+<p class="font-body-md text-on-surface-variant flex-grow">Expansive living space with dedicated work and lounge areas.</p>
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">wifi</span> Wi-Fi</span>
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">kitchen</span> Kitchenette</span>
+</div>
+<div class="flex justify-between items-center pt-sm border-t border-surface-variant">
+<span class="font-headline-sm text-headline-sm text-primary">$180 <span class="font-body-md text-on-surface-variant">/night</span></span>
+<button class="font-button text-button text-secondary hover:text-on-secondary-container transition-colors">Details</button>
+</div>
+</div>
+</div>
+<!-- Room Card 3 -->
+<div class="bg-surface rounded border border-surface-variant overflow-hidden group hover:-translate-y-1 transition-transform duration-300 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.04)]">
+<div class="h-64 relative overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A detailed photograph of a luxury penthouse homestay bedroom. Featuring panoramic floor-to-ceiling windows showing a stunning city sunset. The room has high-end tactile materials, a low-profile bed, and sophisticated minimalist design. Warm ambient light balances the cool city glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy38zSnU_reAbxMugJ1sSWcuVI6mKDQiWlNLQSOLOpqXxwmiSHdXOuKgyElqMbOp_ecUOrAxdwrAWyoIxt4dRW443qlsKaLGb0BYZTIqPfViUlHdOgARQm_dBoSEkjU_X6GiyeG_VGxZ0gs2GCiDbQ4uGvcyFHqk6r2mUMlLQTDH50aVZOVhUI8CHPsAbvV4BLzGgzhtNJ_xBR0PrWyQm5rg7gQbA1OL_UC6M3p7RpgsgLRQxMxvlg"/>
+</div>
+<div class="p-gutter flex flex-col gap-sm">
+<div class="flex justify-between items-start">
+<h3 class="font-headline-sm text-headline-sm text-primary">The Penthouse</h3>
+<div class="flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary mr-xs" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-md text-body-md">5.0</span>
+</div>
+</div>
+<p class="font-body-md text-on-surface-variant flex-grow">Unparalleled city views and premium amenities.</p>
+<div class="flex flex-wrap gap-xs mb-sm">
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">balcony</span> Balcony</span>
+<span class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps px-sm py-xs rounded flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">concierge</span> Service</span>
+</div>
+<div class="flex justify-between items-center pt-sm border-t border-surface-variant">
+<span class="font-headline-sm text-headline-sm text-primary">$350 <span class="font-body-md text-on-surface-variant">/night</span></span>
+<button class="font-button text-button text-secondary hover:text-on-secondary-container transition-colors">Details</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Urban Living Experience -->
+<section class="max-w-container-max mx-auto px-gutter md:px-xl py-xl mt-xl mb-xl">
+<div class="flex flex-col md:flex-row items-center gap-xl">
+<div class="flex-1 relative w-full h-[500px] bg-surface-container-high overflow-hidden rounded">
+<img class="w-full h-full object-cover" data-alt="A high-quality architectural photograph of a stylish communal area in an urban homestay. The space features clean, essentialist lines, a large wooden dining table, and curated abstract art. Soft, diffuse natural lighting highlights the tactile textures of the slate floors and white walls." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9KDiQ66WkaYIVrXcBFVdG6-jLIjBWMK4xjRZJ62Jnlz41O2AbyTB8s2qL4iaeZd-ddxAzeiTVQVKnttpeobKJPaoaik9Bc7z3F-fklkyx6GcGo9IdvfatvIXLFgE0SOuLEXIW9uBGgOowlEn1V8nBgKe9A5wM-BKhv-1b8V466h-cRDRLdprAtZ_3PZXHfoVchR6DrEijQjc2SftBGguvw6kfgVW_yy4lr2PW5-4pjwZN0MJ4jmAc"/>
+</div>
+<div class="flex-1 flex flex-col items-start gap-lg">
+<h2 class="font-display-lg-mobile md:font-display-lg text-primary">Curated for<br/>Clarity.</h2>
+<p class="font-body-lg text-on-surface-variant">Our spaces are designed to provide a high-end residential feel that prioritizes calm amidst the urban rush. We blend industrial energy with material warmth to create a sanctuary you can call home.</p>
+<button class="border border-outline text-on-surface font-button text-button px-gutter py-sm rounded hover:bg-surface-container-high transition-colors">
+                        Discover Our Story
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-low w-full mt-xl">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter md:px-xl py-lg max-w-container-max mx-auto">
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary mb-gutter md:mb-0">
+                Prama Homestay
+            </div>
+<div class="flex flex-wrap justify-center gap-gutter mb-gutter md:mb-0">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Local Guide</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Careers</a>
+</div>
+<div class="font-body-md text-body-md text-on-surface dark:text-on-surface text-center md:text-right">
+                © 2024 Prama Homestay. Urban Sanctuary Living.
+            </div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Prama Homestay - Payment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f9f9f9",
+                        "on-primary-container": "#858383",
+                        "secondary-fixed": "#ffddb9",
+                        "on-background": "#1a1c1c",
+                        "surface-variant": "#e2e2e2",
+                        "on-tertiary-fixed": "#121c29",
+                        "on-surface": "#1a1c1c",
+                        "primary-fixed": "#e5e2e1",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-container": "#7a5930",
+                        "inverse-primary": "#c8c6c5",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#7a8495",
+                        "secondary-fixed-dim": "#eabf8e",
+                        "on-tertiary-fixed-variant": "#3e4756",
+                        "outline": "#747878",
+                        "secondary": "#795830",
+                        "on-primary-fixed": "#1c1b1b",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "surface-container-high": "#e8e8e8",
+                        "on-surface-variant": "#444748",
+                        "surface-container": "#eeeeee",
+                        "tertiary-container": "#121c29",
+                        "on-secondary-fixed-variant": "#5f411b",
+                        "background": "#f9f9f9",
+                        "inverse-surface": "#2f3131",
+                        "tertiary-fixed": "#d9e3f5",
+                        "surface-dim": "#dadada",
+                        "tertiary-fixed-dim": "#bdc7d9",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#ffd2a1",
+                        "on-primary-fixed-variant": "#474746",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-tint": "#5f5e5e",
+                        "error": "#ba1a1a",
+                        "tertiary": "#000000",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1c1b1b",
+                        "primary": "#000000",
+                        "outline-variant": "#c4c7c7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "container-max": "1280px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "button": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-md": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg-mobile": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "button": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .whisper-shadow {
+            box-shadow: 0 32px 64px -16px rgba(116, 120, 120, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-sans min-h-screen flex flex-col">
+<!-- TopNavBar (Suppressed due to transactional intent: Checkout/Payment page) -->
+<main class="flex-grow flex items-center justify-center py-xl px-gutter md:px-lg">
+<div class="w-full max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-12 gap-lg lg:gap-xl">
+<!-- Left Side: Form Container -->
+<div class="lg:col-span-7 flex flex-col space-y-lg">
+<div class="space-y-base">
+<button class="flex items-center text-on-surface-variant hover:text-primary transition-colors duration-200 group mb-gutter">
+<span class="material-symbols-outlined mr-xs text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="font-button text-button">Back to Room Details</span>
+</button>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary">Complete your booking</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Please provide your details and select a payment method.</p>
+</div>
+<!-- Guest Details Section -->
+<section class="bg-surface-container-lowest p-gutter md:p-lg rounded-xl whisper-shadow space-y-gutter">
+<h2 class="font-headline-sm text-headline-sm text-primary border-b border-outline-variant pb-base">Guest Details</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="firstName">First Name</label>
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full" id="firstName" placeholder="John" type="text"/>
+</div>
+<div class="flex flex-col space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="lastName">Last Name</label>
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full" id="lastName" placeholder="Doe" type="text"/>
+</div>
+<div class="flex flex-col space-y-xs md:col-span-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="email">Email Address</label>
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full" id="email" placeholder="john.doe@example.com" type="email"/>
+</div>
+<div class="flex flex-col space-y-xs md:col-span-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="phone">Phone Number</label>
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full" id="phone" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</div>
+</section>
+<!-- Payment Method Section -->
+<section class="bg-surface-container-lowest p-gutter md:p-lg rounded-xl whisper-shadow space-y-gutter">
+<h2 class="font-headline-sm text-headline-sm text-primary border-b border-outline-variant pb-base">Payment Method</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-sm">
+<!-- Option 1: Credit Card (Selected) -->
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="payment" type="radio"/>
+<div class="flex flex-col items-center justify-center p-gutter border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed transition-colors h-full">
+<span class="material-symbols-outlined text-[32px] text-primary mb-sm">credit_card</span>
+<span class="font-button text-button text-primary">Credit Card</span>
+</div>
+</label>
+<!-- Option 2: Bank Transfer -->
+<label class="cursor-pointer">
+<input class="peer sr-only" name="payment" type="radio"/>
+<div class="flex flex-col items-center justify-center p-gutter border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed transition-colors h-full">
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm">account_balance</span>
+<span class="font-button text-button text-on-surface-variant">Bank Transfer</span>
+</div>
+</label>
+<!-- Option 3: E-Wallet -->
+<label class="cursor-pointer">
+<input class="peer sr-only" name="payment" type="radio"/>
+<div class="flex flex-col items-center justify-center p-gutter border border-outline-variant rounded-lg peer-checked:border-secondary peer-checked:bg-secondary-fixed transition-colors h-full">
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant mb-sm">wallet</span>
+<span class="font-button text-button text-on-surface-variant">E-Wallet</span>
+</div>
+</label>
+</div>
+<!-- Credit Card Details (Visible by default in this state) -->
+<div class="space-y-gutter mt-gutter">
+<div class="flex flex-col space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="cardNumber">Card Number</label>
+<div class="relative">
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full pr-lg" id="cardNumber" placeholder="0000 0000 0000 0000" type="text"/>
+<span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-outline-variant">credit_card</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-gutter">
+<div class="flex flex-col space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="expiry">Expiry Date</label>
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full" id="expiry" placeholder="MM/YY" type="text"/>
+</div>
+<div class="flex flex-col space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="cvv">CVV</label>
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full" id="cvv" placeholder="123" type="text"/>
+</div>
+</div>
+<div class="flex flex-col space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="cardName">Name on Card</label>
+<input class="border-0 border-b border-outline-variant bg-transparent focus:ring-0 focus:border-primary px-0 py-sm font-body-md text-body-md text-on-surface transition-colors w-full" id="cardName" placeholder="John Doe" type="text"/>
+</div>
+</div>
+</section>
+<div class="pt-gutter">
+<button class="w-full bg-primary hover:bg-inverse-surface text-on-primary font-button text-button py-gutter rounded-lg transition-transform duration-200 hover:-translate-y-[2px] shadow-sm">
+                        Confirm Payment - $1,250.00
+                    </button>
+<div class="flex items-center justify-center mt-sm text-on-surface-variant">
+<span class="material-symbols-outlined mr-xs text-[16px]">lock</span>
+<span class="font-label-caps text-label-caps">Secure encrypted connection</span>
+</div>
+</div>
+</div>
+<!-- Right Side: Booking Summary Card -->
+<div class="lg:col-span-5 mt-xl lg:mt-0">
+<div class="bg-surface-container-lowest rounded-xl whisper-shadow sticky top-lg overflow-hidden flex flex-col">
+<!-- High-fidelity photography -->
+<div class="h-64 w-full relative">
+<img alt="Room image" class="object-cover w-full h-full absolute inset-0" data-alt="A luxurious, minimalist bedroom in an urban homestay. Soft natural light pours in through large floor-to-ceiling windows, highlighting clean architectural lines and warm wood accents. Crisp white linens cover a modern platform bed, set against a smooth concrete wall. A subtle potted plant sits in the corner, adding a touch of organic life to the sophisticated space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfIWmCUyTSuZ_S6_4IgGFZnD09iND2721QY9u6yd0KJjPptOF9yKMpSb8iSacw3U1Q1kSOq9YUnUY2JJTh4B16a4fLMe4eVE6pH7TezMKn-OuI64Y8XbG73PmsNzm9CFpfVr2XbtGeejwGuh6lzC4WojIxLZv4NHbTD0T0Eb5EBccURrofkZMEwYJpUUjqeXZxblps39qvIT-wse4IphOlrsH8vdes4IlAA6STALWLub8OQ9C6iLv6"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent opacity-50"></div>
+</div>
+<div class="p-gutter md:p-lg flex flex-col space-y-gutter relative z-10 bg-surface-container-lowest -mt-sm">
+<div>
+<div class="flex gap-sm mb-xs">
+<span class="bg-surface-container px-sm py-xs rounded text-outline font-label-caps text-label-caps">Entire Suite</span>
+<span class="bg-surface-container px-sm py-xs rounded text-outline font-label-caps text-label-caps">Superhost</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary">The Urban Sanctuary Penthouse</h3>
+<div class="flex items-center mt-xs text-on-surface-variant font-body-md text-body-md">
+<span class="material-symbols-outlined text-[18px] mr-xs" data-weight="fill">star</span>
+<span class="font-semibold text-primary mr-xs">4.98</span>
+<span>(124 reviews)</span>
+</div>
+</div>
+<div class="border-t border-b border-outline-variant py-gutter space-y-sm">
+<div class="flex justify-between items-start">
+<div>
+<span class="block font-label-caps text-label-caps text-on-surface-variant uppercase mb-xs">Dates</span>
+<span class="font-body-md text-body-md text-primary">Oct 15 - Oct 20, 2024</span>
+</div>
+<button class="text-secondary font-button text-button hover:underline">Edit</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<span class="block font-label-caps text-label-caps text-on-surface-variant uppercase mb-xs">Guests</span>
+<span class="font-body-md text-body-md text-primary">2 Guests</span>
+</div>
+<button class="text-secondary font-button text-button hover:underline">Edit</button>
+</div>
+</div>
+<div class="space-y-sm">
+<h4 class="font-headline-sm text-headline-sm text-primary mb-sm">Price Details</h4>
+<div class="flex justify-between font-body-md text-body-md text-on-surface">
+<span>$200 x 5 nights</span>
+<span>$1,000.00</span>
+</div>
+<div class="flex justify-between font-body-md text-body-md text-on-surface">
+<span>Cleaning fee</span>
+<span>$120.00</span>
+</div>
+<div class="flex justify-between font-body-md text-body-md text-on-surface">
+<span>Service fee</span>
+<span>$80.00</span>
+</div>
+<div class="flex justify-between font-body-md text-body-md text-on-surface">
+<span>Taxes</span>
+<span>$50.00</span>
+</div>
+</div>
+<div class="border-t border-primary pt-sm flex justify-between items-center">
+<span class="font-headline-md text-headline-md text-primary">Total (USD)</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">$1,250.00</span>
+</div>
+<div class="bg-surface-container p-sm rounded text-center">
+<span class="font-body-md text-body-md text-on-surface-variant text-sm">Free cancellation before Oct 13.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Suppressed due to transactional intent: Checkout/Payment page) -->
+</body></html>

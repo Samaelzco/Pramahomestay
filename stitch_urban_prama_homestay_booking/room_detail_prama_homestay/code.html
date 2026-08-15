@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Room Detail - Prama Homestay</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f9f9f9",
+                        "on-primary-container": "#858383",
+                        "secondary-fixed": "#ffddb9",
+                        "on-background": "#1a1c1c",
+                        "surface-variant": "#e2e2e2",
+                        "on-tertiary-fixed": "#121c29",
+                        "on-surface": "#1a1c1c",
+                        "primary-fixed": "#e5e2e1",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-container": "#7a5930",
+                        "inverse-primary": "#c8c6c5",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#7a8495",
+                        "secondary-fixed-dim": "#eabf8e",
+                        "on-tertiary-fixed-variant": "#3e4756",
+                        "outline": "#747878",
+                        "secondary": "#795830",
+                        "on-primary-fixed": "#1c1b1b",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "surface-container-high": "#e8e8e8",
+                        "on-surface-variant": "#444748",
+                        "surface-container": "#eeeeee",
+                        "tertiary-container": "#121c29",
+                        "on-secondary-fixed-variant": "#5f411b",
+                        "background": "#f9f9f9",
+                        "inverse-surface": "#2f3131",
+                        "tertiary-fixed": "#d9e3f5",
+                        "surface-dim": "#dadada",
+                        "tertiary-fixed-dim": "#bdc7d9",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#ffd2a1",
+                        "on-primary-fixed-variant": "#474746",
+                        "inverse-on-surface": "#f1f1f1",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-tint": "#5f5e5e",
+                        "error": "#ba1a1a",
+                        "tertiary": "#000000",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1c1b1b",
+                        "primary": "#000000",
+                        "outline-variant": "#c4c7c7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "container-max": "1280px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "button": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-md": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg-mobile": ["36px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "button": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .whisper-shadow {
+            box-shadow: 0 32px 64px -12px rgba(26, 28, 28, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased font-sans flex flex-col min-h-screen selection:bg-secondary selection:text-on-secondary">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface w-full top-0 sticky border-b border-outline-variant dark:border-outline-variant flat no shadows z-50 transition-all duration-300">
+<div class="flex justify-between items-center px-gutter md:px-xl py-base max-w-container-max mx-auto">
+<a class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary tracking-tight" href="#">Prama Homestay</a>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">Home</a>
+<a class="text-secondary dark:text-secondary border-b-2 border-secondary pb-1 hover:text-secondary dark:hover:text-secondary transition-colors duration-200 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">Rooms</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">About</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200 cursor-pointer active:scale-95 font-body-md text-body-md" href="#">Contact</a>
+</div>
+<button class="bg-secondary text-on-secondary font-button text-button py-sm px-md rounded-DEFAULT hover:-translate-y-[2px] transition-transform duration-200 shadow-sm cursor-pointer active:scale-95">Book Now</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-gutter md:px-xl pt-lg pb-xl">
+<!-- Breadcrumb -->
+<div class="flex items-center space-x-2 text-on-surface-variant font-label-caps text-label-caps mb-sm uppercase">
+<a class="hover:text-secondary transition-colors" href="#">Rooms</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface">The Urban Suite</span>
+</div>
+<!-- Room Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-md gap-4">
+<div>
+<h1 class="font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight mb-2">The Urban Suite</h1>
+<div class="flex items-center text-on-surface-variant font-body-md text-body-md gap-4">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">group</span> 2 Guests</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">bed</span> 1 King Bed</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">aspect_ratio</span> 45 sqm</span>
+</div>
+</div>
+</div>
+<!-- Hero Gallery Bento -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-sm mb-xl h-[50vh] md:h-[60vh]">
+<div class="md:col-span-3 rounded-lg overflow-hidden bg-surface-container h-full relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" data-alt="A wide angle photograph of a modern, luxurious bedroom suite. The room features a plush king-sized bed with crisp white linens and neutral-toned textured pillows. Large floor-to-ceiling windows reveal a soft, natural daylight illuminating the minimalist space. The walls are finished in a smooth, light grey concrete, accented by warm oak wood paneling behind the bed. The overall mood is serene, high-end, and architectural." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG5Y_1BzubuzHORHhVYY5-4AVwjPinCU_6uiaiZx7rvpnpntNN_JWb_YKG1dPmogFNlI0qU1Zo0pFePHZZdBsIfm0Ntk0Jh6a-SDldQtnncwiJcWN0lBFVCo5FgSxTKXgjEVhiiGzpRHv7FLM7US41wwvjiWdanNZwquUW3YOQIOOxJjLQw0U2q_WGK5SoBxQSKQTZrBL5BLi97S4c8XUQTezAx6kyLT8d85q58N1sV5nYPjn-VQ4D"/>
+</div>
+<div class="hidden md:flex flex-col gap-sm h-full">
+<div class="h-1/2 rounded-lg overflow-hidden bg-surface-container relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" data-alt="A close-up shot of a sophisticated, modern bathroom interior. A sleek freestanding white bathtub sits against a wall of textured slate grey tiles. Sunlight casts soft geometric shadows across the pristine surface. Minimalist matte black fixtures contrast with the light surrounding palette. The mood is spa-like, clean, and luxurious." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8hfztlP3zBET5y9LfL-9xLhXYiflL3uNCQxtzbv4_QbjKa3vxXm9Joa3yXr0l8sbji48JBhj7Azb2oNiTSnlxkcBS4ujOPrh6YyRrEB8I4d3Mq3QSm-IGyTCXnosOyyXueNT1KIARBvgc9oHJjZSztXm-GIZd0XL5QgcHx_n_ebtF8uoOLLkQO-68kt8q-Sw-s8cZJPeZHWvHpEyyFZzjf-sfPgTT-jFgQiOcd1Ut66jzDGnWmsIT"/>
+</div>
+<div class="h-1/2 rounded-lg overflow-hidden bg-surface-container relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" data-alt="A detailed view of a minimalist room corner featuring a sleek, low-profile reading chair upholstered in dark charcoal fabric. Beside it sits a small, warm oak side table holding a ceramic coffee cup and a contemporary metallic reading lamp. The background is softly blurred, emphasizing the quiet, contemplative atmosphere of the urban sanctuary design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRa5_DiiQoSL3z3BI5BWEzTdmzs9y4Dj-w_o6h0I2GYHG4PMuGlRnEogKGaJn4J-p0HSZLfV9XkYbph7YFP2OjKYkfHjbOWRnEAmDFvxAMUqdyvsgQL9w_zG4jYUNT3jGdC6pGwo3YVUdCzgXpV6Djbghh5G3fqdJ-wb-PNU9vO41okg6nCipnUMNTPV6G9yzGoAHLUP-7FVPcwxQPn7kQjaGUaBA47jCzJfKxeJYDHiFgNzg_8U6z"/>
+</div>
+</div>
+</div>
+<!-- Content Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl relative">
+<!-- Left Column: Details -->
+<div class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Description -->
+<section>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-md border-b border-outline-variant pb-2">About this space</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        Designed for the modern traveler, The Urban Suite is a masterclass in sophisticated minimalism. Flooded with natural light through expansive floor-to-ceiling windows, the space seamlessly blends raw architectural elements with organic warmth. The curated selection of furnishings and tactile materials—from the polished concrete floors to the warm wood accents—creates a calm, restorative environment high above the city pulse. Enjoy deep, restful sleep on our signature premium mattress, and start your day enveloped in the quiet luxury of this sanctuary.
+                    </p>
+</section>
+<!-- Amenities -->
+<section>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-md border-b border-outline-variant pb-2">Amenities</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[24px]">wifi</span>
+<span class="font-body-md text-body-md text-on-surface">High-speed Wi-Fi</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[24px]">coffee_maker</span>
+<span class="font-body-md text-body-md text-on-surface">Espresso Machine</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[24px]">location_city</span>
+<span class="font-body-md text-body-md text-on-surface">Panoramic City View</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[24px]">ac_unit</span>
+<span class="font-body-md text-body-md text-on-surface">Climate Control</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[24px]">tv</span>
+<span class="font-body-md text-body-md text-on-surface">Smart TV</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[24px]">iron</span>
+<span class="font-body-md text-body-md text-on-surface">Iron &amp; Board</span>
+</div>
+</div>
+</section>
+<!-- Features List -->
+<section>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-md border-b border-outline-variant pb-2">Room Features</h2>
+<ul class="flex flex-col">
+<li class="py-4 border-b border-outline-variant/30 flex items-start gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">check_circle</span>
+<div>
+<h3 class="font-button text-button text-on-surface mb-1">Premium Bedding</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Egyptian cotton sheets and a selection of hypoallergenic pillows.</p>
+</div>
+</li>
+<li class="py-4 border-b border-outline-variant/30 flex items-start gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">check_circle</span>
+<div>
+<h3 class="font-button text-button text-on-surface mb-1">Spa-inspired Bathroom</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Rainfall shower, deep soaking tub, and artisanal toiletries.</p>
+</div>
+</li>
+<li class="py-4 flex items-start gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">check_circle</span>
+<div>
+<h3 class="font-button text-button text-on-surface mb-1">Dedicated Workspace</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">A minimal desk setup perfect for remote work or reading.</p>
+</div>
+</li>
+</ul>
+</section>
+</div>
+<!-- Right Column: Sticky Booking Card -->
+<div class="lg:col-span-4">
+<div class="sticky top-32 bg-surface-container-lowest rounded-xl p-md border border-outline-variant/50 whisper-shadow">
+<div class="flex justify-between items-baseline mb-md">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md text-primary">$285</span>
+<span class="font-body-md text-body-md text-on-surface-variant">/ night</span>
+</div>
+<div class="flex items-center gap-1 text-sm text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-button text-button">4.9</span>
+<span class="text-on-surface-variant">(124 reviews)</span>
+</div>
+</div>
+<!-- Booking Form -->
+<form class="flex flex-col gap-4 mb-md">
+<div class="grid grid-cols-2 border border-outline-variant rounded-lg overflow-hidden bg-surface-bright">
+<div class="p-3 border-r border-outline-variant focus-within:bg-surface-container transition-colors">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase">Check-in</label>
+<input class="w-full bg-transparent border-none p-0 text-sm font-body-md text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50 outline-none" placeholder="Add date" type="text"/>
+</div>
+<div class="p-3 focus-within:bg-surface-container transition-colors">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase">Check-out</label>
+<input class="w-full bg-transparent border-none p-0 text-sm font-body-md text-on-surface focus:ring-0 placeholder:text-on-surface-variant/50 outline-none" placeholder="Add date" type="text"/>
+</div>
+</div>
+<div class="border border-outline-variant rounded-lg p-3 bg-surface-bright focus-within:bg-surface-container transition-colors">
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase">Guests</label>
+<select class="w-full bg-transparent border-none p-0 text-sm font-body-md text-on-surface focus:ring-0 outline-none cursor-pointer appearance-none">
+<option>1 Guest</option>
+<option selected="">2 Guests</option>
+<option>3 Guests</option>
+</select>
+</div>
+</form>
+<!-- Price Breakdown -->
+<div class="flex flex-col gap-2 font-body-md text-body-md text-on-surface-variant mb-lg pb-4 border-b border-outline-variant/30">
+<div class="flex justify-between">
+<span>$285 x 3 nights</span>
+<span>$855</span>
+</div>
+<div class="flex justify-between">
+<span>Cleaning fee</span>
+<span>$45</span>
+</div>
+<div class="flex justify-between">
+<span>Service fee</span>
+<span>$90</span>
+</div>
+</div>
+<div class="flex justify-between items-center mb-lg font-headline-sm text-headline-sm text-primary">
+<span>Total</span>
+<span>$990</span>
+</div>
+<button class="w-full bg-secondary text-on-secondary font-button text-button py-4 rounded-lg hover:-translate-y-[2px] transition-transform duration-200 shadow-sm flex items-center justify-center gap-2">
+                        Proceed to Payment
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<p class="text-center font-body-md text-body-md text-on-surface-variant text-sm mt-4">You won't be charged yet</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-low w-full mt-xl flex flex-col md:flex-row justify-between items-center px-gutter md:px-xl py-lg max-w-container-max mx-auto flat no shadows">
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary mb-4 md:mb-0">
+            © 2024 Prama Homestay. Urban Sanctuary Living.
+        </div>
+<div class="flex flex-wrap gap-4 md:gap-8 font-body-md text-body-md">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Local Guide</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-200" href="#">Careers</a>
+</div>
+</footer>
+</body></html>
