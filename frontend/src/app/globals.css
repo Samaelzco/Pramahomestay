@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f9f9f9;
+  --surface: #ffffff;
+  --surface-low: #f3f3f3;
+  --surface-high: #e8e8e8;
+  --foreground: #1a1c1c;
+  --muted: #575b5c;
+  --outline: #c4c7c7;
+  --primary: #111111;
+  --secondary: #795830;
+  --secondary-soft: #f2e4d4;
+  --danger: #ba1a1a;
+  --success: #356148;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-low: var(--surface-low);
+  --color-surface-high: var(--surface-high);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-outline: var(--outline);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+* { border-color: var(--outline); }
+html { background: var(--background); color: var(--foreground); scrollbar-color: var(--outline) var(--surface-low); }
+body { background: var(--background); color: var(--foreground); font-family: var(--font-inter), sans-serif; }
+::selection { background: #e4cfb6; color: #2b1700; }
+:focus-visible { outline: 2px solid var(--secondary); outline-offset: 3px; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button, select { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+input::placeholder, textarea::placeholder { color: #747878; opacity: 1; }

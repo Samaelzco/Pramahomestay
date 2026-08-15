@@ -6,6 +6,8 @@
 
 # Monorepo migration archive
 .monorepo-migration/
+.impeccable/chrome-profile/
+.impeccable/review/
 
 # Root tooling
 node_modules/

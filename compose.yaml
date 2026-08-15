@@ -40,7 +40,7 @@ services:
     command:
       - sh
       - -c
-      - php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
+      - php artisan migrate --force && php artisan storage:link --force && cd public && exec php -S 0.0.0.0:8000 ../vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     volumes:
@@ -69,6 +69,7 @@ services:
     restart: unless-stopped
     environment:
       NEXT_TELEMETRY_DISABLED: "1"
+      INTERNAL_API_URL: http://backend:8000/api
       NEXT_PUBLIC_API_URL: http://localhost:${BACKEND_PORT:-8000}/api
     command:
       - npm
