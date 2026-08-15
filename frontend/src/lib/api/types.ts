@@ -33,3 +33,28 @@ export type PaginationMeta = {
 export type PaginatedRooms = { data: Room[]; meta: PaginationMeta };
 export type ApiItem<T> = { data: T; message?: string };
 export type ActionState = { message?: string; errors?: Record<string, string[]> };
+
+export type BookingStatus = "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled";
+
+export type Booking = {
+  id: number;
+  booking_code: string;
+  room: Room;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string;
+  check_in: string;
+  check_out: string;
+  guest_count: number;
+  price_per_night: string;
+  total_nights: number;
+  total_amount: string;
+  status: BookingStatus;
+  status_label: string;
+  special_requests: string | null;
+  internal_notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PaginatedBookings = { data: Booking[]; meta: PaginationMeta };

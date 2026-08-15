@@ -1,16 +1,20 @@
+"use client";
+
 import { logoutAction } from "@/app/internal/login/actions";
 import { BedIcon, CalendarIcon, ChartIcon, GridIcon, HomeIcon, LogOutIcon, UsersIcon } from "@/components/ui/icons";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { label: "Ringkasan", href: "#", icon: GridIcon, disabled: true },
-  { label: "Booking", href: "#", icon: CalendarIcon, disabled: true },
+  { label: "Booking", href: "/internal/bookings", icon: CalendarIcon },
   { label: "Kamar", href: "/internal/rooms", icon: BedIcon },
   { label: "Tamu", href: "#", icon: UsersIcon, disabled: true },
   { label: "Analitik", href: "#", icon: ChartIcon, disabled: true },
 ];
 
 export function Sidebar({ userName }: { userName: string }) {
+  const pathname = usePathname();
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-[264px] border-r bg-surface px-4 py-6 md:flex md:flex-col">
       <div className="flex items-center gap-3 px-3">
@@ -19,15 +23,17 @@ export function Sidebar({ userName }: { userName: string }) {
       </div>
       <nav aria-label="Navigasi internal" className="mt-14 flex-1">
         <ul className="space-y-1">
-          {navItems.map(({ label, href, icon: NavIcon, disabled }) => (
+          {navItems.map(({ label, href, icon: NavIcon, disabled }) => {
+            const active = !disabled && pathname.startsWith(href);
+            return (
             <li key={label}>
               {disabled ? (
                 <span aria-disabled="true" className="flex items-center gap-3 rounded-md px-4 py-3 text-sm text-muted/55"><NavIcon className="size-5" />{label}<span className="ml-auto text-[10px] tracking-wide uppercase">Nanti</span></span>
               ) : (
-                <Link href={href} className="flex items-center gap-3 rounded-md bg-surface-low px-4 py-3 text-sm font-semibold text-secondary after:ml-auto after:size-1.5 after:rounded-full after:bg-secondary"><NavIcon className="size-5" />{label}</Link>
+                <Link href={href} aria-current={active ? "page" : undefined} className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm transition-colors ${active ? "bg-surface-low font-semibold text-secondary after:ml-auto after:size-1.5 after:rounded-full after:bg-secondary" : "text-muted hover:bg-surface-low hover:text-primary"}`}><NavIcon className="size-5" />{label}</Link>
               )}
             </li>
-          ))}
+          );})}
         </ul>
       </nav>
       <div className="border-t pt-5">

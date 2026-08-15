@@ -34,6 +34,11 @@ class RoomRepository implements RoomRepositoryInterface
         return $this->model->newQuery()->findOrFail($id);
     }
 
+    public function findForUpdate(int $id): Room
+    {
+        return $this->model->newQuery()->lockForUpdate()->findOrFail($id);
+    }
+
     public function findByName(string $name): ?Room
     {
         return $this->model->newQuery()->where('name', $name)->first();

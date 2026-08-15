@@ -15,6 +15,8 @@ interface RoomRepositoryInterface
 
     public function findOrFail(int $id): Room;
 
+    public function findForUpdate(int $id): Room;
+
     public function findByName(string $name): ?Room;
 
     /** @param array<string, mixed> $attributes */

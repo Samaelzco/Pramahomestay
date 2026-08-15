@@ -1,4 +1,4 @@
-import { Pagination } from "@/components/rooms/pagination";
+import { Pagination } from "@/components/ui/pagination";
 import { RoomCard } from "@/components/rooms/room-card";
 import { RoomFilters } from "@/components/rooms/room-filters";
 import { PlusIcon } from "@/components/ui/icons";
@@ -29,7 +29,7 @@ export default async function RoomsPage({ searchParams }: { searchParams: Promis
       <RoomFilters search={query.search} status={query.status} type={query.type} />
       <div className="mt-8 flex items-baseline justify-between"><p className="text-sm font-medium">{rooms.meta.total} kamar ditemukan</p>{(query.search || query.status || query.type) && <Link href="/internal/rooms" className="text-sm font-semibold text-secondary underline-offset-4 hover:underline">Hapus filter</Link>}</div>
       {rooms.data.length > 0 ? <div className="mt-5 grid gap-6 lg:grid-cols-2 2xl:grid-cols-3">{rooms.data.map((room) => <RoomCard key={room.id} room={room} />)}</div> : <div className="mt-5 border-y bg-surface py-20 text-center"><h2 className="text-xl font-semibold">Belum ada kamar yang sesuai</h2><p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted">Ubah kata pencarian atau filter. Jika inventori masih kosong, tambahkan kamar pertama.</p><Link href="/internal/rooms/new" className="mt-6 inline-flex h-11 items-center rounded-sm bg-primary px-5 text-sm font-semibold text-white">Tambah kamar</Link></div>}
-      <Pagination meta={rooms.meta} query={query} />
+      <Pagination meta={rooms.meta} query={query} resourceName="kamar" />
     </main>
   );
 }

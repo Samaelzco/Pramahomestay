@@ -3,6 +3,7 @@
 .phpunit.cache
 node_modules
 storage/logs/*
+public/storage
 vendor
 Dockerfile
 README.md
