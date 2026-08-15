@@ -12,6 +12,6 @@ step by step
 4. setup mono repo untuk project ini
 5. setup arsitektur laravel untuk menggunakan service-repository pattern dan wajib
 6. buat seeder untuk admin dengan email: admin@gmail.com, password: password
-7. buat database dan juga model untuk project sesuai fitur yang sudah ditentukan. pastikan masing masing itu ada index, create, dan edit pada internal jangan semua dijadikan 1 file. lalu langsung buat tampilan UI nya di frontend dan sambungkan apinya agar BE dan FE terkoneksi. buat per masing masing fitur internal dulu jangan langsung semuanya. pada next js juga harus di pisah per fitur jangan dijadikan semua dalam 1 file tsx
+7. buat database dan juga model untuk project sesuai fitur yang sudah ditentukan. pastikan masing masing itu ada index, create, dan edit pada internal jangan semua dijadikan 1 file. lalu langsung buat tampilan UI nya di frontend dan sambungkan apinya agar BE dan FE terkoneksi. buat per masing masing fitur internal dulu jangan langsung semuanya. konfirmasi dulu ke aku fitur apa yang akan kamu kerjakan. pada next js juga harus di pisah per fitur jangan dijadikan semua dalam 1 file tsx
 8. cek validasi agar lebih aman
 9. buat page untuk pelanggan sesuai dengan referensi dan pastikan mobile first.
