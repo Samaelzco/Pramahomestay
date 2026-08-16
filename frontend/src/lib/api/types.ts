@@ -82,3 +82,46 @@ export type Payment = {
 };
 
 export type PaginatedPayments = { data: Payment[]; meta: PaginationMeta };
+
+export type DashboardBookingRow = {
+  id: number;
+  booking_code: string;
+  guest_name: string;
+  room_name: string | null;
+  check_in: string;
+  check_out: string;
+  status: BookingStatus;
+  status_label: string;
+  total_amount: string;
+};
+
+export type DashboardFollowup = {
+  id: number;
+  booking_code: string;
+  guest_name: string;
+  room_name: string | null;
+  check_in: string;
+  remaining_amount: string;
+  payment_status: PaymentStatus;
+  payment_status_label: string;
+};
+
+export type DashboardSummary = {
+  period: { days: 7 | 30 | 90; start: string; end: string };
+  metrics: {
+    bookings: number;
+    revenue: string;
+    occupancy_rate: number;
+    occupied_rooms: number;
+    active_rooms: number;
+    outstanding: string;
+    arrivals_today: number;
+    departures_today: number;
+  };
+  series: Array<{ date: string; bookings: number; revenue: string; occupancy_rate: number }>;
+  booking_statuses: Array<{ status: BookingStatus; label: string; count: number }>;
+  payment_statuses: Array<{ status: PaymentStatus; label: string; count: number }>;
+  operations: { arrivals: DashboardBookingRow[]; departures: DashboardBookingRow[] };
+  recent_bookings: DashboardBookingRow[];
+  payment_followups: DashboardFollowup[];
+};

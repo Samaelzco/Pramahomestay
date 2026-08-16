@@ -42,7 +42,7 @@ export async function loginAction(
     return { message: "Server belum dapat dihubungi. Silakan coba kembali." };
   }
 
-  redirect("/internal/rooms");
+  redirect("/internal/dashboard");
 }
 
 export async function logoutAction(): Promise<void> {

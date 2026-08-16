@@ -164,7 +164,7 @@ While the layout is modern and "linear," strictly sharp corners are avoided to e
 
 - **Buttons:** Primary buttons are Solid Charcoal with White text. Secondary buttons are Outline (Slate Gray) or Ghost. The "Warm Wood" color is reserved for high-intent "Book Now" actions or active selection states.
 - **Inputs:** Minimalist bottom-border only or very light Slate Gray outlines. On focus, the border transitions to Deep Charcoal. Labels use the `label-caps` style.
-- **Cards:** Use white backgrounds with "Whisper Shadows." Photography should always be the dominant element, typically taking up the top 60-70% of the card area.
+- **Cards:** Use white backgrounds with "Whisper Shadows." Public and editorial cards remain photography-led, typically giving imagery the top 60-70% of the card area. Internal operational cards are data-led: use tonal surfaces, fine dividers, tabular numerals, and restrained ambient shadow instead of forcing imagery into analytical content.
 - **Chips/Tags:** Used for amenities (e.g., "High-speed Wi-Fi"). Use a light gray fill with Slate Gray text; no borders.
 - **Lists:** Clean, high-contrast list items separated by thin 1px lines in light slate (#E1E4E8).
-- **Navigation:** A persistent, minimal top-bar with plenty of padding. Use the Secondary (Wood) color for the active page indicator—a simple 2px bottom bar or a small dot.
+- **Navigation:** Public navigation uses a persistent, minimal top-bar with plenty of padding. Internal tools use a persistent desktop sidebar and a modal drawer on smaller screens; retain the Secondary (Wood) active state, `aria-current`, keyboard dismissal, focus containment, and focus return.

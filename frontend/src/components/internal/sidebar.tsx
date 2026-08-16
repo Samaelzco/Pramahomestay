@@ -1,18 +1,17 @@
 "use client";
 
 import { logoutAction } from "@/app/internal/login/actions";
-import { BedIcon, CalendarIcon, ChartIcon, GridIcon, HomeIcon, LogOutIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
+import { BedIcon, CalendarIcon, GridIcon, HomeIcon, LogOutIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type KeyboardEvent } from "react";
 
 const navItems = [
-  { label: "Ringkasan", href: "#", icon: GridIcon, disabled: true },
+  { label: "Ringkasan", href: "/internal/dashboard", icon: GridIcon },
   { label: "Booking", href: "/internal/bookings", icon: CalendarIcon },
   { label: "Pembayaran", href: "/internal/payments", icon: WalletIcon },
   { label: "Kamar", href: "/internal/rooms", icon: BedIcon },
   { label: "Tamu", href: "#", icon: UsersIcon, disabled: true },
-  { label: "Analitik", href: "#", icon: ChartIcon, disabled: true },
 ];
 
 function InternalNavigation({ onNavigate }: { onNavigate?: () => void }) {

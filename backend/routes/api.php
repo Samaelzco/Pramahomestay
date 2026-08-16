@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Internal\BookingController;
+use App\Http\Controllers\Api\Internal\DashboardController;
 use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\RoomController;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::prefix('internal')->group(function (): void {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:dashboard.view');
         Route::get('/payments', [PaymentController::class, 'index'])->middleware('permission:payments.view');
         Route::post('/payments', [PaymentController::class, 'store'])->middleware('permission:payments.create');
         Route::get('/payments/{payment}', [PaymentController::class, 'show'])->middleware('permission:payments.view');

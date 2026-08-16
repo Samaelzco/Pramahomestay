@@ -9,7 +9,8 @@ export function InternalHeader({ userName }: { userName: string }) {
   const pathname = usePathname();
   const booking = pathname.startsWith("/internal/bookings");
   const payment = pathname.startsWith("/internal/payments");
-  const context = booking ? "Operasional booking" : payment ? "Administrasi pembayaran" : "Inventori kamar";
+  const dashboard = pathname.startsWith("/internal/dashboard");
+  const context = dashboard ? "Ringkasan operasional" : booking ? "Operasional booking" : payment ? "Administrasi pembayaran" : "Inventori kamar";
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
