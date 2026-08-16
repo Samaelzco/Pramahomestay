@@ -58,3 +58,27 @@ export type Booking = {
 };
 
 export type PaginatedBookings = { data: Booking[]; meta: PaginationMeta };
+
+export type PaymentMethod = "cash" | "bank_transfer" | "qris" | "card";
+export type PaymentStatus = "unpaid" | "partial" | "paid" | "failed" | "refunded";
+
+export type Payment = {
+  id: number;
+  payment_code: string;
+  booking: Booking;
+  amount_paid: string;
+  credited_amount: string;
+  remaining_amount: string;
+  method: PaymentMethod | null;
+  method_label: string | null;
+  status: PaymentStatus;
+  status_label: string;
+  reference_number: string | null;
+  paid_at: string | null;
+  notes: string | null;
+  proof_url: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PaginatedPayments = { data: Payment[]; meta: PaginationMeta };

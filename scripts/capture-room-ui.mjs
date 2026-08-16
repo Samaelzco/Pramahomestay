@@ -65,6 +65,10 @@ async function capture(name, url, width, height, deviceScaleFactor = 1) {
 
 await capture("desktop", "http://localhost:3000/internal/rooms", 1600, 1000);
 await capture("mobile", "http://localhost:3000/internal/rooms", 390, 844, 1);
+await send("Runtime.evaluate", { expression: "document.querySelector('[aria-label=\"Buka menu navigasi\"]')?.click()" });
+await new Promise((resolve) => setTimeout(resolve, 500));
+const mobileMenu = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
+await writeFile(new URL("mobile-menu.png", outputDir), Buffer.from(mobileMenu.data, "base64"));
 await capture("create-desktop", "http://localhost:3000/internal/rooms/new", 1600, 1000);
 await capture("create-mobile", "http://localhost:3000/internal/rooms/new", 390, 844, 1);
 socket.close();

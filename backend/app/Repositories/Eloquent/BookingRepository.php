@@ -26,6 +26,7 @@ class BookingRepository implements BookingRepositoryInterface
             })
             ->when($filters['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
             ->when($filters['room_id'] ?? null, fn ($query, int $roomId) => $query->where('room_id', $roomId))
+            ->when($filters['without_payment'] ?? false, fn ($query) => $query->whereDoesntHave('payment'))
             ->when($filters['date_from'] ?? null, fn ($query, string $date) => $query->whereDate('check_out', '>=', $date))
             ->when($filters['date_to'] ?? null, fn ($query, string $date) => $query->whereDate('check_in', '<=', $date))
             ->orderByDesc('check_in')
@@ -44,6 +45,11 @@ class BookingRepository implements BookingRepositoryInterface
         $booking->updateOrFail($attributes);
 
         return $booking->refresh()->load('room');
+    }
+
+    public function findForUpdate(int $id): Booking
+    {
+        return $this->model->newQuery()->lockForUpdate()->findOrFail($id);
     }
 
     public function hasDateConflict(int $roomId, string $checkIn, string $checkOut, ?int $ignoreId = null): bool

@@ -8,6 +8,7 @@
 .monorepo-migration/
 .impeccable/chrome-profile/
 .impeccable/review/
+.chrome-review/
 
 # Root tooling
 node_modules/

@@ -3,15 +3,19 @@
 namespace Tests\Feature\Architecture;
 
 use App\Contracts\Repositories\BookingRepositoryInterface;
+use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Contracts\Services\BookingServiceInterface;
+use App\Contracts\Services\PaymentServiceInterface;
 use App\Contracts\Services\RoomServiceInterface;
 use App\Contracts\Services\UserServiceInterface;
 use App\Repositories\Eloquent\BookingRepository;
+use App\Repositories\Eloquent\PaymentRepository;
 use App\Repositories\Eloquent\RoomRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\BookingService;
+use App\Services\PaymentService;
 use App\Services\RoomService;
 use App\Services\UserService;
 use Tests\TestCase;
@@ -28,6 +32,16 @@ class ServiceRepositoryArchitectureTest extends TestCase
         $this->assertInstanceOf(
             BookingService::class,
             $this->app->make(BookingServiceInterface::class),
+        );
+
+        $this->assertInstanceOf(
+            PaymentRepository::class,
+            $this->app->make(PaymentRepositoryInterface::class),
+        );
+
+        $this->assertInstanceOf(
+            PaymentService::class,
+            $this->app->make(PaymentServiceInterface::class),
         );
 
         $this->assertInstanceOf(

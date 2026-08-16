@@ -22,6 +22,9 @@ class AuthorizationSeeder extends Seeder
                 'bookings.view',
                 'bookings.create',
                 'bookings.update',
+                'payments.view',
+                'payments.create',
+                'payments.update',
             ])->map(fn (string $name): Permission => Permission::findOrCreate($name, 'web'));
 
             Role::findOrCreate('admin', 'web')->syncPermissions($permissions);

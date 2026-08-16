@@ -14,6 +14,8 @@ interface BookingRepositoryInterface
 
     public function update(Booking $booking, array $attributes): Booking;
 
+    public function findForUpdate(int $id): Booking;
+
     public function hasDateConflict(int $roomId, string $checkIn, string $checkOut, ?int $ignoreId = null): bool;
 
     public function codeExists(string $code): bool;
