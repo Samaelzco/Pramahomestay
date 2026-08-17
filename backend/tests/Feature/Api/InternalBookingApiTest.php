@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Booking;
+use App\Models\Guest;
 use App\Models\Room;
 use App\Models\User;
 use Database\Seeders\AuthorizationSeeder;
@@ -16,12 +17,19 @@ class InternalBookingApiTest extends TestCase
 
     private User $admin;
 
+    private Guest $guest;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->seed(AuthorizationSeeder::class);
         $this->admin = User::factory()->create();
         $this->admin->assignRole('admin');
+        $this->guest = Guest::factory()->create([
+            'full_name' => 'Ayu Lestari',
+            'email' => 'ayu@example.com',
+            'phone' => '+62 812 3456 7890',
+        ]);
     }
 
     public function test_booking_endpoints_require_authentication_and_permission(): void
@@ -85,7 +93,7 @@ class InternalBookingApiTest extends TestCase
     public function test_cancelled_booking_does_not_block_room_availability(): void
     {
         Sanctum::actingAs($this->admin, ['internal']);
-        $room = Room::factory()->create();
+        $room = Room::factory()->create(['capacity' => 2]);
         Booking::factory()->for($room)->create([
             'check_in' => '2026-09-10',
             'check_out' => '2026-09-13',
@@ -95,13 +103,33 @@ class InternalBookingApiTest extends TestCase
         $this->postJson('/api/internal/bookings', $this->payload($room))->assertCreated();
     }
 
+    public function test_updating_booking_keeps_snapshot_when_guest_profile_is_unchanged(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $room = Room::factory()->create(['price_per_night' => 600000, 'capacity' => 3]);
+        $created = $this->postJson('/api/internal/bookings', $this->payload($room))->assertCreated();
+        $id = $created->json('data.id');
+
+        $this->guest->update([
+            'full_name' => 'Ayu Lestari Baru',
+            'email' => 'ayu.baru@example.com',
+            'phone' => '+62 811 0000 0000',
+        ]);
+
+        $this->putJson("/api/internal/bookings/{$id}", [
+            ...$this->payload($room),
+            'status' => 'checked_in',
+        ])->assertOk()
+            ->assertJsonPath('data.guest_name', 'Ayu Lestari')
+            ->assertJsonPath('data.guest_email', 'ayu@example.com')
+            ->assertJsonPath('data.guest_phone', '+62 812 3456 7890');
+    }
+
     private function payload(Room $room): array
     {
         return [
             'room_id' => $room->id,
-            'guest_name' => 'Ayu Lestari',
-            'guest_email' => 'ayu@example.com',
-            'guest_phone' => '+62 812 3456 7890',
+            'guest_id' => $this->guest->id,
             'check_in' => '2026-09-10',
             'check_out' => '2026-09-13',
             'guest_count' => 2,

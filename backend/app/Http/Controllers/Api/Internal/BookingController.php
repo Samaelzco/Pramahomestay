@@ -33,7 +33,7 @@ class BookingController extends Controller
 
     public function show(Booking $booking): BookingResource
     {
-        return new BookingResource($booking->load('room'));
+        return new BookingResource($booking->load(['room', 'guest']));
     }
 
     public function update(UpdateBookingRequest $request, Booking $booking): BookingResource

@@ -36,10 +36,18 @@ export type ActionState = { message?: string; errors?: Record<string, string[]> 
 
 export type BookingStatus = "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled";
 
+export type GuestReference = {
+  id: number;
+  full_name: string;
+  email: string;
+  phone: string;
+};
+
 export type Booking = {
   id: number;
   booking_code: string;
   room: Room;
+  guest?: GuestReference;
   guest_name: string;
   guest_email: string;
   guest_phone: string;
@@ -82,6 +90,23 @@ export type Payment = {
 };
 
 export type PaginatedPayments = { data: Payment[]; meta: PaginationMeta };
+
+export type Guest = GuestReference & {
+  address: string | null;
+  notes: string | null;
+  stats: {
+    bookings: number;
+    completed_stays: number;
+    total_booking_value: string;
+    total_paid: string;
+    latest_check_in: string | null;
+  };
+  bookings?: Booking[];
+  created_at: string;
+  updated_at: string;
+};
+
+export type PaginatedGuests = { data: Guest[]; meta: PaginationMeta };
 
 export type DashboardBookingRow = {
   id: number;

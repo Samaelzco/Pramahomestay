@@ -14,7 +14,7 @@ class BookingRepository implements BookingRepositoryInterface
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return $this->model->newQuery()
-            ->with('room')
+            ->with(['room', 'guest'])
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $term = '%'.mb_strtolower($search).'%';
                 $query->where(function ($query) use ($term): void {
@@ -37,14 +37,14 @@ class BookingRepository implements BookingRepositoryInterface
 
     public function create(array $attributes): Booking
     {
-        return $this->model->newQuery()->create($attributes)->load('room');
+        return $this->model->newQuery()->create($attributes)->load(['room', 'guest']);
     }
 
     public function update(Booking $booking, array $attributes): Booking
     {
         $booking->updateOrFail($attributes);
 
-        return $booking->refresh()->load('room');
+        return $booking->refresh()->load(['room', 'guest']);
     }
 
     public function findForUpdate(int $id): Booking

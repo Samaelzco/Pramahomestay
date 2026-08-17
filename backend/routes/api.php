@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Internal\BookingController;
 use App\Http\Controllers\Api\Internal\DashboardController;
+use App\Http\Controllers\Api\Internal\GuestController;
 use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\RoomController;
 use Illuminate\Http\Request;
@@ -19,6 +20,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::prefix('internal')->group(function (): void {
         Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:dashboard.view');
+        Route::get('/guests', [GuestController::class, 'index'])->middleware('permission:guests.view');
+        Route::post('/guests', [GuestController::class, 'store'])->middleware('permission:guests.create');
+        Route::get('/guests/{guest}', [GuestController::class, 'show'])->middleware('permission:guests.view');
+        Route::match(['put', 'patch'], '/guests/{guest}', [GuestController::class, 'update'])->middleware('permission:guests.update');
         Route::get('/payments', [PaymentController::class, 'index'])->middleware('permission:payments.view');
         Route::post('/payments', [PaymentController::class, 'store'])->middleware('permission:payments.create');
         Route::get('/payments/{payment}', [PaymentController::class, 'show'])->middleware('permission:payments.view');

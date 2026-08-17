@@ -4,21 +4,25 @@ namespace Tests\Feature\Architecture;
 
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\DashboardRepositoryInterface;
+use App\Contracts\Repositories\GuestRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Contracts\Services\DashboardServiceInterface;
+use App\Contracts\Services\GuestServiceInterface;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Contracts\Services\RoomServiceInterface;
 use App\Contracts\Services\UserServiceInterface;
 use App\Repositories\Eloquent\BookingRepository;
 use App\Repositories\Eloquent\DashboardRepository;
+use App\Repositories\Eloquent\GuestRepository;
 use App\Repositories\Eloquent\PaymentRepository;
 use App\Repositories\Eloquent\RoomRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\BookingService;
 use App\Services\DashboardService;
+use App\Services\GuestService;
 use App\Services\PaymentService;
 use App\Services\RoomService;
 use App\Services\UserService;
@@ -40,6 +44,8 @@ class ServiceRepositoryArchitectureTest extends TestCase
 
         $this->assertInstanceOf(DashboardRepository::class, $this->app->make(DashboardRepositoryInterface::class));
         $this->assertInstanceOf(DashboardService::class, $this->app->make(DashboardServiceInterface::class));
+        $this->assertInstanceOf(GuestRepository::class, $this->app->make(GuestRepositoryInterface::class));
+        $this->assertInstanceOf(GuestService::class, $this->app->make(GuestServiceInterface::class));
 
         $this->assertInstanceOf(
             PaymentRepository::class,

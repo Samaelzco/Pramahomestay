@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Models\Guest;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,6 +20,7 @@ class BookingFactory extends Factory
         return [
             'booking_code' => 'PRM-'.fake()->unique()->numerify('########'),
             'room_id' => Room::factory(),
+            'guest_id' => Guest::factory(),
             'guest_name' => fake()->name(),
             'guest_email' => fake()->safeEmail(),
             'guest_phone' => fake()->phoneNumber(),

@@ -1,9 +1,9 @@
 "use client";
 
-import { createBookingAction, updateBookingAction } from "@/app/internal/(dashboard)/bookings/actions";
-import type { ActionState, Booking, Room } from "@/lib/api/types";
+import { createBookingAction, searchGuestOptionsAction, updateBookingAction } from "@/app/internal/(dashboard)/bookings/actions";
+import type { ActionState, Booking, GuestReference, Room } from "@/lib/api/types";
 import Link from "next/link";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 
 const statuses = [["pending", "Menunggu"], ["confirmed", "Dikonfirmasi"], ["checked_in", "Check-in"], ["checked_out", "Check-out"], ["cancelled", "Dibatalkan"]];
 const currency = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
@@ -12,13 +12,35 @@ function FieldError({ errors }: { errors?: string[] }) {
   return errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{error}</p>);
 }
 
-export function BookingForm({ rooms, booking }: { rooms: Room[]; booking?: Booking }) {
+export function BookingForm({ rooms, guests, booking, initialGuestId }: { rooms: Room[]; guests: GuestReference[]; booking?: Booking; initialGuestId?: string }) {
   const action = booking ? updateBookingAction.bind(null, booking.id) : createBookingAction;
   const [state, formAction, pending] = useActionState<ActionState, FormData>(action, {});
   const [roomId, setRoomId] = useState(String(booking?.room.id ?? rooms[0]?.id ?? ""));
+  const [guestId, setGuestId] = useState(String(booking?.guest?.id ?? initialGuestId ?? guests[0]?.id ?? ""));
+  const [guestQuery, setGuestQuery] = useState("");
+  const [guestOptions, setGuestOptions] = useState<GuestReference[]>(() => {
+    const selected = booking?.guest;
+    return selected && !guests.some((item) => item.id === selected.id) ? [selected, ...guests] : guests;
+  });
+  const [searchingGuests, startGuestSearch] = useTransition();
   const [checkIn, setCheckIn] = useState(booking?.check_in ?? "");
   const [checkOut, setCheckOut] = useState(booking?.check_out ?? "");
   const room = rooms.find((item) => String(item.id) === roomId) ?? booking?.room;
+  const guest = guestOptions.find((item) => String(item.id) === guestId) ?? booking?.guest;
+  useEffect(() => {
+    let active = true;
+    const timer = window.setTimeout(() => {
+      startGuestSearch(async () => {
+        const results = await searchGuestOptionsAction(guestQuery);
+        if (!active || results.length === 0) return;
+        setGuestOptions((current) => {
+          const selected = current.find((item) => String(item.id) === guestId);
+          return selected && !results.some((item) => item.id === selected.id) ? [selected, ...results] : results;
+        });
+      });
+    }, 300);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [guestId, guestQuery]);
   const nights = useMemo(() => {
     if (!checkIn || !checkOut) return 0;
     return Math.max(0, Math.round((new Date(`${checkOut}T00:00:00`).getTime() - new Date(`${checkIn}T00:00:00`).getTime()) / 86_400_000));
@@ -31,11 +53,7 @@ export function BookingForm({ rooms, booking }: { rooms: Room[]; booking?: Booki
       {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
       <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Data tamu</h2><p className="mt-2 text-sm leading-6 text-muted">Kontak utama yang dapat dihubungi terkait reservasi.</p></div>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Nama lengkap<input name="guest_name" required maxLength={120} defaultValue={booking?.guest_name} placeholder="Nama sesuai identitas" className={inputClass} /><FieldError errors={state.errors?.guest_name} /></label>
-          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Nomor telepon<input name="guest_phone" required maxLength={30} defaultValue={booking?.guest_phone} placeholder="+62 812 3456 7890" className={inputClass} /><FieldError errors={state.errors?.guest_phone} /></label>
-          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:col-span-2">Email<input name="guest_email" type="email" required maxLength={255} defaultValue={booking?.guest_email} placeholder="nama@email.com" className={inputClass} /><FieldError errors={state.errors?.guest_email} /></label>
-        </div>
+        <div><label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Cari tamu<input type="search" value={guestQuery} onChange={(event) => setGuestQuery(event.target.value)} placeholder="Nama, email, atau nomor telepon" className={inputClass} /></label><p aria-live="polite" className="mt-2 text-xs text-muted">{searchingGuests ? "Mencari profil…" : `${guestOptions.length} pilihan ditampilkan`}</p><label className="mt-5 block text-xs font-semibold tracking-[0.08em] text-muted uppercase">Pilih tamu<select name="guest_id" required value={guestId} onChange={(event) => setGuestId(event.target.value)} className={inputClass}>{guestOptions.map((item) => <option key={item.id} value={item.id}>{item.full_name} · {item.phone}</option>)}</select><FieldError errors={state.errors?.guest_id} /></label>{guest && <div className="mt-4 rounded-sm bg-surface-low p-4 text-sm"><p className="font-semibold">{guest.full_name}</p><p className="mt-1 break-all text-muted">{guest.email} · {guest.phone}</p></div>}<Link href="/internal/guests/new" className="mt-4 inline-flex min-h-12 items-center text-sm font-semibold text-secondary underline-offset-4 hover:underline">Tamu belum terdaftar? Tambah profil</Link></div>
       </section>
       <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Rencana menginap</h2><p className="mt-2 text-sm leading-6 text-muted">Kamar, tanggal, dan jumlah tamu akan diperiksa terhadap ketersediaan.</p></div>

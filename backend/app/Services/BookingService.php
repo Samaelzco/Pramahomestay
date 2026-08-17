@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Contracts\Repositories\BookingRepositoryInterface;
+use App\Contracts\Repositories\GuestRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Models\Guest;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +20,7 @@ class BookingService implements BookingServiceInterface
     public function __construct(
         private readonly BookingRepositoryInterface $bookings,
         private readonly RoomRepositoryInterface $rooms,
+        private readonly GuestRepositoryInterface $guests,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -29,12 +32,14 @@ class BookingService implements BookingServiceInterface
     {
         return DB::transaction(function () use ($attributes, $createdBy): Booking {
             $room = $this->rooms->findForUpdate((int) $attributes['room_id']);
+            $guest = $this->guests->findForUpdate((int) $attributes['guest_id']);
 
             if (! $room->is_active) {
                 throw ValidationException::withMessages(['room_id' => 'Kamar yang dipilih sedang tidak aktif.']);
             }
 
             $attributes = $this->prepareAttributes($attributes, $room->id, $room->capacity, (string) $room->price_per_night);
+            $attributes = $this->applyGuestSnapshot($attributes, $guest);
             $attributes['booking_code'] = $this->uniqueCode();
             $attributes['created_by'] = $createdBy;
 
@@ -46,6 +51,10 @@ class BookingService implements BookingServiceInterface
     {
         return DB::transaction(function () use ($booking, $attributes): Booking {
             $room = $this->rooms->findForUpdate((int) $attributes['room_id']);
+            $guestChanged = (int) $attributes['guest_id'] !== (int) $booking->guest_id;
+            $guest = $guestChanged
+                ? $this->guests->findForUpdate((int) $attributes['guest_id'])
+                : null;
 
             if ($room->id !== $booking->room_id && ! $room->is_active) {
                 throw ValidationException::withMessages(['room_id' => 'Kamar yang dipilih sedang tidak aktif.']);
@@ -55,6 +64,9 @@ class BookingService implements BookingServiceInterface
                 ? (string) $booking->price_per_night
                 : (string) $room->price_per_night;
             $attributes = $this->prepareAttributes($attributes, $room->id, $room->capacity, $price, $booking->id);
+            if ($guest !== null) {
+                $attributes = $this->applyGuestSnapshot($attributes, $guest);
+            }
 
             return $this->bookings->update($booking, $attributes);
         });
@@ -90,5 +102,15 @@ class BookingService implements BookingServiceInterface
         } while ($this->bookings->codeExists($code));
 
         return $code;
+    }
+
+    private function applyGuestSnapshot(array $attributes, Guest $guest): array
+    {
+        $attributes['guest_id'] = $guest->id;
+        $attributes['guest_name'] = $guest->full_name;
+        $attributes['guest_email'] = $guest->email;
+        $attributes['guest_phone'] = $guest->phone;
+
+        return $attributes;
     }
 }

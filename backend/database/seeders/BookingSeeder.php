@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Models\Guest;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,10 +27,15 @@ class BookingSeeder extends Seeder
 
         foreach ($records as $record) {
             $price = (string) $record['room']->price_per_night;
+            $guest = Guest::query()->updateOrCreate(
+                ['email' => $record['email']],
+                ['full_name' => $record['name'], 'phone' => $record['phone'], 'created_by' => $admin?->id],
+            );
             Booking::query()->updateOrCreate(
                 ['booking_code' => $record['code']],
                 [
                     'room_id' => $record['room']->id,
+                    'guest_id' => $guest->id,
                     'guest_name' => $record['name'],
                     'guest_email' => $record['email'],
                     'guest_phone' => $record['phone'],

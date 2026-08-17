@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'booking_code', 'room_id', 'guest_name', 'guest_email', 'guest_phone',
+    'booking_code', 'room_id', 'guest_id', 'guest_name', 'guest_email', 'guest_phone',
     'check_in', 'check_out', 'guest_count', 'price_per_night', 'total_nights',
     'total_amount', 'status', 'special_requests', 'internal_notes', 'created_by',
 ])]
@@ -37,6 +37,11 @@ class Booking extends Model
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
+    }
+
+    public function guest(): BelongsTo
+    {
+        return $this->belongsTo(Guest::class);
     }
 
     public function creator(): BelongsTo

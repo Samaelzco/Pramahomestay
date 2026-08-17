@@ -13,6 +13,12 @@ class BookingResource extends JsonResource
             'id' => $this->id,
             'booking_code' => $this->booking_code,
             'room' => new RoomResource($this->whenLoaded('room')),
+            'guest' => $this->whenLoaded('guest', fn () => [
+                'id' => $this->guest->id,
+                'full_name' => $this->guest->full_name,
+                'email' => $this->guest->email,
+                'phone' => $this->guest->phone,
+            ]),
             'guest_name' => $this->guest_name,
             'guest_email' => $this->guest_email,
             'guest_phone' => $this->guest_phone,

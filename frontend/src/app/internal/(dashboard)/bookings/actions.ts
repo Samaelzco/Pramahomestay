@@ -1,16 +1,14 @@
 "use server";
 
 import { ApiError, apiFetch } from "@/lib/api/client";
-import type { ActionState } from "@/lib/api/types";
+import type { ActionState, GuestReference, PaginatedGuests } from "@/lib/api/types";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 function payload(formData: FormData) {
   return {
     room_id: Number(formData.get("room_id")),
-    guest_name: formData.get("guest_name"),
-    guest_email: formData.get("guest_email"),
-    guest_phone: formData.get("guest_phone"),
+    guest_id: Number(formData.get("guest_id")),
     check_in: formData.get("check_in"),
     check_out: formData.get("check_out"),
     guest_count: Number(formData.get("guest_count")),
@@ -43,4 +41,16 @@ export async function updateBookingAction(id: number, _state: ActionState, formD
   revalidatePath("/internal/bookings");
   revalidatePath(`/internal/bookings/${id}`);
   redirect(`/internal/bookings/${id}?success=updated`);
+}
+
+export async function searchGuestOptionsAction(search: string): Promise<GuestReference[]> {
+  const query = search.trim();
+  const suffix = query ? `&search=${encodeURIComponent(query)}` : "";
+
+  try {
+    const response = await apiFetch<PaginatedGuests>(`/internal/guests?per_page=20${suffix}`);
+    return response.data;
+  } catch {
+    return [];
+  }
 }
