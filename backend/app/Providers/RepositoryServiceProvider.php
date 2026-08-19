@@ -2,24 +2,28 @@
 
 namespace App\Providers;
 
+use App\Contracts\Repositories\AccessRepositoryInterface;
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\DashboardRepositoryInterface;
 use App\Contracts\Repositories\GuestRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
+use App\Contracts\Services\AccessServiceInterface;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Contracts\Services\DashboardServiceInterface;
 use App\Contracts\Services\GuestServiceInterface;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Contracts\Services\RoomServiceInterface;
 use App\Contracts\Services\UserServiceInterface;
+use App\Repositories\Eloquent\AccessRepository;
 use App\Repositories\Eloquent\BookingRepository;
 use App\Repositories\Eloquent\DashboardRepository;
 use App\Repositories\Eloquent\GuestRepository;
 use App\Repositories\Eloquent\PaymentRepository;
 use App\Repositories\Eloquent\RoomRepository;
 use App\Repositories\Eloquent\UserRepository;
+use App\Services\AccessService;
 use App\Services\BookingService;
 use App\Services\DashboardService;
 use App\Services\GuestService;
@@ -32,6 +36,8 @@ class RepositoryServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(AccessRepositoryInterface::class, AccessRepository::class);
+        $this->app->bind(AccessServiceInterface::class, AccessService::class);
         $this->app->bind(BookingRepositoryInterface::class, BookingRepository::class);
         $this->app->bind(BookingServiceInterface::class, BookingService::class);
         $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);

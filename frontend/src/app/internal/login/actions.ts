@@ -5,12 +5,13 @@ import type { ActionState } from "@/lib/api/types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-type LoginResponse = { token: string };
+type LoginResponse = { token: string; user: { permissions: string[] } };
 
 export async function loginAction(
   _state: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  let destination = "/internal/dashboard";
   try {
     const response = await apiFetch<LoginResponse>(
       "/auth/login",
@@ -31,6 +32,15 @@ export async function loginAction(
       path: "/",
       maxAge: 60 * 60 * 12,
     });
+    const routes = [
+      ["dashboard.view", "/internal/dashboard"],
+      ["bookings.view", "/internal/bookings"],
+      ["payments.view", "/internal/payments"],
+      ["rooms.view", "/internal/rooms"],
+      ["guests.view", "/internal/guests"],
+      ["users.view", "/internal/users"],
+    ];
+    destination = routes.find(([permission]) => response.user.permissions.includes(permission))?.[1] ?? destination;
   } catch (error) {
     if (error instanceof ApiError) {
       return {
@@ -42,7 +52,7 @@ export async function loginAction(
     return { message: "Server belum dapat dihubungi. Silakan coba kembali." };
   }
 
-  redirect("/internal/dashboard");
+  redirect(destination);
 }
 
 export async function logoutAction(): Promise<void> {

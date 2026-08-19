@@ -28,6 +28,7 @@ class InternalAuthApiTest extends TestCase
 
         $token = $response->json('token');
         $this->assertNotEmpty($token);
+        $this->assertNotNull($admin->fresh()->last_login_at);
 
         $this->withToken($token)
             ->postJson('/api/auth/logout')

@@ -36,6 +36,28 @@ export type PaginatedRooms = { data: Room[]; meta: PaginationMeta };
 export type ApiItem<T> = { data: T; message?: string };
 export type ActionState = { message?: string; errors?: Record<string, string[]>; success?: boolean };
 
+export type InternalUser = {
+  id: number;
+  name: string;
+  email: string;
+  roles: Array<"admin" | "staff">;
+  permissions: string[];
+  is_active: boolean;
+  is_self: boolean;
+  can_change_status: boolean;
+  can_delete: boolean;
+  last_login_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PaginatedUsers = { data: InternalUser[]; meta: PaginationMeta };
+
+export type AccessMatrix = {
+  groups: Array<{ key: string; label: string; permissions: Array<{ name: string; label: string }> }>;
+  roles: Array<{ name: "admin" | "staff"; label: string; is_protected: boolean; permissions: string[] }>;
+};
+
 export type BookingStatus = "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled";
 
 export type GuestReference = {

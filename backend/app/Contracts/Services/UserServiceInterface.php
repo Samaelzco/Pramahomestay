@@ -10,7 +10,8 @@ interface UserServiceInterface
     /**
      * @return LengthAwarePaginator<int, User>
      */
-    public function paginate(int $perPage = 15): LengthAwarePaginator;
+    /** @param array{search?: string, role?: string, is_active?: bool} $filters */
+    public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator;
 
     public function findOrFail(int $id): User;
 
@@ -19,12 +20,16 @@ interface UserServiceInterface
     /**
      * @param  array<string, mixed>  $attributes
      */
-    public function create(array $attributes): User;
+    public function create(array $attributes, ?string $role = null): User;
 
     /**
      * @param  array<string, mixed>  $attributes
      */
-    public function update(User $user, array $attributes): User;
+    public function update(User $user, array $attributes, ?string $role = null, ?User $actor = null): User;
 
-    public function delete(User $user): void;
+    public function setActive(User $user, bool $isActive, User $actor): User;
+
+    public function recordLogin(User $user): User;
+
+    public function delete(User $user, ?User $actor = null): void;
 }

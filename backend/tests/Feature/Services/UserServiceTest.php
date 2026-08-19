@@ -38,6 +38,6 @@ class UserServiceTest extends TestCase
 
         $service->delete($updatedUser);
 
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertSoftDeleted($user);
     }
 }

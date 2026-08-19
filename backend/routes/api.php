@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Internal\AccessController;
 use App\Http\Controllers\Api\Internal\BookingController;
 use App\Http\Controllers\Api\Internal\DashboardController;
 use App\Http\Controllers\Api\Internal\GuestController;
 use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\RoomController;
+use App\Http\Controllers\Api\Internal\UserController;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,12 +16,18 @@ Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
 
 Route::middleware('auth:sanctum')->group(function (): void {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', fn (Request $request) => new UserResource($request->user()));
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::prefix('internal')->group(function (): void {
+        Route::get('/access/roles', [AccessController::class, 'index'])->middleware('permission:roles.view');
+        Route::patch('/access/roles/{role}', [AccessController::class, 'update'])->middleware('permission:roles.update');
+        Route::get('/users', [UserController::class, 'index'])->middleware('permission:users.view');
+        Route::post('/users', [UserController::class, 'store'])->middleware('permission:users.create');
+        Route::get('/users/{user}', [UserController::class, 'show'])->middleware('permission:users.view');
+        Route::match(['put', 'patch'], '/users/{user}', [UserController::class, 'update'])->middleware('permission:users.update');
+        Route::patch('/users/{user}/activation', [UserController::class, 'activation'])->middleware('permission:users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->middleware('permission:users.update');
         Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:dashboard.view');
         Route::get('/guests', [GuestController::class, 'index'])->middleware('permission:guests.view');
         Route::post('/guests', [GuestController::class, 'store'])->middleware('permission:guests.create');

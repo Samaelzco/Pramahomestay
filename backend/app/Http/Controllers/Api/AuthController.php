@@ -25,11 +25,18 @@ class AuthController extends Controller
             ]);
         }
 
+        if (! $user->is_active) {
+            throw ValidationException::withMessages([
+                'email' => ['Akun ini sedang dinonaktifkan. Hubungi administrator.'],
+            ]);
+        }
+
         if (! $user->hasAnyRole(['admin', 'staff'])) {
             abort(403, 'Akun ini tidak memiliki akses ke area internal.');
         }
 
         $user->tokens()->where('name', 'internal-dashboard')->delete();
+        $user = $this->users->recordLogin($user);
         $token = $user->createToken('internal-dashboard', ['internal'])->plainTextToken;
 
         return response()->json([
