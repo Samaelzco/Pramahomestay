@@ -11,10 +11,10 @@ export default async function CreateBookingPage({ searchParams }: { searchParams
   const params = await searchParams;
   const [{ data: rooms }, { data: firstGuests }, selectedGuestResponse] = await Promise.all([
     apiFetch<PaginatedRooms>("/internal/rooms?is_active=1&per_page=50"),
-    apiFetch<PaginatedGuests>("/internal/guests?per_page=20"),
+    apiFetch<PaginatedGuests>("/internal/guests?is_active=1&per_page=20"),
     params.guest_id ? apiFetch<ApiItem<Guest>>(`/internal/guests/${encodeURIComponent(params.guest_id)}`) : Promise.resolve(null),
   ]);
-  const selectedGuest = selectedGuestResponse?.data;
+  const selectedGuest = selectedGuestResponse?.data.is_active ? selectedGuestResponse.data : undefined;
   const guests = selectedGuest && !firstGuests.some((guest) => guest.id === selectedGuest.id)
     ? [selectedGuest, ...firstGuests]
     : firstGuests;

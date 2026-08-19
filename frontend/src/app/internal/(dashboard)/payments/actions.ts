@@ -44,3 +44,15 @@ export async function updatePaymentAction(id: number, _state: ActionState, formD
   revalidatePath(`/internal/payments/${id}`);
   redirect(`/internal/payments/${id}?success=updated`);
 }
+
+export async function refundPaymentAction(id: number, _state: ActionState, formData: FormData): Promise<ActionState> {
+  try {
+    const response = await apiFetch<{ message?: string }>(`/internal/payments/${id}/refund`, { method: "PATCH", body: JSON.stringify({ reason: formData.get("reason") }) });
+    revalidatePath("/internal/payments");
+    revalidatePath(`/internal/payments/${id}`);
+    return { success: true, message: response.message };
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Pengembalian pembayaran belum dapat dicatat. Periksa koneksi lalu coba lagi." };
+  }
+}

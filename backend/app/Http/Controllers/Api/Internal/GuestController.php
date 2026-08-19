@@ -6,6 +6,7 @@ use App\Contracts\Services\GuestServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guests\IndexGuestRequest;
 use App\Http\Requests\Guests\StoreGuestRequest;
+use App\Http\Requests\Guests\UpdateGuestActivationRequest;
 use App\Http\Requests\Guests\UpdateGuestRequest;
 use App\Http\Resources\GuestResource;
 use App\Models\Guest;
@@ -41,5 +42,14 @@ class GuestController extends Controller
         $guest = $this->guests->update($guest, $request->validated());
 
         return (new GuestResource($guest))->additional(['message' => 'Data tamu berhasil diperbarui.']);
+    }
+
+    public function activation(UpdateGuestActivationRequest $request, Guest $guest): GuestResource
+    {
+        $guest = $this->guests->setActive($guest, (bool) $request->validated('is_active'));
+
+        return (new GuestResource($guest))->additional([
+            'message' => $guest->is_active ? 'Profil tamu berhasil diaktifkan.' : 'Profil tamu berhasil dinonaktifkan.',
+        ]);
     }
 }

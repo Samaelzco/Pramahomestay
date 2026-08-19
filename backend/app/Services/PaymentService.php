@@ -65,13 +65,14 @@ class PaymentService implements PaymentServiceInterface
 
         try {
             $updated = DB::transaction(function () use ($payment, $attributes, $newProofPath, $removeProof): Payment {
+                $payment = $this->payments->findForUpdate($payment->id);
                 $booking = $this->bookings->findForUpdate((int) $attributes['booking_id']);
 
                 if ($this->payments->existsForBooking($booking->id, $payment->id)) {
                     throw ValidationException::withMessages(['booking_id' => 'Booking ini sudah memiliki data pembayaran lain.']);
                 }
 
-                $attributes = $this->prepareAttributes($attributes, (string) $booking->total_amount);
+                $attributes = $this->prepareAttributes($attributes, (string) $booking->total_amount, $payment->status === PaymentStatus::Refunded);
                 if ($newProofPath) {
                     $this->applyProof($attributes, $newProofPath);
                 } elseif ($removeProof) {
@@ -93,7 +94,29 @@ class PaymentService implements PaymentServiceInterface
         return $updated;
     }
 
-    private function prepareAttributes(array $attributes, string $total): array
+    public function refund(Payment $payment, string $reason): Payment
+    {
+        return DB::transaction(function () use ($payment, $reason): Payment {
+            $locked = $this->payments->findForUpdate($payment->id);
+
+            if ($locked->status === PaymentStatus::Refunded) {
+                return $locked->load('booking.room');
+            }
+
+            if (! in_array($locked->status, [PaymentStatus::Partial, PaymentStatus::Paid], true)) {
+                throw ValidationException::withMessages(['status' => 'Hanya pembayaran sebagian atau lunas yang dapat dikembalikan.']);
+            }
+
+            $entry = 'Alasan pengembalian: '.trim($reason);
+
+            return $this->payments->update($locked, [
+                'status' => PaymentStatus::Refunded->value,
+                'notes' => trim(implode("\n\n", array_filter([$locked->notes, $entry]))),
+            ]);
+        });
+    }
+
+    private function prepareAttributes(array $attributes, string $total, bool $alreadyRefunded = false): array
     {
         $amount = (string) $attributes['amount_paid'];
         if (bccomp($amount, $total, 2) === 1) {
@@ -105,6 +128,9 @@ class PaymentService implements PaymentServiceInterface
         }
 
         $requested = PaymentStatus::from($attributes['status']);
+        if ($requested === PaymentStatus::Refunded && ! $alreadyRefunded) {
+            throw ValidationException::withMessages(['status' => 'Gunakan aksi Kembalikan dan sertakan alasan pengembalian.']);
+        }
         if (! in_array($requested, [PaymentStatus::Failed, PaymentStatus::Refunded], true)) {
             $attributes['status'] = match (bccomp($amount, '0', 2)) {
                 0 => PaymentStatus::Unpaid->value,

@@ -1,5 +1,6 @@
 import { TrendChart } from "@/components/dashboard/trend-chart";
 import { DailyDataDisclosure } from "@/components/dashboard/daily-data-disclosure";
+import { PeriodFilter } from "@/components/dashboard/period-filter";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiItem, DashboardBookingRow, DashboardSummary } from "@/lib/api/types";
 import type { Metadata } from "next";
@@ -11,6 +12,17 @@ const currency = (value: number | string) => new Intl.NumberFormat("id-ID", { st
 const compactCurrency = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", notation: "compact", maximumFractionDigits: 1 }).format(value);
 const date = (value: string) => new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${value}T00:00:00`));
 const periods = [7, 30, 90] as const;
+const granularityCopy = {
+  day: { noun: "hari", description: "per hari" },
+  week: { noun: "minggu", description: "per minggu" },
+  month: { noun: "bulan", description: "per bulan" },
+} as const;
+
+const validDate = (value?: string) => {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+};
 
 function StatusBars({ title, rows }: { title: string; rows: Array<{ status: string; label: string; count: number }> }) {
   const total = Math.max(rows.reduce((sum, row) => sum + row.count, 0), 1);
@@ -21,26 +33,30 @@ function OperationList({ title, count, rows, empty }: { title: string; count: nu
   return <section className="border-t pt-6 first:border-t-0 first:pt-0"><div className="flex items-center justify-between gap-4"><h3 className="font-semibold">{title}</h3><span className="text-sm font-semibold tabular-nums text-secondary">{count}</span></div>{rows.length ? <ul className="mt-4 divide-y">{rows.map((row) => <li key={row.id} className="py-4 first:pt-0"><Link href={`/internal/bookings/${row.id}`} className="group flex items-start justify-between gap-4"><span><span className="block text-sm font-semibold group-hover:text-secondary">{row.guest_name}</span><span className="mt-1 block text-xs text-muted">{row.room_name} · {row.booking_code}</span></span><span className="text-xs text-muted">{title === "Tiba" ? date(row.check_in) : date(row.check_out)}</span></Link></li>)}</ul> : <p className="mt-3 text-sm leading-6 text-muted">{empty}</p>}</section>;
 }
 
-export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ days?: string; from?: string; to?: string }> }) {
   const params = await searchParams;
   const requested = Number(params.days);
-  const days = periods.includes(requested as (typeof periods)[number]) ? requested : 30;
-  const { data } = await apiFetch<ApiItem<DashboardSummary>>(`/internal/dashboard?days=${days}`);
+  const custom = validDate(params.from) && validDate(params.to) && params.from! <= params.to!;
+  const days = custom ? null : periods.includes(requested as (typeof periods)[number]) ? requested as 7 | 30 | 90 : 30;
+  const query = custom ? `from=${params.from}&to=${params.to}` : `days=${days}`;
+  const { data } = await apiFetch<ApiItem<DashboardSummary>>(`/internal/dashboard?${query}`);
+  const seriesCopy = granularityCopy[data.period.granularity];
+  const periodNote = data.period.is_custom ? `${date(data.period.start)}–${date(data.period.end)}` : `Dalam ${data.period.days} hari`;
 
   return <main className="mx-auto min-h-[calc(100vh-64px)] max-w-[1440px] px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16">
-    <div className="flex flex-col gap-6 border-b pb-8 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-4xl font-semibold tracking-[-0.03em] text-primary md:text-5xl">Ringkasan operasional</h1><p className="mt-3 max-w-2xl text-base leading-7 text-muted">Satu pandangan untuk performa homestay, agenda tamu, dan pembayaran yang perlu ditindaklanjuti.</p></div><nav aria-label="Periode analitik" className="inline-flex self-start rounded-sm bg-surface-low p-1 sm:self-auto">{periods.map((period) => <Link key={period} href={`/internal/dashboard?days=${period}`} aria-current={days === period ? "page" : undefined} className={`grid h-11 min-w-16 place-items-center rounded-sm px-3 text-sm font-semibold transition-colors ${days === period ? "bg-primary text-white shadow-[0_8px_20px_-14px_rgba(17,17,17,.6)]" : "text-muted hover:bg-surface hover:text-primary"}`}>{period} hari</Link>)}</nav></div>
+    <div className="flex flex-col gap-6 border-b pb-8 xl:flex-row xl:items-end xl:justify-between"><div className="min-w-0"><h1 className="text-4xl font-semibold tracking-[-0.03em] text-primary md:text-5xl">Ringkasan operasional</h1><p className="mt-3 max-w-2xl text-base leading-7 text-muted">Satu pandangan untuk performa homestay, agenda tamu, dan pembayaran yang perlu ditindaklanjuti.</p></div><PeriodFilter activeDays={days} custom={custom} initialFrom={data.period.start} initialTo={data.period.end} /></div>
 
     <section aria-label="Metrik utama" className="grid border-b sm:grid-cols-2 xl:grid-cols-4">{[
-      ["Pendapatan", currency(data.metrics.revenue), `Dalam ${days} hari`],
+      ["Pendapatan", currency(data.metrics.revenue), periodNote],
       ["Booking masuk", data.metrics.bookings.toLocaleString("id-ID"), `Dibuat sejak ${date(data.period.start)}`],
       ["Okupansi hari ini", `${data.metrics.occupancy_rate}%`, `${data.metrics.occupied_rooms} dari ${data.metrics.active_rooms} kamar aktif`],
       ["Sisa tagihan", currency(data.metrics.outstanding), "Dari booking yang masih aktif"],
     ].map(([label, value, note], index) => <div key={label} className={`py-8 sm:px-7 ${index % 2 ? "sm:border-l" : ""} ${index > 1 ? "sm:border-t xl:border-t-0" : ""} ${index > 0 ? "border-t sm:border-t-0" : ""} ${index > 0 ? "xl:border-l" : ""} sm:first:pl-0 xl:first:pl-0`}><p className="text-sm text-muted">{label}</p><p className="mt-3 text-3xl font-semibold tracking-[-0.03em] tabular-nums">{value}</p><p className="mt-2 text-xs leading-5 text-muted">{note}</p></div>)}</section>
 
     <div className="mt-10 grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <section className="overflow-hidden rounded-lg bg-surface shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)]"><div className="flex flex-col gap-2 border-b px-6 py-6 sm:flex-row sm:items-end sm:justify-between sm:px-8"><div><h2 className="text-2xl font-semibold tracking-[-0.02em]">Pergerakan usaha</h2><p className="mt-2 text-sm text-muted">{date(data.period.start)}—{date(data.period.end)}</p></div><p className="text-sm text-muted">Diperbarui dari transaksi tersimpan</p></div><div className="grid gap-10 px-6 py-8 sm:px-8 lg:grid-cols-2"><TrendChart title="Pendapatan" description="Pembayaran valid per hari" points={data.series.map((row) => ({ date: row.date, value: Number(row.revenue) }))} formatValue={currency} formatAxis={compactCurrency} /><TrendChart title="Okupansi" description="Persentase kamar terisi per hari" points={data.series.map((row) => ({ date: row.date, value: row.occupancy_rate }))} formatValue={(value) => `${value}%`} formatAxis={(value) => `${Math.round(value)}%`} maxValue={100} /></div><DailyDataDisclosure rows={data.series} /></section>
+      <section className="overflow-hidden rounded-lg bg-surface shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)]"><div className="flex flex-col gap-2 border-b px-6 py-6 sm:flex-row sm:items-end sm:justify-between sm:px-8"><div><h2 className="text-2xl font-semibold tracking-[-0.02em]">Pergerakan usaha</h2><p className="mt-2 text-sm text-muted">{date(data.period.start)}—{date(data.period.end)}</p></div><p className="text-sm text-muted">Dikelompokkan per {seriesCopy.noun}</p></div><div className="grid gap-10 px-6 py-8 sm:px-8 lg:grid-cols-2"><TrendChart title="Pendapatan" description={`Pembayaran valid ${seriesCopy.description}`} granularity={data.period.granularity} points={data.series.map((row) => ({ date: row.date, endDate: row.end_date, value: Number(row.revenue) }))} formatValue={currency} formatAxis={compactCurrency} /><TrendChart title="Okupansi" description={`Rata-rata kamar terisi ${seriesCopy.description}`} granularity={data.period.granularity} points={data.series.map((row) => ({ date: row.date, endDate: row.end_date, value: row.occupancy_rate }))} formatValue={(value) => `${value}%`} formatAxis={(value) => `${Math.round(value)}%`} maxValue={100} /></div><DailyDataDisclosure rows={data.series} granularity={data.period.granularity} /></section>
 
-      <aside aria-label="Agenda hari ini" className="rounded-lg bg-primary px-6 py-7 text-white shadow-[0_18px_42px_-28px_rgba(17,17,17,0.55)]"><div className="flex items-end justify-between gap-4 border-b border-white/20 pb-5"><div><h2 className="text-xl font-semibold">Hari ini</h2><p className="mt-1 text-sm text-white/70">{date(data.period.end)}</p></div><span className="text-3xl font-semibold tabular-nums">{data.metrics.arrivals_today + data.metrics.departures_today}</span></div><div className="mt-6 space-y-7 [&_a]:text-white [&_span.text-muted]:text-white/65 [&_p.text-muted]:text-white/65 [&_section]:border-white/20"><OperationList title="Tiba" count={data.metrics.arrivals_today} rows={data.operations.arrivals} empty="Tidak ada tamu yang dijadwalkan tiba." /><OperationList title="Berangkat" count={data.metrics.departures_today} rows={data.operations.departures} empty="Tidak ada tamu yang dijadwalkan berangkat." /></div></aside>
+      <aside aria-label="Agenda hari ini" className="rounded-lg bg-primary px-6 py-7 text-white shadow-[0_18px_42px_-28px_rgba(17,17,17,0.55)]"><div className="flex items-end justify-between gap-4 border-b border-white/20 pb-5"><div><h2 className="text-xl font-semibold">Hari ini</h2><p className="mt-1 text-sm text-white/70">{date(data.operations.date)}</p></div><span className="text-3xl font-semibold tabular-nums">{data.metrics.arrivals_today + data.metrics.departures_today}</span></div><div className="mt-6 space-y-7 [&_a]:text-white [&_span.text-muted]:text-white/65 [&_p.text-muted]:text-white/65 [&_section]:border-white/20"><OperationList title="Tiba" count={data.metrics.arrivals_today} rows={data.operations.arrivals} empty="Tidak ada tamu yang dijadwalkan tiba." /><OperationList title="Berangkat" count={data.metrics.departures_today} rows={data.operations.departures} empty="Tidak ada tamu yang dijadwalkan berangkat." /></div></aside>
     </div>
 
     <div className="mt-10 grid gap-8 lg:grid-cols-2"><div className="rounded-lg bg-surface p-6 shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)] sm:p-8"><StatusBars title="Status booking" rows={data.booking_statuses} /></div><div className="rounded-lg bg-surface p-6 shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)] sm:p-8"><StatusBars title="Status pembayaran" rows={data.payment_statuses} /></div></div>

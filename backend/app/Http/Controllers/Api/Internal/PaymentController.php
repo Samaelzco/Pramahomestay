@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Internal;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payments\IndexPaymentRequest;
+use App\Http\Requests\Payments\RefundPaymentRequest;
 use App\Http\Requests\Payments\StorePaymentRequest;
 use App\Http\Requests\Payments\UpdatePaymentRequest;
 use App\Http\Resources\PaymentResource;
@@ -41,5 +42,12 @@ class PaymentController extends Controller
         $payment = $this->payments->update($payment, $request->validated());
 
         return (new PaymentResource($payment))->additional(['message' => 'Pembayaran berhasil diperbarui.']);
+    }
+
+    public function refund(RefundPaymentRequest $request, Payment $payment): PaymentResource
+    {
+        $payment = $this->payments->refund($payment, $request->validated('reason'));
+
+        return (new PaymentResource($payment))->additional(['message' => 'Pembayaran berhasil ditandai dikembalikan.']);
     }
 }

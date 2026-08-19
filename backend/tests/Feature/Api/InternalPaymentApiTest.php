@@ -82,6 +82,45 @@ class InternalPaymentApiTest extends TestCase
             ->assertUnprocessable()->assertJsonValidationErrors('booking_id');
     }
 
+    public function test_paid_or_partial_payment_can_be_marked_as_refunded_with_a_reason(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $payment = Payment::factory()->for($this->booking)->create([
+            'status' => 'partial',
+            'amount_paid' => 1000000,
+            'notes' => 'Pembayaran awal.',
+        ]);
+
+        $this->patchJson("/api/internal/payments/{$payment->id}/refund", ['reason' => 'Booking dibatalkan tamu.'])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'refunded')
+            ->assertJsonPath('data.credited_amount', '0.00');
+
+        $this->assertStringContainsString('Alasan pengembalian: Booking dibatalkan tamu.', $payment->refresh()->notes);
+    }
+
+    public function test_refund_requires_a_reason_and_a_credited_payment(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $payment = Payment::factory()->for($this->booking)->create(['status' => 'unpaid', 'amount_paid' => 0]);
+
+        $this->patchJson("/api/internal/payments/{$payment->id}/refund", [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('reason');
+
+        $this->patchJson("/api/internal/payments/{$payment->id}/refund", ['reason' => 'Koreksi transaksi.'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('status');
+
+        $paid = Payment::factory()->for(Booking::factory()->for(Room::factory()))->create(['status' => 'paid', 'amount_paid' => 100000]);
+        $this->putJson("/api/internal/payments/{$paid->id}", [
+            ...$this->payload(),
+            'booking_id' => $paid->booking_id,
+            'amount_paid' => 100000,
+            'status' => 'refunded',
+        ])->assertUnprocessable()->assertJsonValidationErrors('status');
+    }
+
     public function test_authorized_user_can_upload_replace_and_remove_payment_proof(): void
     {
         Storage::fake('public');

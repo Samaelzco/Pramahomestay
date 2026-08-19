@@ -32,7 +32,7 @@ export type PaginationMeta = {
 
 export type PaginatedRooms = { data: Room[]; meta: PaginationMeta };
 export type ApiItem<T> = { data: T; message?: string };
-export type ActionState = { message?: string; errors?: Record<string, string[]> };
+export type ActionState = { message?: string; errors?: Record<string, string[]>; success?: boolean };
 
 export type BookingStatus = "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled";
 
@@ -92,6 +92,7 @@ export type Payment = {
 export type PaginatedPayments = { data: Payment[]; meta: PaginationMeta };
 
 export type Guest = GuestReference & {
+  is_active: boolean;
   address: string | null;
   notes: string | null;
   stats: {
@@ -132,7 +133,7 @@ export type DashboardFollowup = {
 };
 
 export type DashboardSummary = {
-  period: { days: 7 | 30 | 90; start: string; end: string };
+  period: { days: 7 | 30 | 90 | null; start: string; end: string; granularity: "day" | "week" | "month"; is_custom: boolean };
   metrics: {
     bookings: number;
     revenue: string;
@@ -143,10 +144,10 @@ export type DashboardSummary = {
     arrivals_today: number;
     departures_today: number;
   };
-  series: Array<{ date: string; bookings: number; revenue: string; occupancy_rate: number }>;
+  series: Array<{ date: string; end_date: string; bookings: number; revenue: string; occupancy_rate: number }>;
   booking_statuses: Array<{ status: BookingStatus; label: string; count: number }>;
   payment_statuses: Array<{ status: PaymentStatus; label: string; count: number }>;
-  operations: { arrivals: DashboardBookingRow[]; departures: DashboardBookingRow[] };
+  operations: { date: string; arrivals: DashboardBookingRow[]; departures: DashboardBookingRow[] };
   recent_bookings: DashboardBookingRow[];
   payment_followups: DashboardFollowup[];
 };

@@ -15,4 +15,6 @@ interface GuestServiceInterface
     public function update(Guest $guest, array $attributes): Guest;
 
     public function details(Guest $guest): Guest;
+
+    public function setActive(Guest $guest, bool $isActive): Guest;
 }

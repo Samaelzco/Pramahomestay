@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\Booking;
 use App\Models\Guest;
+use App\Models\Payment;
 use App\Models\Room;
 use App\Models\User;
 use Database\Seeders\AuthorizationSeeder;
@@ -101,6 +102,59 @@ class InternalBookingApiTest extends TestCase
         ]);
 
         $this->postJson('/api/internal/bookings', $this->payload($room))->assertCreated();
+    }
+
+    public function test_booking_can_be_cancelled_safely_before_check_in(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $booking = Booking::factory()->for(Room::factory())->for($this->guest)->create([
+            'status' => 'confirmed',
+            'internal_notes' => 'Catatan awal.',
+        ]);
+
+        $this->patchJson("/api/internal/bookings/{$booking->id}/cancel", ['reason' => 'Tamu mengubah rencana.'])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'cancelled');
+
+        $this->assertStringContainsString('Alasan pembatalan: Tamu mengubah rencana.', $booking->refresh()->internal_notes);
+    }
+
+    public function test_booking_with_credited_payment_or_completed_stay_cannot_be_cancelled(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $paidBooking = Booking::factory()->for(Room::factory())->for($this->guest)->create(['status' => 'confirmed']);
+        Payment::factory()->for($paidBooking)->create(['status' => 'partial', 'amount_paid' => 100000]);
+
+        $this->patchJson("/api/internal/bookings/{$paidBooking->id}/cancel")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('status');
+
+        $this->putJson("/api/internal/bookings/{$paidBooking->id}", [
+            ...$this->payload($paidBooking->room),
+            'status' => 'cancelled',
+        ])->assertUnprocessable()->assertJsonValidationErrors('status');
+
+        $checkedIn = Booking::factory()->for(Room::factory())->for($this->guest)->create(['status' => 'checked_in']);
+        $this->patchJson("/api/internal/bookings/{$checkedIn->id}/cancel")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('status');
+
+        $cancelled = Booking::factory()->for(Room::factory())->for($this->guest)->create(['status' => 'cancelled']);
+        $this->putJson("/api/internal/bookings/{$cancelled->id}", [
+            ...$this->payload($cancelled->room),
+            'status' => 'confirmed',
+        ])->assertUnprocessable()->assertJsonValidationErrors('status');
+    }
+
+    public function test_inactive_guest_cannot_be_assigned_to_a_new_booking(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $this->guest->update(['is_active' => false]);
+        $room = Room::factory()->create();
+
+        $this->postJson('/api/internal/bookings', $this->payload($room))
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('guest_id');
     }
 
     public function test_updating_booking_keeps_snapshot_when_guest_profile_is_unchanged(): void

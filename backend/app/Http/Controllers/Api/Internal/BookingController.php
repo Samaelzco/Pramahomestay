@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Internal;
 
 use App\Contracts\Services\BookingServiceInterface;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Bookings\CancelBookingRequest;
 use App\Http\Requests\Bookings\IndexBookingRequest;
 use App\Http\Requests\Bookings\StoreBookingRequest;
 use App\Http\Requests\Bookings\UpdateBookingRequest;
@@ -41,5 +42,12 @@ class BookingController extends Controller
         $booking = $this->bookings->update($booking, $request->validated());
 
         return (new BookingResource($booking))->additional(['message' => 'Booking berhasil diperbarui.']);
+    }
+
+    public function cancel(CancelBookingRequest $request, Booking $booking): BookingResource
+    {
+        $booking = $this->bookings->cancel($booking, $request->validated('reason'));
+
+        return (new BookingResource($booking))->additional(['message' => 'Booking berhasil dibatalkan.']);
     }
 }

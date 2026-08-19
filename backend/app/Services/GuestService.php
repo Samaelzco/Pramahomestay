@@ -37,6 +37,15 @@ class GuestService implements GuestServiceInterface
         return $this->guests->withDetails($guest);
     }
 
+    public function setActive(Guest $guest, bool $isActive): Guest
+    {
+        return DB::transaction(function () use ($guest, $isActive): Guest {
+            $locked = $this->guests->findForUpdate($guest->id);
+
+            return $this->guests->update($locked, ['is_active' => $isActive]);
+        });
+    }
+
     private function normalize(array $attributes): array
     {
         $attributes['full_name'] = trim($attributes['full_name']);

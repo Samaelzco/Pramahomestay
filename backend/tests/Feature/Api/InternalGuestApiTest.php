@@ -90,6 +90,25 @@ class InternalGuestApiTest extends TestCase
             ->assertUnprocessable()->assertJsonValidationErrors('email');
     }
 
+    public function test_authorized_user_can_deactivate_filter_and_reactivate_a_guest(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $guest = Guest::factory()->create(['is_active' => true]);
+
+        $this->patchJson("/api/internal/guests/{$guest->id}/activation", ['is_active' => false])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', false);
+
+        $this->getJson('/api/internal/guests?is_active=0')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $guest->id);
+
+        $this->patchJson("/api/internal/guests/{$guest->id}/activation", ['is_active' => true])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', true);
+    }
+
     private function payload(): array
     {
         return [

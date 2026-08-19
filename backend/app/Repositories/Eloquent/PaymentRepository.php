@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Contracts\Repositories\PaymentRepositoryInterface;
+use App\Enums\PaymentStatus;
 use App\Models\Payment;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -48,11 +49,24 @@ class PaymentRepository implements PaymentRepositoryInterface
         return $payment->refresh()->load('booking.room');
     }
 
+    public function findForUpdate(int $id): Payment
+    {
+        return $this->model->newQuery()->lockForUpdate()->findOrFail($id);
+    }
+
     public function existsForBooking(int $bookingId, ?int $ignoreId = null): bool
     {
         return $this->model->newQuery()
             ->where('booking_id', $bookingId)
             ->when($ignoreId, fn ($query, int $id) => $query->whereKeyNot($id))
+            ->exists();
+    }
+
+    public function hasCreditedPaymentForBooking(int $bookingId): bool
+    {
+        return $this->model->newQuery()
+            ->where('booking_id', $bookingId)
+            ->whereIn('status', [PaymentStatus::Partial->value, PaymentStatus::Paid->value])
             ->exists();
     }
 

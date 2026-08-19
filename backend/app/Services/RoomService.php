@@ -92,6 +92,15 @@ class RoomService implements RoomServiceInterface
         return $updated;
     }
 
+    public function setActive(Room $room, bool $isActive): Room
+    {
+        return DB::transaction(function () use ($room, $isActive): Room {
+            $locked = $this->rooms->findForUpdate($room->id);
+
+            return $this->rooms->update($locked, ['is_active' => $isActive]);
+        });
+    }
+
     /** @param array<string, mixed> $attributes */
     private function extractImage(array &$attributes): ?UploadedFile
     {

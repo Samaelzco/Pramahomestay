@@ -59,6 +59,9 @@ class InternalDashboardApiTest extends TestCase
         $this->getJson('/api/internal/dashboard?days=7')
             ->assertOk()
             ->assertJsonPath('data.period.days', 7)
+            ->assertJsonPath('data.period.granularity', 'day')
+            ->assertJsonPath('data.period.is_custom', false)
+            ->assertJsonPath('data.operations.date', '2026-08-16')
             ->assertJsonPath('data.metrics.bookings', 1)
             ->assertJsonPath('data.metrics.revenue', '750000.00')
             ->assertJsonPath('data.metrics.occupancy_rate', 50)
@@ -79,5 +82,51 @@ class InternalDashboardApiTest extends TestCase
         $this->getJson('/api/internal/dashboard?days=14')
             ->assertUnprocessable()
             ->assertJsonValidationErrors('days');
+    }
+
+    public function test_dashboard_accepts_an_unbounded_custom_range_and_adapts_its_granularity(): void
+    {
+        CarbonImmutable::setTestNow('2026-08-16 09:00:00');
+        $this->seed(AuthorizationSeeder::class);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Sanctum::actingAs($admin, ['internal']);
+
+        $this->getJson('/api/internal/dashboard?from=2026-08-01&to=2026-08-16')
+            ->assertOk()
+            ->assertJsonPath('data.period.days', null)
+            ->assertJsonPath('data.period.is_custom', true)
+            ->assertJsonPath('data.period.granularity', 'day')
+            ->assertJsonCount(16, 'data.series');
+
+        $this->getJson('/api/internal/dashboard?from=2026-01-01&to=2026-05-01')
+            ->assertOk()
+            ->assertJsonPath('data.period.granularity', 'week')
+            ->assertJsonCount(18, 'data.series');
+
+        $this->getJson('/api/internal/dashboard?from=2023-01-01&to=2026-01-02')
+            ->assertOk()
+            ->assertJsonPath('data.period.granularity', 'month')
+            ->assertJsonCount(37, 'data.series');
+    }
+
+    public function test_dashboard_validates_custom_range_boundaries(): void
+    {
+        $this->seed(AuthorizationSeeder::class);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Sanctum::actingAs($admin, ['internal']);
+
+        $this->getJson('/api/internal/dashboard?from=2026-08-01')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('to');
+
+        $this->getJson('/api/internal/dashboard?from=2026-08-16&to=2026-08-01')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('to');
+
+        $this->getJson('/api/internal/dashboard?days=30&from=2026-08-01&to=2026-08-16')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['days', 'from', 'to']);
     }
 }

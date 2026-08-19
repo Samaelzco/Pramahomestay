@@ -6,6 +6,7 @@ use App\Contracts\Services\RoomServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Rooms\IndexRoomRequest;
 use App\Http\Requests\Rooms\StoreRoomRequest;
+use App\Http\Requests\Rooms\UpdateRoomActivationRequest;
 use App\Http\Requests\Rooms\UpdateRoomRequest;
 use App\Http\Resources\RoomResource;
 use App\Models\Room;
@@ -44,6 +45,15 @@ class RoomController extends Controller
 
         return (new RoomResource($room))->additional([
             'message' => 'Kamar berhasil diperbarui.',
+        ]);
+    }
+
+    public function activation(UpdateRoomActivationRequest $request, Room $room): RoomResource
+    {
+        $room = $this->rooms->setActive($room, (bool) $request->validated('is_active'));
+
+        return (new RoomResource($room))->additional([
+            'message' => $room->is_active ? 'Kamar berhasil diaktifkan.' : 'Kamar berhasil dinonaktifkan.',
         ]);
     }
 }

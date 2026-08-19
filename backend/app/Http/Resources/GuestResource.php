@@ -16,6 +16,7 @@ class GuestResource extends JsonResource
             'phone' => $this->phone,
             'address' => $this->address,
             'notes' => $this->notes,
+            'is_active' => $this->is_active,
             'stats' => [
                 'bookings' => (int) ($this->bookings_count ?? 0),
                 'completed_stays' => (int) ($this->completed_stays_count ?? 0),

@@ -22,4 +22,6 @@ interface RoomServiceInterface
 
     /** @param array<string, mixed> $attributes */
     public function update(Room $room, array $attributes): Room;
+
+    public function setActive(Room $room, bool $isActive): Room;
 }

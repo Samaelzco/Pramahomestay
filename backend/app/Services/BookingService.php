@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\GuestRepositoryInterface;
+use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Enums\BookingStatus;
@@ -21,6 +22,7 @@ class BookingService implements BookingServiceInterface
         private readonly BookingRepositoryInterface $bookings,
         private readonly RoomRepositoryInterface $rooms,
         private readonly GuestRepositoryInterface $guests,
+        private readonly PaymentRepositoryInterface $payments,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -38,6 +40,10 @@ class BookingService implements BookingServiceInterface
                 throw ValidationException::withMessages(['room_id' => 'Kamar yang dipilih sedang tidak aktif.']);
             }
 
+            if (! $guest->is_active) {
+                throw ValidationException::withMessages(['guest_id' => 'Profil tamu yang dipilih sedang tidak aktif.']);
+            }
+
             $attributes = $this->prepareAttributes($attributes, $room->id, $room->capacity, (string) $room->price_per_night);
             $attributes = $this->applyGuestSnapshot($attributes, $guest);
             $attributes['booking_code'] = $this->uniqueCode();
@@ -50,6 +56,15 @@ class BookingService implements BookingServiceInterface
     public function update(Booking $booking, array $attributes): Booking
     {
         return DB::transaction(function () use ($booking, $attributes): Booking {
+            $booking = $this->bookings->findForUpdate($booking->id);
+            $requestedStatus = BookingStatus::from($attributes['status']);
+            if ($booking->status === BookingStatus::Cancelled && $requestedStatus !== BookingStatus::Cancelled) {
+                throw ValidationException::withMessages(['status' => 'Booking yang dibatalkan tidak dapat diaktifkan kembali.']);
+            }
+            if ($requestedStatus === BookingStatus::Cancelled && $booking->status !== BookingStatus::Cancelled) {
+                $this->assertCanCancel($booking);
+            }
+
             $room = $this->rooms->findForUpdate((int) $attributes['room_id']);
             $guestChanged = (int) $attributes['guest_id'] !== (int) $booking->guest_id;
             $guest = $guestChanged
@@ -58,6 +73,10 @@ class BookingService implements BookingServiceInterface
 
             if ($room->id !== $booking->room_id && ! $room->is_active) {
                 throw ValidationException::withMessages(['room_id' => 'Kamar yang dipilih sedang tidak aktif.']);
+            }
+
+            if ($guest !== null && ! $guest->is_active) {
+                throw ValidationException::withMessages(['guest_id' => 'Profil tamu yang dipilih sedang tidak aktif.']);
             }
 
             $price = $room->id === $booking->room_id
@@ -70,6 +89,38 @@ class BookingService implements BookingServiceInterface
 
             return $this->bookings->update($booking, $attributes);
         });
+    }
+
+    public function cancel(Booking $booking, ?string $reason = null): Booking
+    {
+        return DB::transaction(function () use ($booking, $reason): Booking {
+            $locked = $this->bookings->findForUpdate($booking->id);
+
+            if ($locked->status === BookingStatus::Cancelled) {
+                return $locked->load(['room', 'guest']);
+            }
+
+            $this->assertCanCancel($locked);
+
+            $attributes = ['status' => BookingStatus::Cancelled->value];
+            if ($reason !== null && trim($reason) !== '') {
+                $entry = 'Alasan pembatalan: '.trim($reason);
+                $attributes['internal_notes'] = trim(implode("\n\n", array_filter([$locked->internal_notes, $entry])));
+            }
+
+            return $this->bookings->update($locked, $attributes);
+        });
+    }
+
+    private function assertCanCancel(Booking $booking): void
+    {
+        if (! in_array($booking->status, [BookingStatus::Pending, BookingStatus::Confirmed], true)) {
+            throw ValidationException::withMessages(['status' => 'Booking yang sudah check-in atau selesai tidak dapat dibatalkan.']);
+        }
+
+        if ($this->payments->hasCreditedPaymentForBooking($booking->id)) {
+            throw ValidationException::withMessages(['status' => 'Kembalikan pembayaran terlebih dahulu sebelum membatalkan booking.']);
+        }
     }
 
     private function prepareAttributes(array $attributes, int $roomId, int $capacity, string $price, ?int $ignoreId = null): array

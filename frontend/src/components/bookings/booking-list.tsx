@@ -1,4 +1,6 @@
+import { cancelBookingAction } from "@/app/internal/(dashboard)/bookings/actions";
 import { BookingStatusBadge } from "@/components/bookings/booking-status";
+import { ConfirmAction } from "@/components/ui/confirm-action";
 import type { Booking } from "@/lib/api/types";
 import Link from "next/link";
 
@@ -20,7 +22,10 @@ export function BookingList({ bookings }: { bookings: Booking[] }) {
             <div><p className="text-sm font-semibold">{booking.room.name}</p><p className="mt-1 text-xs text-muted">{booking.room.type_label} · {booking.guest_count} tamu</p></div>
             <div><p className="text-sm font-medium">{formatDate(booking.check_in)}</p><p className="mt-1 text-xs text-muted">hingga {formatDate(booking.check_out)} · {booking.total_nights} malam</p></div>
             <div><p className="text-sm font-semibold tabular-nums">{currency.format(Number(booking.total_amount))}</p><p className="mt-1 text-xs text-muted">Total booking</p></div>
-            <Link href={`/internal/bookings/${booking.id}`} className="inline-flex min-h-12 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat detail</Link>
+            <div className="flex flex-wrap items-center gap-x-4 lg:flex-col lg:items-start">
+              <Link href={`/internal/bookings/${booking.id}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat detail</Link>
+              {["pending", "confirmed"].includes(booking.status) && <ConfirmAction action={cancelBookingAction.bind(null, booking.id)} trigger="Batalkan" title={`Batalkan ${booking.booking_code}?`} description="Kamar akan dilepas dari jadwal. Booking tetap tersimpan sebagai riwayat dan tidak dapat dikembalikan lewat aksi ini." confirmLabel="Ya, batalkan" reason={{ label: "Alasan pembatalan · opsional", placeholder: "Contoh: tamu mengubah jadwal" }} />}
+            </div>
           </article>
         ))}
       </div>

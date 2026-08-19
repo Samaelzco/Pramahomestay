@@ -76,6 +76,23 @@ class InternalRoomApiTest extends TestCase
             ->assertJsonValidationErrors(['name', 'type', 'status', 'price_per_night', 'capacity']);
     }
 
+    public function test_authorized_user_can_deactivate_and_reactivate_a_room(): void
+    {
+        $this->seed(AuthorizationSeeder::class);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Sanctum::actingAs($admin, ['internal']);
+        $room = Room::factory()->create(['is_active' => true]);
+
+        $this->patchJson("/api/internal/rooms/{$room->id}/activation", ['is_active' => false])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', false);
+
+        $this->patchJson("/api/internal/rooms/{$room->id}/activation", ['is_active' => true])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', true);
+    }
+
     public function test_authorized_user_can_upload_replace_and_remove_a_room_image(): void
     {
         Storage::fake('public');

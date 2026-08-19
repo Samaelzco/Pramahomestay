@@ -10,11 +10,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['full_name', 'email', 'phone', 'address', 'notes', 'created_by'])]
+#[Fillable(['full_name', 'email', 'phone', 'address', 'notes', 'is_active', 'created_by'])]
 class Guest extends Model
 {
     /** @use HasFactory<GuestFactory> */
     use HasFactory, SoftDeletes;
+
+    protected function casts(): array
+    {
+        return ['is_active' => 'boolean'];
+    }
 
     public function bookings(): HasMany
     {

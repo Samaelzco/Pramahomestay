@@ -13,13 +13,18 @@ class DashboardService implements DashboardServiceInterface
 {
     public function __construct(private readonly DashboardRepositoryInterface $dashboard) {}
 
-    public function summary(int $days = 30): array
+    public function summary(array $filters = []): array
     {
-        $end = CarbonImmutable::today();
-        $start = $end->subDays($days - 1);
+        $today = CarbonImmutable::today();
+        $isCustom = isset($filters['from'], $filters['to']);
+        $days = $isCustom ? null : (int) ($filters['days'] ?? 30);
+        $end = $isCustom ? CarbonImmutable::parse($filters['to'])->startOfDay() : $today;
+        $start = $isCustom ? CarbonImmutable::parse($filters['from'])->startOfDay() : $end->subDays($days - 1);
+        $rangeDays = $start->diffInDays($end) + 1;
+        $granularity = $rangeDays <= 90 ? 'day' : ($end->lte($start->addYears(2)) ? 'week' : 'month');
         $snapshot = $this->dashboard->snapshot($start, $end);
         $activeRooms = max((int) $snapshot['active_room_count'], 1);
-        $today = $end->toDateString();
+        $todayString = $today->toDateString();
         $activeBookings = $snapshot['active_bookings'];
 
         $outstanding = $activeBookings->sum(function ($booking): float {
@@ -33,18 +38,25 @@ class DashboardService implements DashboardServiceInterface
 
         $arrivals = $activeBookings
             ->whereIn('status', [BookingStatus::Confirmed, BookingStatus::CheckedIn])
-            ->filter(fn ($booking): bool => $booking->check_in->toDateString() === $today)
+            ->filter(fn ($booking): bool => $booking->check_in->toDateString() === $todayString)
             ->values();
         $departures = $activeBookings
             ->whereIn('status', [BookingStatus::CheckedIn, BookingStatus::CheckedOut])
-            ->filter(fn ($booking): bool => $booking->check_out->toDateString() === $today)
+            ->filter(fn ($booking): bool => $booking->check_out->toDateString() === $todayString)
             ->values();
-        $occupiedToday = $snapshot['period_stays']
-            ->filter(fn ($booking): bool => $booking->check_in->lte($end) && $booking->check_out->gt($end))
+        $occupiedToday = $activeBookings
+            ->whereIn('status', [BookingStatus::Confirmed, BookingStatus::CheckedIn, BookingStatus::CheckedOut])
+            ->filter(fn ($booking): bool => $booking->check_in->lte($today) && $booking->check_out->gt($today))
             ->pluck('room_id')->unique()->count();
 
         return [
-            'period' => ['days' => $days, 'start' => $start->toDateString(), 'end' => $end->toDateString()],
+            'period' => [
+                'days' => $days,
+                'start' => $start->toDateString(),
+                'end' => $end->toDateString(),
+                'granularity' => $granularity,
+                'is_custom' => $isCustom,
+            ],
             'metrics' => [
                 'bookings' => $snapshot['period_bookings']->count(),
                 'revenue' => $this->money($snapshot['period_payments']->sum('amount_paid')),
@@ -55,10 +67,11 @@ class DashboardService implements DashboardServiceInterface
                 'arrivals_today' => $arrivals->count(),
                 'departures_today' => $departures->count(),
             ],
-            'series' => $this->series($start, $end, $snapshot, $activeRooms),
+            'series' => $this->series($start, $end, $granularity, $snapshot, $activeRooms),
             'booking_statuses' => $this->statusRows(BookingStatus::cases(), $snapshot['booking_statuses']),
             'payment_statuses' => $this->statusRows(PaymentStatus::cases(), $snapshot['payment_statuses']),
             'operations' => [
+                'date' => $todayString,
                 'arrivals' => $this->bookingRows($arrivals),
                 'departures' => $this->bookingRows($departures),
             ],
@@ -67,28 +80,69 @@ class DashboardService implements DashboardServiceInterface
         ];
     }
 
-    private function series(CarbonImmutable $start, CarbonImmutable $end, array $snapshot, int $activeRooms): array
+    private function series(CarbonImmutable $start, CarbonImmutable $end, string $granularity, array $snapshot, int $activeRooms): array
     {
-        $rows = [];
-        for ($date = $start; $date->lte($end); $date = $date->addDay()) {
-            $dateString = $date->toDateString();
-            $occupied = $snapshot['period_stays']
-                ->filter(fn ($booking): bool => $booking->check_in->lte($date) && $booking->check_out->gt($date))
-                ->pluck('room_id')->unique()->count();
+        return collect($this->buckets($start, $end, $granularity))->map(function (array $bucket) use ($snapshot, $activeRooms): array {
+            [$bucketStart, $bucketEnd] = $bucket;
+            $capacityDays = $activeRooms * ($bucketStart->diffInDays($bucketEnd) + 1);
 
-            $rows[] = [
-                'date' => $dateString,
+            return [
+                'date' => $bucketStart->toDateString(),
+                'end_date' => $bucketEnd->toDateString(),
                 'bookings' => $snapshot['period_bookings']->filter(
-                    fn ($booking): bool => $booking->created_at->toDateString() === $dateString
+                    fn ($booking): bool => $booking->created_at->betweenIncluded($bucketStart->startOfDay(), $bucketEnd->endOfDay())
                 )->count(),
                 'revenue' => $this->money($snapshot['period_payments']->filter(
-                    fn ($payment): bool => $payment->paid_at?->toDateString() === $dateString
+                    fn ($payment): bool => $payment->paid_at?->betweenIncluded($bucketStart->startOfDay(), $bucketEnd->endOfDay()) ?? false
                 )->sum('amount_paid')),
-                'occupancy_rate' => round(($occupied / $activeRooms) * 100, 1),
+                'occupancy_rate' => round(($this->occupiedRoomDays($snapshot['period_stays'], $bucketStart, $bucketEnd) / $capacityDays) * 100, 1),
             ];
+        })->all();
+    }
+
+    private function buckets(CarbonImmutable $start, CarbonImmutable $end, string $granularity): array
+    {
+        $buckets = [];
+        for ($cursor = $start; $cursor->lte($end); $cursor = $bucketEnd->addDay()) {
+            $bucketEnd = match ($granularity) {
+                'day' => $cursor,
+                'week' => $cursor->addDays(6)->min($end),
+                default => $cursor->endOfMonth()->startOfDay()->min($end),
+            };
+            $buckets[] = [$cursor, $bucketEnd];
         }
 
-        return $rows;
+        return $buckets;
+    }
+
+    private function occupiedRoomDays(Collection $stays, CarbonImmutable $start, CarbonImmutable $end): int
+    {
+        $exclusiveEnd = $end->addDay();
+
+        return $stays->groupBy('room_id')->sum(function (Collection $roomStays) use ($start, $exclusiveEnd): int {
+            $intervals = $roomStays->map(function ($stay) use ($start, $exclusiveEnd): array {
+                $from = CarbonImmutable::instance($stay->check_in)->max($start);
+                $to = CarbonImmutable::instance($stay->check_out)->min($exclusiveEnd);
+
+                return [$from, $to];
+            })->filter(fn (array $interval): bool => $interval[0]->lt($interval[1]))->sortBy(fn (array $interval): int => $interval[0]->getTimestamp())->values();
+
+            $days = 0;
+            $currentStart = null;
+            $currentEnd = null;
+            foreach ($intervals as [$from, $to]) {
+                if ($currentStart === null) {
+                    [$currentStart, $currentEnd] = [$from, $to];
+                } elseif ($from->lte($currentEnd)) {
+                    $currentEnd = $to->max($currentEnd);
+                } else {
+                    $days += $currentStart->diffInDays($currentEnd);
+                    [$currentStart, $currentEnd] = [$from, $to];
+                }
+            }
+
+            return $currentStart === null ? 0 : $days + $currentStart->diffInDays($currentEnd);
+        });
     }
 
     private function statusRows(array $cases, Collection $counts): array

@@ -1,4 +1,6 @@
+import { refundPaymentAction } from "@/app/internal/(dashboard)/payments/actions";
 import { PaymentStatus } from "@/components/payments/payment-status";
+import { ConfirmAction } from "@/components/ui/confirm-action";
 import type { Payment } from "@/lib/api/types";
 import Link from "next/link";
 
@@ -17,7 +19,10 @@ export function PaymentList({ payments }: { payments: Payment[] }) {
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Metode</p><p className="mt-1 text-sm font-medium lg:mt-0">{payment.method_label ?? "Belum ditentukan"}</p><p className="mt-1 truncate text-xs text-muted">{payment.reference_number ? `Ref. ${payment.reference_number}` : "Tanpa referensi"}</p></div>
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Dibayar</p><p className="mt-1 text-sm font-semibold tabular-nums lg:mt-0">{currency.format(Number(payment.amount_paid))}</p><p className="mt-1 text-xs text-muted">{payment.paid_at ? date.format(new Date(payment.paid_at)) : "Belum ada tanggal"}</p></div>
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Sisa</p><p className="mt-1 text-sm font-semibold tabular-nums lg:mt-0">{currency.format(Number(payment.remaining_amount))}</p><p className="mt-1 text-xs text-muted">Sisa tagihan</p></div>
-            <Link href={`/internal/payments/${payment.id}`} className="inline-flex min-h-12 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat detail</Link>
+            <div className="flex flex-wrap items-center gap-x-4 lg:flex-col lg:items-start">
+              <Link href={`/internal/payments/${payment.id}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat detail</Link>
+              {["partial", "paid"].includes(payment.status) && <ConfirmAction action={refundPaymentAction.bind(null, payment.id)} trigger="Kembalikan" title={`Kembalikan ${payment.payment_code}?`} description="Nominal tidak dihapus, tetapi tidak lagi dihitung sebagai pembayaran masuk. Aksi dan alasannya tetap tersimpan pada transaksi." confirmLabel="Catat pengembalian" reason={{ label: "Alasan pengembalian", required: true, placeholder: "Contoh: booking dibatalkan oleh tamu" }} />}
+            </div>
           </article>
         ))}
       </div>

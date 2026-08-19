@@ -1,18 +1,19 @@
 import { useId } from "react";
 
-type Point = { date: string; value: number };
+type Point = { date: string; endDate?: string; value: number };
 
 const dateLabel = (value: string, long = false) => new Intl.DateTimeFormat("id-ID", long
   ? { day: "numeric", month: "short", year: "numeric" }
   : { day: "numeric", month: "short" }).format(new Date(`${value}T00:00:00`));
 
-export function TrendChart({ points, formatValue, formatAxis, maxValue, title, description }: {
+export function TrendChart({ points, formatValue, formatAxis, maxValue, title, description, granularity }: {
   points: Point[];
   formatValue: (value: number) => string;
   formatAxis: (value: number) => string;
   maxValue?: number;
   title: string;
   description: string;
+  granularity: "day" | "week" | "month";
 }) {
   const id = useId();
   const titleId = `${id}-title`;
@@ -46,8 +47,8 @@ export function TrendChart({ points, formatValue, formatAxis, maxValue, title, d
       <path d={area} fill={`url(#${gradientId})`} />
       <defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#795830" stopOpacity=".2" /><stop offset="1" stopColor="#795830" stopOpacity=".015" /></linearGradient></defs>
       <path d={line} fill="none" stroke="#795830" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      {markers.map((point) => <circle key={point.date} cx={point.x} cy={point.y} r="3" fill="#fff" stroke="#795830" strokeWidth="2"><title>{`${dateLabel(point.date, true)}: ${formatValue(point.value)}`}</title></circle>)}
-      {xLabels.map((index) => <text key={index} x={coordinates[index]?.x} y={height - 6} textAnchor={index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"} fill="#575b5c" fontSize="11">{coordinates[index] ? dateLabel(coordinates[index].date) : ""}</text>)}
+      {markers.map((point) => <circle key={point.date} cx={point.x} cy={point.y} r="3" fill="#fff" stroke="#795830" strokeWidth="2"><title>{`${dateLabel(point.date, true)}${point.endDate && point.endDate !== point.date ? `–${dateLabel(point.endDate, true)}` : ""}: ${formatValue(point.value)}`}</title></circle>)}
+      {xLabels.map((index) => <text key={index} x={coordinates[index]?.x} y={height - 6} textAnchor={index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"} fill="#575b5c" fontSize="11">{coordinates[index] ? (granularity === "month" ? new Intl.DateTimeFormat("id-ID", { month: "short", year: "2-digit" }).format(new Date(`${coordinates[index].date}T00:00:00`)) : dateLabel(coordinates[index].date)) : ""}</text>)}
     </svg>
   </figure>;
 }

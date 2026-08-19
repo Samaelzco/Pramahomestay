@@ -48,9 +48,21 @@ export async function searchGuestOptionsAction(search: string): Promise<GuestRef
   const suffix = query ? `&search=${encodeURIComponent(query)}` : "";
 
   try {
-    const response = await apiFetch<PaginatedGuests>(`/internal/guests?per_page=20${suffix}`);
+    const response = await apiFetch<PaginatedGuests>(`/internal/guests?is_active=1&per_page=20${suffix}`);
     return response.data;
   } catch {
     return [];
+  }
+}
+
+export async function cancelBookingAction(id: number, _state: ActionState, formData: FormData): Promise<ActionState> {
+  try {
+    const response = await apiFetch<{ message?: string }>(`/internal/bookings/${id}/cancel`, { method: "PATCH", body: JSON.stringify({ reason: formData.get("reason") || null }) });
+    revalidatePath("/internal/bookings");
+    revalidatePath(`/internal/bookings/${id}`);
+    return { success: true, message: response.message };
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Booking belum dapat dibatalkan. Periksa koneksi lalu coba lagi." };
   }
 }

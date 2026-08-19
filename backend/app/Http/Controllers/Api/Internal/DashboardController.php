@@ -13,6 +13,6 @@ class DashboardController extends Controller
 
     public function index(IndexDashboardRequest $request): DashboardResource
     {
-        return new DashboardResource($this->dashboard->summary((int) $request->validated('days', 30)));
+        return new DashboardResource($this->dashboard->summary($request->validated()));
     }
 }

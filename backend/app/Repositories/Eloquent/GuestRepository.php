@@ -24,6 +24,7 @@ class GuestRepository implements GuestRepositoryInterface
                         ->orWhereRaw('LOWER(phone) LIKE ?', [$term]);
                 });
             })
+            ->when(array_key_exists('is_active', $filters), fn (Builder $query) => $query->where('is_active', $filters['is_active']))
             ->orderByDesc('latest_check_in')
             ->orderBy('full_name')
             ->paginate($perPage)

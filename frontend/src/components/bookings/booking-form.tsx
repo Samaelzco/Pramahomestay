@@ -5,7 +5,7 @@ import type { ActionState, Booking, GuestReference, Room } from "@/lib/api/types
 import Link from "next/link";
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 
-const statuses = [["pending", "Menunggu"], ["confirmed", "Dikonfirmasi"], ["checked_in", "Check-in"], ["checked_out", "Check-out"], ["cancelled", "Dibatalkan"]];
+const statuses = [["pending", "Menunggu"], ["confirmed", "Dikonfirmasi"], ["checked_in", "Check-in"], ["checked_out", "Check-out"]];
 const currency = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
 
 function FieldError({ errors }: { errors?: string[] }) {
@@ -62,7 +62,7 @@ export function BookingForm({ rooms, guests, booking, initialGuestId }: { rooms:
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Check-in · TT/BB/TTTT<input name="check_in" type="date" required value={checkIn} onChange={(event) => setCheckIn(event.target.value)} className={inputClass} /><FieldError errors={state.errors?.check_in} /></label>
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Check-out · TT/BB/TTTT<input name="check_out" type="date" required min={checkIn || undefined} value={checkOut} onChange={(event) => setCheckOut(event.target.value)} className={inputClass} /><FieldError errors={state.errors?.check_out} /></label>
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Jumlah tamu<input name="guest_count" type="number" min="1" max={room?.capacity ?? 20} required defaultValue={booking?.guest_count ?? 2} className={inputClass} /><FieldError errors={state.errors?.guest_count} /></label>
-          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Status<select name="status" required defaultValue={booking?.status ?? "pending"} className={inputClass}>{statuses.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><FieldError errors={state.errors?.status} /></label>
+          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Status<select name="status" required defaultValue={booking?.status ?? "pending"} className={inputClass}>{statuses.map(([value, label]) => <option key={value} value={value}>{label}</option>)}{booking?.status === "cancelled" && <option value="cancelled">Dibatalkan</option>}</select><FieldError errors={state.errors?.status} /></label>
           <div key={`${roomId}-${nights}`} className="booking-estimate-feedback sm:col-span-2 grid gap-3 rounded-lg bg-primary p-5 text-white sm:grid-cols-3 sm:p-6">
             <div><p className="text-xs text-white/65">Tarif kamar</p><p className="mt-1 font-semibold tabular-nums">{currency.format(Number(room?.price_per_night ?? 0))}</p></div>
             <div><p className="text-xs text-white/65">Durasi</p><p className="mt-1 font-semibold tabular-nums">{nights > 0 ? `${nights} malam` : "Pilih tanggal"}</p></div>

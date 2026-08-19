@@ -14,7 +14,11 @@ interface PaymentRepositoryInterface
 
     public function update(Payment $payment, array $attributes): Payment;
 
+    public function findForUpdate(int $id): Payment;
+
     public function existsForBooking(int $bookingId, ?int $ignoreId = null): bool;
+
+    public function hasCreditedPaymentForBooking(int $bookingId): bool;
 
     public function codeExists(string $code): bool;
 }

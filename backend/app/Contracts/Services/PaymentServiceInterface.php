@@ -13,4 +13,6 @@ interface PaymentServiceInterface
     public function create(array $attributes, ?int $createdBy = null): Payment;
 
     public function update(Payment $payment, array $attributes): Payment;
+
+    public function refund(Payment $payment, string $reason): Payment;
 }

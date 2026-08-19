@@ -1,3 +1,5 @@
+import { setRoomActivationAction } from "@/app/internal/(dashboard)/rooms/actions";
+import { ConfirmAction } from "@/components/ui/confirm-action";
 import type { Room } from "@/lib/api/types";
 import Link from "next/link";
 
@@ -35,7 +37,10 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Status</p><div className="mt-2 lg:mt-0"><RoomStatus room={room} /></div><p className="mt-2 text-xs text-muted">{operationalCopy[room.status]}</p></div>
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Kapasitas</p><p className="mt-1 text-sm font-semibold tabular-nums lg:mt-0">{room.capacity} tamu</p><p className="mt-1 text-xs text-muted">{room.bed_count} tempat tidur</p></div>
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Tarif</p><p className="mt-1 text-sm font-semibold tabular-nums lg:mt-0">{currency.format(Number(room.price_per_night))}</p><p className="mt-1 text-xs text-muted">per malam</p></div>
-            <Link href={`/internal/rooms/${room.id}/edit`} className="inline-flex min-h-12 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Edit detail</Link>
+            <div className="flex flex-wrap items-center gap-x-4 lg:flex-col lg:items-start">
+              <Link href={`/internal/rooms/${room.id}/edit`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Edit detail</Link>
+              <ConfirmAction action={setRoomActivationAction.bind(null, room.id, !room.is_active)} trigger={room.is_active ? "Nonaktifkan" : "Aktifkan"} title={room.is_active ? `Nonaktifkan ${room.name}?` : `Aktifkan ${room.name}?`} description={room.is_active ? "Kamar tidak muncul sebagai pilihan untuk booking baru. Booking yang sudah tercatat tetap tersimpan." : "Kamar kembali tersedia dalam alur booking baru sesuai status operasionalnya."} confirmLabel={room.is_active ? "Ya, nonaktifkan" : "Ya, aktifkan"} tone={room.is_active ? "danger" : "primary"} />
+            </div>
           </article>
         ))}
       </div>
