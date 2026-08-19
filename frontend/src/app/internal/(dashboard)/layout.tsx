@@ -11,7 +11,7 @@ export default async function InternalLayout({ children }: LayoutProps<"/interna
     <div className="min-h-screen bg-background">
       <Sidebar userName={user.name} />
       <InternalHeader userName={user.name} />
-      <div className="md:ml-[264px]">{children}</div>
+      <div className="xl:ml-[264px]">{children}</div>
     </div>
   );
 }

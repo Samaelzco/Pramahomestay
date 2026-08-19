@@ -51,11 +51,11 @@ export function BookingForm({ rooms, guests, booking, initialGuestId }: { rooms:
   return (
     <form action={formAction} className="mt-10 max-w-5xl">
       {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
-      <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Data tamu</h2><p className="mt-2 text-sm leading-6 text-muted">Kontak utama yang dapat dihubungi terkait reservasi.</p></div>
         <div><label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Cari tamu<input type="search" value={guestQuery} onChange={(event) => setGuestQuery(event.target.value)} placeholder="Nama, email, atau nomor telepon" className={inputClass} /></label><p aria-live="polite" className="mt-2 text-xs text-muted">{searchingGuests ? "Mencari profil…" : `${guestOptions.length} pilihan ditampilkan`}</p><label className="mt-5 block text-xs font-semibold tracking-[0.08em] text-muted uppercase">Pilih tamu<select name="guest_id" required value={guestId} onChange={(event) => setGuestId(event.target.value)} className={inputClass}>{guestOptions.map((item) => <option key={item.id} value={item.id}>{item.full_name} · {item.phone}</option>)}</select><FieldError errors={state.errors?.guest_id} /></label>{guest && <div className="mt-4 rounded-sm bg-surface-low p-4 text-sm"><p className="font-semibold">{guest.full_name}</p><p className="mt-1 break-all text-muted">{guest.email} · {guest.phone}</p></div>}<Link href="/internal/guests/new" className="mt-4 inline-flex min-h-12 items-center text-sm font-semibold text-secondary underline-offset-4 hover:underline">Tamu belum terdaftar? Tambah profil</Link></div>
       </section>
-      <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Rencana menginap</h2><p className="mt-2 text-sm leading-6 text-muted">Kamar, tanggal, dan jumlah tamu akan diperiksa terhadap ketersediaan.</p></div>
         <div className="grid gap-6 sm:grid-cols-2">
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:col-span-2">Kamar<select name="room_id" required value={roomId} onChange={(event) => setRoomId(event.target.value)} className={inputClass}>{rooms.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.type_label} · maks. {item.capacity} tamu</option>)}</select><FieldError errors={state.errors?.room_id} /></label>
@@ -70,7 +70,7 @@ export function BookingForm({ rooms, guests, booking, initialGuestId }: { rooms:
           </div>
         </div>
       </section>
-      <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Catatan</h2><p className="mt-2 text-sm leading-6 text-muted">Pisahkan permintaan tamu dari informasi khusus tim internal.</p></div>
         <div className="grid gap-6">
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Permintaan khusus<textarea name="special_requests" maxLength={2000} defaultValue={booking?.special_requests ?? ""} rows={3} placeholder="Contoh: kamar jauh dari tangga" className="mt-2 w-full resize-y rounded-sm border bg-surface px-4 py-3 text-sm font-normal leading-6 tracking-normal normal-case outline-none focus:border-primary" /><FieldError errors={state.errors?.special_requests} /></label>

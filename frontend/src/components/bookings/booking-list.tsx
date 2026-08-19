@@ -14,13 +14,13 @@ export function BookingList({ bookings }: { bookings: Booking[] }) {
       </div>
       <div className="divide-y">
         {bookings.map((booking) => (
-          <article key={booking.id} className="grid gap-5 px-5 py-6 transition-colors hover:bg-surface-low/60 lg:grid-cols-[1.05fr_1.25fr_1fr_1.2fr_0.8fr_auto] lg:items-center lg:px-6">
+          <article key={booking.id} className="grid gap-5 px-5 py-6 transition-colors hover:bg-surface-low/60 sm:grid-cols-2 lg:grid-cols-[1.05fr_1.25fr_1fr_1.2fr_0.8fr_auto] lg:items-center lg:px-6">
             <div><p className="text-sm font-semibold tabular-nums">{booking.booking_code}</p><div className="mt-2"><BookingStatusBadge status={booking.status} label={booking.status_label} /></div></div>
             <div><p className="font-semibold">{booking.guest_name}</p><p className="mt-1 truncate text-sm text-muted">{booking.guest_phone}</p></div>
             <div><p className="text-sm font-semibold">{booking.room.name}</p><p className="mt-1 text-xs text-muted">{booking.room.type_label} · {booking.guest_count} tamu</p></div>
             <div><p className="text-sm font-medium">{formatDate(booking.check_in)}</p><p className="mt-1 text-xs text-muted">hingga {formatDate(booking.check_out)} · {booking.total_nights} malam</p></div>
             <div><p className="text-sm font-semibold tabular-nums">{currency.format(Number(booking.total_amount))}</p><p className="mt-1 text-xs text-muted">Total booking</p></div>
-            <Link href={`/internal/bookings/${booking.id}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat detail</Link>
+            <Link href={`/internal/bookings/${booking.id}`} className="inline-flex min-h-12 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat detail</Link>
           </article>
         ))}
       </div>

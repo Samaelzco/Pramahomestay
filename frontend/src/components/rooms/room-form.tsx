@@ -21,7 +21,7 @@ export function RoomForm({ room }: { room?: Room }) {
   return (
     <form action={formAction} className="mt-10 max-w-4xl">
       {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
-      <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Identitas kamar</h2><p className="mt-2 text-sm leading-6 text-muted">Nama unit, tipe, dan uraian yang dikenali tim.</p></div>
         <div className="grid gap-6 sm:grid-cols-2">
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Nama unit<input name="name" required maxLength={100} defaultValue={room?.name} placeholder="Contoh: Unit 301" className={inputClass} /><FieldError errors={state.errors?.name} /></label>
@@ -29,7 +29,7 @@ export function RoomForm({ room }: { room?: Room }) {
           <label className="sm:col-span-2 text-xs font-semibold tracking-[0.08em] text-muted uppercase">Deskripsi<textarea name="description" maxLength={2000} defaultValue={room?.description ?? ""} rows={4} placeholder="Jelaskan karakter dan keunggulan kamar." className="mt-2 w-full resize-y rounded-sm border bg-surface px-4 py-3 text-sm leading-6 outline-none transition-colors focus:border-primary" /><FieldError errors={state.errors?.description} /></label>
         </div>
       </section>
-      <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Harga & kapasitas</h2><p className="mt-2 text-sm leading-6 text-muted">Informasi dasar untuk ketersediaan dan pemesanan.</p></div>
         <div className="grid gap-6 sm:grid-cols-2">
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Harga per malam (Rp)<input name="price_per_night" type="number" min="0" step="1000" required defaultValue={room ? Number(room.price_per_night) : 650000} className={inputClass} /><FieldError errors={state.errors?.price_per_night} /></label>
@@ -38,7 +38,7 @@ export function RoomForm({ room }: { room?: Room }) {
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Luas kamar (m²)<input name="size_sqm" type="number" min="1" step="0.01" defaultValue={room?.size_sqm ?? ""} placeholder="Contoh: 28" className={inputClass} /><FieldError errors={state.errors?.size_sqm} /></label>
         </div>
       </section>
-      <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
+      <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">Operasional & fasilitas</h2><p className="mt-2 text-sm leading-6 text-muted">Kondisi terkini, foto, dan fasilitas utama.</p></div>
         <div className="grid gap-6 sm:grid-cols-2">
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Status<select name="status" required defaultValue={room?.status ?? "ready"} className={inputClass}>{statuses.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><FieldError errors={state.errors?.status} /></label>
