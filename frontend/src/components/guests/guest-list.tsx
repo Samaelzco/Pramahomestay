@@ -1,4 +1,4 @@
-import { setGuestActivationAction } from "@/app/internal/(dashboard)/guests/actions";
+import { deleteGuestAction, setGuestActivationAction } from "@/app/internal/(dashboard)/guests/actions";
 import { ConfirmAction } from "@/components/ui/confirm-action";
 import type { Guest } from "@/lib/api/types";
 import Link from "next/link";
@@ -18,6 +18,7 @@ export function GuestList({ guests }: { guests: Guest[] }) {
       <div className="flex flex-wrap items-center gap-x-4 lg:flex-col lg:items-start">
         <Link href={`/internal/guests/${guest.id}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat profil</Link>
         <ConfirmAction action={setGuestActivationAction.bind(null, guest.id, !guest.is_active)} trigger={guest.is_active ? "Nonaktifkan" : "Aktifkan"} title={guest.is_active ? `Nonaktifkan ${guest.full_name}?` : `Aktifkan ${guest.full_name}?`} description={guest.is_active ? "Profil tidak dapat dipilih untuk booking baru. Riwayat dan booking yang sudah ada tetap tersimpan." : "Profil kembali dapat dipilih saat membuat booking baru."} confirmLabel={guest.is_active ? "Ya, nonaktifkan" : "Ya, aktifkan"} tone={guest.is_active ? "danger" : "primary"} />
+        <ConfirmAction action={deleteGuestAction.bind(null, guest.id)} trigger="Hapus" title={`Hapus ${guest.full_name}?`} description="Profil akan dihapus dari daftar tamu. Aksi ini hanya tersedia karena profil belum memiliki riwayat booking." confirmLabel="Ya, hapus profil" disabled={!guest.can_delete} />
       </div>
     </article>)}</div>
   </div>;

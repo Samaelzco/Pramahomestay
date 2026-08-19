@@ -112,6 +112,21 @@ class BookingService implements BookingServiceInterface
         });
     }
 
+    public function delete(Booking $booking): void
+    {
+        DB::transaction(function () use ($booking): void {
+            $locked = $this->bookings->findForUpdate($booking->id);
+            if (! in_array($locked->status, [BookingStatus::Pending, BookingStatus::Cancelled], true)) {
+                throw ValidationException::withMessages(['delete' => 'Hanya booking menunggu atau dibatalkan yang dapat dihapus.']);
+            }
+            if ($this->payments->hasAnyPaymentForBooking($locked->id)) {
+                throw ValidationException::withMessages(['delete' => 'Booking tidak dapat dihapus karena sudah memiliki data pembayaran.']);
+            }
+
+            $this->bookings->delete($locked);
+        });
+    }
+
     private function assertCanCancel(Booking $booking): void
     {
         if (! in_array($booking->status, [BookingStatus::Pending, BookingStatus::Confirmed], true)) {

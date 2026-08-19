@@ -17,6 +17,8 @@ export type Room = {
   image_url: string | null;
   amenities: string[];
   is_active: boolean;
+  can_delete: boolean;
+  delete_block_reason: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -59,6 +61,8 @@ export type Booking = {
   total_amount: string;
   status: BookingStatus;
   status_label: string;
+  can_delete: boolean;
+  delete_block_reason: string | null;
   special_requests: string | null;
   internal_notes: string | null;
   created_at: string;
@@ -93,6 +97,8 @@ export type PaginatedPayments = { data: Payment[]; meta: PaginationMeta };
 
 export type Guest = GuestReference & {
   is_active: boolean;
+  can_delete: boolean;
+  delete_block_reason: string | null;
   address: string | null;
   notes: string | null;
   stats: {

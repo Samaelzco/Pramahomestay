@@ -20,5 +20,7 @@ interface PaymentRepositoryInterface
 
     public function hasCreditedPaymentForBooking(int $bookingId): bool;
 
+    public function hasAnyPaymentForBooking(int $bookingId): bool;
+
     public function codeExists(string $code): bool;
 }

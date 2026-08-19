@@ -10,6 +10,7 @@ use App\Http\Requests\Guests\UpdateGuestActivationRequest;
 use App\Http\Requests\Guests\UpdateGuestRequest;
 use App\Http\Resources\GuestResource;
 use App\Models\Guest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GuestController extends Controller
@@ -51,5 +52,12 @@ class GuestController extends Controller
         return (new GuestResource($guest))->additional([
             'message' => $guest->is_active ? 'Profil tamu berhasil diaktifkan.' : 'Profil tamu berhasil dinonaktifkan.',
         ]);
+    }
+
+    public function destroy(Guest $guest): JsonResponse
+    {
+        $this->guests->delete($guest);
+
+        return response()->json(['message' => 'Profil tamu berhasil dihapus.']);
     }
 }

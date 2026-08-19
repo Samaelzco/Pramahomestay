@@ -157,6 +157,40 @@ class InternalBookingApiTest extends TestCase
             ->assertJsonValidationErrors('guest_id');
     }
 
+    public function test_pending_or_cancelled_booking_without_payment_can_be_soft_deleted(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $booking = Booking::factory()->for(Room::factory())->for($this->guest)->create(['status' => 'pending']);
+
+        $this->getJson('/api/internal/bookings')
+            ->assertOk()
+            ->assertJsonPath('data.0.can_delete', true);
+
+        $this->deleteJson("/api/internal/bookings/{$booking->id}")
+            ->assertOk()
+            ->assertJsonPath('message', 'Booking berhasil dihapus.');
+
+        $this->assertSoftDeleted($booking);
+    }
+
+    public function test_confirmed_booking_or_booking_with_payment_cannot_be_deleted(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $confirmed = Booking::factory()->for(Room::factory())->for($this->guest)->create(['status' => 'confirmed']);
+        $withPayment = Booking::factory()->for(Room::factory())->for($this->guest)->create(['status' => 'cancelled']);
+        Payment::factory()->for($withPayment)->create(['status' => 'refunded']);
+
+        $this->deleteJson("/api/internal/bookings/{$confirmed->id}")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('delete');
+        $this->deleteJson("/api/internal/bookings/{$withPayment->id}")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('delete');
+
+        $this->assertNotSoftDeleted($confirmed);
+        $this->assertNotSoftDeleted($withPayment);
+    }
+
     public function test_updating_booking_keeps_snapshot_when_guest_profile_is_unchanged(): void
     {
         Sanctum::actingAs($this->admin, ['internal']);

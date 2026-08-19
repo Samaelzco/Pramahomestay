@@ -63,3 +63,16 @@ export async function setRoomActivationAction(roomId: number, isActive: boolean,
     return { message: "Status kamar belum dapat diubah. Periksa koneksi lalu coba lagi." };
   }
 }
+
+export async function deleteRoomAction(roomId: number, _state: ActionState, _formData: FormData): Promise<ActionState> {
+  void _state;
+  void _formData;
+  try {
+    const response = await apiFetch<{ message?: string }>(`/internal/rooms/${roomId}`, { method: "DELETE" });
+    revalidatePath("/internal/rooms");
+    return { success: true, message: response.message };
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Kamar belum dapat dihapus. Periksa koneksi lalu coba lagi." };
+  }
+}

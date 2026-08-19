@@ -10,6 +10,7 @@ use App\Http\Requests\Rooms\UpdateRoomActivationRequest;
 use App\Http\Requests\Rooms\UpdateRoomRequest;
 use App\Http\Resources\RoomResource;
 use App\Models\Room;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class RoomController extends Controller
@@ -55,5 +56,12 @@ class RoomController extends Controller
         return (new RoomResource($room))->additional([
             'message' => $room->is_active ? 'Kamar berhasil diaktifkan.' : 'Kamar berhasil dinonaktifkan.',
         ]);
+    }
+
+    public function destroy(Room $room): JsonResponse
+    {
+        $this->rooms->delete($room);
+
+        return response()->json(['message' => 'Kamar berhasil dihapus.']);
     }
 }

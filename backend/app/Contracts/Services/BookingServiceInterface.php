@@ -15,4 +15,6 @@ interface BookingServiceInterface
     public function update(Booking $booking, array $attributes): Booking;
 
     public function cancel(Booking $booking, ?string $reason = null): Booking;
+
+    public function delete(Booking $booking): void;
 }

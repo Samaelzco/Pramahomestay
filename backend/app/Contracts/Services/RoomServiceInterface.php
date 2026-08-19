@@ -24,4 +24,6 @@ interface RoomServiceInterface
     public function update(Room $room, array $attributes): Room;
 
     public function setActive(Room $room, bool $isActive): Room;
+
+    public function delete(Room $room): void;
 }

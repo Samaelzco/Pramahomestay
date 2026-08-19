@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\BookingStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -9,6 +10,10 @@ class BookingResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $paymentExists = array_key_exists('any_payment_exists', $this->resource->getAttributes())
+            ? (bool) $this->any_payment_exists
+            : $this->payment()->withTrashed()->exists();
+
         return [
             'id' => $this->id,
             'booking_code' => $this->booking_code,
@@ -30,6 +35,10 @@ class BookingResource extends JsonResource
             'total_amount' => $this->total_amount,
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
+            'can_delete' => in_array($this->status, [BookingStatus::Pending, BookingStatus::Cancelled], true) && ! $paymentExists,
+            'delete_block_reason' => $paymentExists
+                ? 'Memiliki data pembayaran'
+                : (! in_array($this->status, [BookingStatus::Pending, BookingStatus::Cancelled], true) ? 'Status operasional aktif' : null),
             'special_requests' => $this->special_requests,
             'internal_notes' => $this->internal_notes,
             'created_at' => $this->created_at,

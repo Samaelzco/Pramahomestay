@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Booking;
 use App\Models\Room;
 use App\Models\User;
 use Database\Seeders\AuthorizationSeeder;
@@ -91,6 +92,46 @@ class InternalRoomApiTest extends TestCase
         $this->patchJson("/api/internal/rooms/{$room->id}/activation", ['is_active' => true])
             ->assertOk()
             ->assertJsonPath('data.is_active', true);
+    }
+
+    public function test_room_without_booking_can_be_soft_deleted(): void
+    {
+        $this->seed(AuthorizationSeeder::class);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Sanctum::actingAs($admin, ['internal']);
+        $room = Room::factory()->create();
+
+        $this->getJson('/api/internal/rooms')
+            ->assertOk()
+            ->assertJsonPath('data.0.can_delete', true);
+
+        $this->deleteJson("/api/internal/rooms/{$room->id}")
+            ->assertOk()
+            ->assertJsonPath('message', 'Kamar berhasil dihapus.');
+
+        $this->assertSoftDeleted($room);
+        $this->getJson("/api/internal/rooms/{$room->id}")->assertNotFound();
+    }
+
+    public function test_room_with_booking_cannot_be_deleted(): void
+    {
+        $this->seed(AuthorizationSeeder::class);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Sanctum::actingAs($admin, ['internal']);
+        $room = Room::factory()->create();
+        Booking::factory()->for($room)->create();
+
+        $this->getJson('/api/internal/rooms')
+            ->assertOk()
+            ->assertJsonPath('data.0.can_delete', false);
+
+        $this->deleteJson("/api/internal/rooms/{$room->id}")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('delete');
+
+        $this->assertNotSoftDeleted($room);
     }
 
     public function test_authorized_user_can_upload_replace_and_remove_a_room_image(): void

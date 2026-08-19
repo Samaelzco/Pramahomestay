@@ -1,4 +1,4 @@
-import { setRoomActivationAction } from "@/app/internal/(dashboard)/rooms/actions";
+import { deleteRoomAction, setRoomActivationAction } from "@/app/internal/(dashboard)/rooms/actions";
 import { ConfirmAction } from "@/components/ui/confirm-action";
 import type { Room } from "@/lib/api/types";
 import Link from "next/link";
@@ -40,6 +40,7 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
             <div className="flex flex-wrap items-center gap-x-4 lg:flex-col lg:items-start">
               <Link href={`/internal/rooms/${room.id}/edit`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Edit detail</Link>
               <ConfirmAction action={setRoomActivationAction.bind(null, room.id, !room.is_active)} trigger={room.is_active ? "Nonaktifkan" : "Aktifkan"} title={room.is_active ? `Nonaktifkan ${room.name}?` : `Aktifkan ${room.name}?`} description={room.is_active ? "Kamar tidak muncul sebagai pilihan untuk booking baru. Booking yang sudah tercatat tetap tersimpan." : "Kamar kembali tersedia dalam alur booking baru sesuai status operasionalnya."} confirmLabel={room.is_active ? "Ya, nonaktifkan" : "Ya, aktifkan"} tone={room.is_active ? "danger" : "primary"} />
+              <ConfirmAction action={deleteRoomAction.bind(null, room.id)} trigger="Hapus" title={`Hapus ${room.name}?`} description="Kamar akan dihapus dari inventori aktif. Aksi ini hanya tersedia karena kamar belum memiliki riwayat booking." confirmLabel="Ya, hapus kamar" disabled={!room.can_delete} />
             </div>
           </article>
         ))}

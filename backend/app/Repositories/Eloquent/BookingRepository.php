@@ -15,6 +15,7 @@ class BookingRepository implements BookingRepositoryInterface
     {
         return $this->model->newQuery()
             ->with(['room', 'guest'])
+            ->withExists(['payment as any_payment_exists' => fn ($query) => $query->withTrashed()])
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $term = '%'.mb_strtolower($search).'%';
                 $query->where(function ($query) use ($term): void {
@@ -45,6 +46,11 @@ class BookingRepository implements BookingRepositoryInterface
         $booking->updateOrFail($attributes);
 
         return $booking->refresh()->load(['room', 'guest']);
+    }
+
+    public function delete(Booking $booking): void
+    {
+        $booking->deleteOrFail();
     }
 
     public function findForUpdate(int $id): Booking

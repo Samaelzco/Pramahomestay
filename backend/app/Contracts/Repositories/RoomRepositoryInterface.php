@@ -25,5 +25,9 @@ interface RoomRepositoryInterface
     /** @param array<string, mixed> $attributes */
     public function update(Room $room, array $attributes): Room;
 
+    public function delete(Room $room): void;
+
+    public function hasAnyBooking(int $roomId): bool;
+
     public function slugExists(string $slug, ?int $ignoreId = null): bool;
 }

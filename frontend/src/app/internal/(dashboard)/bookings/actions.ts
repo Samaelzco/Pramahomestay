@@ -66,3 +66,17 @@ export async function cancelBookingAction(id: number, _state: ActionState, formD
     return { message: "Booking belum dapat dibatalkan. Periksa koneksi lalu coba lagi." };
   }
 }
+
+export async function deleteBookingAction(id: number, _state: ActionState, _formData: FormData): Promise<ActionState> {
+  void _state;
+  void _formData;
+  try {
+    const response = await apiFetch<{ message?: string }>(`/internal/bookings/${id}`, { method: "DELETE" });
+    revalidatePath("/internal/bookings");
+    revalidatePath(`/internal/bookings/${id}`);
+    return { success: true, message: response.message };
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Booking belum dapat dihapus. Periksa koneksi lalu coba lagi." };
+  }
+}

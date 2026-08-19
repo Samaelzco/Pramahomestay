@@ -10,6 +10,7 @@ use App\Http\Requests\Bookings\StoreBookingRequest;
 use App\Http\Requests\Bookings\UpdateBookingRequest;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class BookingController extends Controller
@@ -49,5 +50,12 @@ class BookingController extends Controller
         $booking = $this->bookings->cancel($booking, $request->validated('reason'));
 
         return (new BookingResource($booking))->additional(['message' => 'Booking berhasil dibatalkan.']);
+    }
+
+    public function destroy(Booking $booking): JsonResponse
+    {
+        $this->bookings->delete($booking);
+
+        return response()->json(['message' => 'Booking berhasil dihapus.']);
     }
 }

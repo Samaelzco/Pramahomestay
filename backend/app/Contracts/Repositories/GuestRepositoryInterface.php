@@ -14,6 +14,10 @@ interface GuestRepositoryInterface
 
     public function update(Guest $guest, array $attributes): Guest;
 
+    public function delete(Guest $guest): void;
+
+    public function hasAnyBooking(int $guestId): bool;
+
     public function findForUpdate(int $id): Guest;
 
     public function withDetails(Guest $guest): Guest;

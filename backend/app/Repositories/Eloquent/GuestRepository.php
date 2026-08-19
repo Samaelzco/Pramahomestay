@@ -43,6 +43,16 @@ class GuestRepository implements GuestRepositoryInterface
         return $guest->refresh();
     }
 
+    public function delete(Guest $guest): void
+    {
+        $guest->deleteOrFail();
+    }
+
+    public function hasAnyBooking(int $guestId): bool
+    {
+        return $this->model->newQuery()->findOrFail($guestId)->bookings()->withTrashed()->exists();
+    }
+
     public function findForUpdate(int $id): Guest
     {
         return $this->model->newQuery()->lockForUpdate()->findOrFail($id);
@@ -58,6 +68,7 @@ class GuestRepository implements GuestRepositoryInterface
     private function summaryQuery(): Builder
     {
         return $this->model->newQuery()
+            ->withCount(['bookings as all_bookings_count' => fn (Builder $query) => $query->withTrashed()])
             ->withCount('bookings')
             ->withCount(['bookings as completed_stays_count' => fn (Builder $query) => $query->where('status', BookingStatus::CheckedOut->value)])
             ->withSum('bookings as total_booking_value', 'total_amount')

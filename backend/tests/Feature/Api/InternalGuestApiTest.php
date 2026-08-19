@@ -109,6 +109,39 @@ class InternalGuestApiTest extends TestCase
             ->assertJsonPath('data.is_active', true);
     }
 
+    public function test_guest_without_booking_can_be_soft_deleted(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $guest = Guest::factory()->create();
+
+        $this->getJson('/api/internal/guests')
+            ->assertOk()
+            ->assertJsonPath('data.0.can_delete', true);
+
+        $this->deleteJson("/api/internal/guests/{$guest->id}")
+            ->assertOk()
+            ->assertJsonPath('message', 'Profil tamu berhasil dihapus.');
+
+        $this->assertSoftDeleted($guest);
+    }
+
+    public function test_guest_with_booking_cannot_be_deleted(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $guest = Guest::factory()->create();
+        Booking::factory()->for($guest)->for(Room::factory())->create();
+
+        $this->getJson('/api/internal/guests')
+            ->assertOk()
+            ->assertJsonPath('data.0.can_delete', false);
+
+        $this->deleteJson("/api/internal/guests/{$guest->id}")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('delete');
+
+        $this->assertNotSoftDeleted($guest);
+    }
+
     private function payload(): array
     {
         return [

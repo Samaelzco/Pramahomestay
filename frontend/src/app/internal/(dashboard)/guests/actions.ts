@@ -35,3 +35,16 @@ export async function setGuestActivationAction(id: number, isActive: boolean, _s
     return { message: "Status tamu belum dapat diubah. Periksa koneksi lalu coba lagi." };
   }
 }
+
+export async function deleteGuestAction(id: number, _state: ActionState, _formData: FormData): Promise<ActionState> {
+  void _state;
+  void _formData;
+  try {
+    const response = await apiFetch<{ message?: string }>(`/internal/guests/${id}`, { method: "DELETE" });
+    revalidatePath("/internal/guests");
+    return { success: true, message: response.message };
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Profil tamu belum dapat dihapus. Periksa koneksi lalu coba lagi." };
+  }
+}

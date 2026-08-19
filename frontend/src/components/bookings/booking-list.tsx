@@ -1,4 +1,4 @@
-import { cancelBookingAction } from "@/app/internal/(dashboard)/bookings/actions";
+import { cancelBookingAction, deleteBookingAction } from "@/app/internal/(dashboard)/bookings/actions";
 import { BookingStatusBadge } from "@/components/bookings/booking-status";
 import { ConfirmAction } from "@/components/ui/confirm-action";
 import type { Booking } from "@/lib/api/types";
@@ -25,6 +25,7 @@ export function BookingList({ bookings }: { bookings: Booking[] }) {
             <div className="flex flex-wrap items-center gap-x-4 lg:flex-col lg:items-start">
               <Link href={`/internal/bookings/${booking.id}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline decoration-transparent underline-offset-4 hover:decoration-current">Lihat detail</Link>
               {["pending", "confirmed"].includes(booking.status) && <ConfirmAction action={cancelBookingAction.bind(null, booking.id)} trigger="Batalkan" title={`Batalkan ${booking.booking_code}?`} description="Kamar akan dilepas dari jadwal. Booking tetap tersimpan sebagai riwayat dan tidak dapat dikembalikan lewat aksi ini." confirmLabel="Ya, batalkan" reason={{ label: "Alasan pembatalan · opsional", placeholder: "Contoh: tamu mengubah jadwal" }} />}
+              <ConfirmAction action={deleteBookingAction.bind(null, booking.id)} trigger="Hapus" title={`Hapus ${booking.booking_code}?`} description="Booking akan dihapus dari daftar operasional. Aksi ini hanya tersedia karena statusnya masih menunggu atau dibatalkan dan belum memiliki pembayaran." confirmLabel="Ya, hapus booking" disabled={!booking.can_delete} />
             </div>
           </article>
         ))}

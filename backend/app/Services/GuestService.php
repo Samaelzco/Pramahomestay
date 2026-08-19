@@ -7,6 +7,7 @@ use App\Contracts\Services\GuestServiceInterface;
 use App\Models\Guest;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class GuestService implements GuestServiceInterface
 {
@@ -43,6 +44,18 @@ class GuestService implements GuestServiceInterface
             $locked = $this->guests->findForUpdate($guest->id);
 
             return $this->guests->update($locked, ['is_active' => $isActive]);
+        });
+    }
+
+    public function delete(Guest $guest): void
+    {
+        DB::transaction(function () use ($guest): void {
+            $locked = $this->guests->findForUpdate($guest->id);
+            if ($this->guests->hasAnyBooking($locked->id)) {
+                throw ValidationException::withMessages(['delete' => 'Profil tamu tidak dapat dihapus karena sudah memiliki riwayat booking. Nonaktifkan profil sebagai gantinya.']);
+            }
+
+            $this->guests->delete($locked);
         });
     }
 

@@ -70,6 +70,14 @@ class PaymentRepository implements PaymentRepositoryInterface
             ->exists();
     }
 
+    public function hasAnyPaymentForBooking(int $bookingId): bool
+    {
+        return $this->model->newQuery()
+            ->withTrashed()
+            ->where('booking_id', $bookingId)
+            ->exists();
+    }
+
     public function codeExists(string $code): bool
     {
         return $this->model->newQuery()->where('payment_code', $code)->exists();

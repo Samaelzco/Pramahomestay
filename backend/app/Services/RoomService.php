@@ -10,6 +10,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use RuntimeException;
 use Throwable;
 
@@ -98,6 +99,18 @@ class RoomService implements RoomServiceInterface
             $locked = $this->rooms->findForUpdate($room->id);
 
             return $this->rooms->update($locked, ['is_active' => $isActive]);
+        });
+    }
+
+    public function delete(Room $room): void
+    {
+        DB::transaction(function () use ($room): void {
+            $locked = $this->rooms->findForUpdate($room->id);
+            if ($this->rooms->hasAnyBooking($locked->id)) {
+                throw ValidationException::withMessages(['delete' => 'Kamar tidak dapat dihapus karena sudah memiliki riwayat booking. Nonaktifkan kamar sebagai gantinya.']);
+            }
+
+            $this->rooms->delete($locked);
         });
     }
 

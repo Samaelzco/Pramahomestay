@@ -14,6 +14,7 @@ class RoomRepository implements RoomRepositoryInterface
     {
         return $this->model
             ->newQuery()
+            ->withCount(['bookings as all_bookings_count' => fn ($query) => $query->withTrashed()])
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $query->where(function ($query) use ($search): void {
                     $query
@@ -54,6 +55,16 @@ class RoomRepository implements RoomRepositoryInterface
         $room->updateOrFail($attributes);
 
         return $room->refresh();
+    }
+
+    public function delete(Room $room): void
+    {
+        $room->deleteOrFail();
+    }
+
+    public function hasAnyBooking(int $roomId): bool
+    {
+        return $this->model->newQuery()->findOrFail($roomId)->bookings()->withTrashed()->exists();
     }
 
     public function slugExists(string $slug, ?int $ignoreId = null): bool

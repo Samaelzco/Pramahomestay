@@ -17,4 +17,6 @@ interface GuestServiceInterface
     public function details(Guest $guest): Guest;
 
     public function setActive(Guest $guest, bool $isActive): Guest;
+
+    public function delete(Guest $guest): void;
 }
