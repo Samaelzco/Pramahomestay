@@ -16,7 +16,7 @@ class IndexUserRequest extends FormRequest
     {
         return [
             'search' => ['nullable', 'string', 'max:100'],
-            'role' => ['nullable', Rule::in(['admin', 'staff'])],
+            'role' => ['nullable', 'string', Rule::exists('roles', 'name')->where('guard_name', 'web')],
             'is_active' => ['nullable', 'boolean'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
             'page' => ['nullable', 'integer', 'min:1'],

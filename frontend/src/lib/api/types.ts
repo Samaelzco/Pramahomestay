@@ -40,7 +40,8 @@ export type InternalUser = {
   id: number;
   name: string;
   email: string;
-  roles: Array<"admin" | "staff">;
+  roles: string[];
+  role_labels: string[];
   permissions: string[];
   is_active: boolean;
   is_self: boolean;
@@ -53,9 +54,19 @@ export type InternalUser = {
 
 export type PaginatedUsers = { data: InternalUser[]; meta: PaginationMeta };
 
+export type AccessRole = {
+  name: string;
+  label: string;
+  description: string | null;
+  is_protected: boolean;
+  user_count: number;
+  can_delete: boolean;
+  permissions: string[];
+};
+
 export type AccessMatrix = {
   groups: Array<{ key: string; label: string; permissions: Array<{ name: string; label: string }> }>;
-  roles: Array<{ name: "admin" | "staff"; label: string; is_protected: boolean; permissions: string[] }>;
+  roles: AccessRole[];
 };
 
 export type BookingStatus = "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled";

@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Contracts\Services\UserServiceInterface;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 
 class AdminUserSeeder extends Seeder
 {

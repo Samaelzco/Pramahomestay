@@ -21,7 +21,11 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::prefix('internal')->group(function (): void {
         Route::get('/access/roles', [AccessController::class, 'index'])->middleware('permission:roles.view');
+        Route::post('/access/roles', [AccessController::class, 'store'])->middleware('permission:roles.update');
+        Route::get('/access/roles/{role}', [AccessController::class, 'show'])->middleware('permission:roles.view');
         Route::patch('/access/roles/{role}', [AccessController::class, 'update'])->middleware('permission:roles.update');
+        Route::put('/access/roles/{role}', [AccessController::class, 'update'])->middleware('permission:roles.update');
+        Route::delete('/access/roles/{role}', [AccessController::class, 'destroy'])->middleware('permission:roles.update');
         Route::get('/users', [UserController::class, 'index'])->middleware('permission:users.view');
         Route::post('/users', [UserController::class, 'store'])->middleware('permission:users.create');
         Route::get('/users/{user}', [UserController::class, 'show'])->middleware('permission:users.view');

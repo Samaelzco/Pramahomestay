@@ -65,15 +65,45 @@ export async function deleteUserAction(id: number, _state: ActionState, _formDat
   }
 }
 
-export async function updateStaffPermissionsAction(_state: ActionState, formData: FormData): Promise<ActionState> {
+const rolePayload = (formData: FormData) => ({
+  display_name: formData.get("display_name"),
+  description: formData.get("description") || null,
+  permissions: formData.getAll("permissions").map(String),
+});
+
+export async function createRoleAction(_state: ActionState, formData: FormData): Promise<ActionState> {
   try {
-    const permissions = formData.getAll("permissions").map(String);
-    const response = await apiFetch<{ message?: string }>("/internal/access/roles/staff", { method: "PATCH", body: JSON.stringify({ permissions }) });
+    await apiFetch("/internal/access/roles", { method: "POST", body: JSON.stringify(rolePayload(formData)) });
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Role belum dapat ditambahkan. Periksa koneksi lalu coba lagi." };
+  }
+  revalidatePath("/internal/users/access");
+  redirect("/internal/users/access?success=created");
+}
+
+export async function updateRoleAction(role: string, _state: ActionState, formData: FormData): Promise<ActionState> {
+  try {
+    await apiFetch(`/internal/access/roles/${role}`, { method: "PUT", body: JSON.stringify(rolePayload(formData)) });
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Role belum dapat diperbarui. Periksa koneksi lalu coba lagi." };
+  }
+  revalidatePath("/internal/users/access");
+  revalidatePath("/internal/users");
+  redirect("/internal/users/access?success=updated");
+}
+
+export async function deleteRoleAction(role: string, _state: ActionState, _formData: FormData): Promise<ActionState> {
+  void _state;
+  void _formData;
+  try {
+    const response = await apiFetch<{ message?: string }>(`/internal/access/roles/${role}`, { method: "DELETE" });
     revalidatePath("/internal/users/access");
-    revalidatePath("/internal");
+    revalidatePath("/internal/users");
     return { success: true, message: response.message };
   } catch (error) {
     if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
-    return { message: "Hak akses belum dapat disimpan. Periksa koneksi lalu coba lagi." };
+    return { message: "Role belum dapat dihapus. Periksa koneksi lalu coba lagi." };
   }
 }

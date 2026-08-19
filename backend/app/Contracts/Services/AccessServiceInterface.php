@@ -2,8 +2,8 @@
 
 namespace App\Contracts\Services;
 
+use App\Models\Role;
 use Illuminate\Support\Collection;
-use Spatie\Permission\Models\Role;
 
 interface AccessServiceInterface
 {
@@ -14,5 +14,11 @@ interface AccessServiceInterface
     public function roles(): Collection;
 
     /** @param array<int, string> $permissions */
-    public function updateRolePermissions(string $roleName, array $permissions): Role;
+    /** @param array<string, mixed> $attributes */
+    public function createRole(array $attributes): Role;
+
+    /** @param array<string, mixed> $attributes */
+    public function updateRole(string $roleName, array $attributes): Role;
+
+    public function deleteRole(string $roleName): void;
 }

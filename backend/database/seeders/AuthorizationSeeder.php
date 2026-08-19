@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class AuthorizationSeeder extends Seeder
@@ -39,8 +39,13 @@ class AuthorizationSeeder extends Seeder
                 'roles.update',
             ])->map(fn (string $name): Permission => Permission::findOrCreate($name, 'web'));
 
-            Role::findOrCreate('admin', 'web')->syncPermissions($operationalPermissions->concat($administrativePermissions));
-            Role::findOrCreate('staff', 'web')->syncPermissions($operationalPermissions);
+            $admin = Role::findOrCreate('admin', 'web');
+            $admin->update(['display_name' => 'Administrator', 'description' => 'Akses penuh ke seluruh fitur internal dan pengaturan sistem.', 'is_protected' => true]);
+            $admin->syncPermissions($operationalPermissions->concat($administrativePermissions));
+
+            $staff = Role::findOrCreate('staff', 'web');
+            $staff->update(['display_name' => 'Staff', 'description' => 'Akses operasional harian sesuai permission yang dipilih.', 'is_protected' => false]);
+            $staff->syncPermissions($operationalPermissions);
         });
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();

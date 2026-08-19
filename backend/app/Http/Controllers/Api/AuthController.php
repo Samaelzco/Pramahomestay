@@ -31,7 +31,7 @@ class AuthController extends Controller
             ]);
         }
 
-        if (! $user->hasAnyRole(['admin', 'staff'])) {
+        if ($user->roles()->doesntExist() || $user->getAllPermissions()->isEmpty()) {
             abort(403, 'Akun ini tidak memiliki akses ke area internal.');
         }
 

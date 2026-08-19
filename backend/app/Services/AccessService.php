@@ -4,10 +4,11 @@ namespace App\Services;
 
 use App\Contracts\Repositories\AccessRepositoryInterface;
 use App\Contracts\Services\AccessServiceInterface;
+use App\Models\Role;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Spatie\Permission\Models\Role;
 
 class AccessService implements AccessServiceInterface
 {
@@ -29,21 +30,80 @@ class AccessService implements AccessServiceInterface
         return $this->access->roles();
     }
 
-    public function updateRolePermissions(string $roleName, array $permissions): Role
+    public function createRole(array $attributes): Role
     {
-        if ($roleName === 'admin') {
-            throw ValidationException::withMessages(['permissions' => 'Hak akses admin dilindungi dan selalu mencakup seluruh fitur.']);
-        }
+        return DB::transaction(function () use ($attributes): Role {
+            $permissions = $this->validatedPermissions($attributes['permissions'] ?? []);
+            unset($attributes['permissions']);
+            $attributes['name'] = $this->uniqueSlug((string) $attributes['display_name']);
+            $attributes['guard_name'] = 'web';
+            $attributes['is_protected'] = false;
+            $role = $this->access->createRole($attributes);
 
+            return $this->access->syncPermissions($role, $permissions);
+        });
+    }
+
+    public function updateRole(string $roleName, array $attributes): Role
+    {
+        return DB::transaction(function () use ($roleName, $attributes): Role {
+            $role = $this->access->findRoleOrFail($roleName);
+            $this->guardProtected($role);
+            $permissions = $this->validatedPermissions($attributes['permissions'] ?? []);
+            unset($attributes['permissions']);
+            $role = $this->access->updateRole($role, $attributes);
+
+            return $this->access->syncPermissions($role, $permissions);
+        });
+    }
+
+    public function deleteRole(string $roleName): void
+    {
+        DB::transaction(function () use ($roleName): void {
+            $role = $this->access->findRoleOrFail($roleName);
+            $this->guardProtected($role);
+            if ($this->access->roleHasUsers($role->id)) {
+                throw ValidationException::withMessages(['delete' => 'Role tidak dapat dihapus karena masih digunakan oleh user. Pindahkan role user terlebih dahulu.']);
+            }
+
+            $this->access->deleteRole($role);
+        });
+    }
+
+    /** @param array<int, string> $permissions
+     * @return array<int, string>
+     */
+    private function validatedPermissions(array $permissions): array
+    {
         $allowed = collect($this->catalogue())->flatMap(fn (array $group) => array_keys($group['permissions']));
         $permissions = collect($permissions)->unique()->filter(fn (string $permission) => $allowed->contains($permission))->values()->all();
         if (! collect($permissions)->contains(fn (string $permission) => str_ends_with($permission, '.view'))) {
-            throw ValidationException::withMessages(['permissions' => 'Pilih setidaknya satu izin melihat agar staff tetap memiliki area kerja.']);
+            throw ValidationException::withMessages(['permissions' => 'Pilih setidaknya satu izin melihat agar role tetap memiliki area kerja.']);
         }
 
-        return DB::transaction(fn (): Role => $this->access->syncPermissions(
-            $this->access->findRoleOrFail($roleName),
-            $permissions,
-        ));
+        return $permissions;
+    }
+
+    private function guardProtected(Role $role): void
+    {
+        if ($role->is_protected) {
+            throw ValidationException::withMessages(['role' => 'Role sistem yang dilindungi tidak dapat diubah atau dihapus.']);
+        }
+    }
+
+    private function uniqueSlug(string $displayName): string
+    {
+        $base = Str::slug($displayName);
+        if ($base === '') {
+            throw ValidationException::withMessages(['display_name' => 'Nama role harus mengandung setidaknya satu huruf atau angka.']);
+        }
+        $slug = $base;
+        $suffix = 2;
+        while ($this->access->slugExists($slug)) {
+            $slug = "{$base}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
     }
 }

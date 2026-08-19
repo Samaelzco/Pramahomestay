@@ -19,7 +19,7 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email:rfc', 'max:255', Rule::unique('users', 'email')],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
-            'role' => ['required', Rule::in(['admin', 'staff'])],
+            'role' => ['required', 'string', Rule::exists('roles', 'name')->where('guard_name', 'web')],
             'is_active' => ['required', 'boolean'],
         ];
     }

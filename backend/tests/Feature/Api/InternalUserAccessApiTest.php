@@ -116,6 +116,8 @@ class InternalUserAccessApiTest extends TestCase
             ->assertJsonPath('data.roles.0.is_protected', true);
 
         $this->patchJson('/api/internal/access/roles/staff', [
+            'display_name' => 'Staff',
+            'description' => 'Operasional terbatas.',
             'permissions' => ['dashboard.view', 'rooms.view'],
         ])->assertOk()->assertJsonPath('data.permissions.1', 'rooms.view');
 
@@ -125,7 +127,54 @@ class InternalUserAccessApiTest extends TestCase
         $this->assertFalse($staff->fresh()->can('rooms.create'));
 
         $this->patchJson('/api/internal/access/roles/admin', [
+            'display_name' => 'Administrator',
+            'description' => 'Akses penuh.',
             'permissions' => ['dashboard.view'],
-        ])->assertUnprocessable()->assertJsonValidationErrors('permissions');
+        ])->assertUnprocessable()->assertJsonValidationErrors('role');
+    }
+
+    public function test_admin_can_create_update_assign_and_delete_custom_role(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+
+        $created = $this->postJson('/api/internal/access/roles', [
+            'display_name' => 'Resepsionis',
+            'description' => 'Mengelola tamu dan booking.',
+            'permissions' => ['bookings.view', 'bookings.create', 'guests.view'],
+        ])->assertCreated();
+        $roleName = $created->json('data.name');
+        $this->assertSame('resepsionis', $roleName);
+
+        $this->getJson("/api/internal/access/roles/{$roleName}")
+            ->assertOk()->assertJsonPath('data.label', 'Resepsionis');
+        $this->putJson("/api/internal/access/roles/{$roleName}", [
+            'display_name' => 'Front Office',
+            'description' => 'Menangani reservasi dan tamu.',
+            'permissions' => ['bookings.view', 'guests.view'],
+        ])->assertOk();
+
+        $user = User::factory()->create();
+        $user->assignRole($roleName);
+        $this->deleteJson("/api/internal/access/roles/{$roleName}")
+            ->assertUnprocessable()->assertJsonValidationErrors('delete');
+
+        $user->syncRoles(['staff']);
+        $this->deleteJson("/api/internal/access/roles/{$roleName}")->assertOk();
+        $this->assertDatabaseMissing('roles', ['name' => $roleName]);
+    }
+
+    public function test_user_with_custom_role_can_login(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $created = $this->postJson('/api/internal/access/roles', [
+            'display_name' => 'Kasir',
+            'description' => null,
+            'permissions' => ['payments.view'],
+        ])->assertCreated();
+        $user = User::factory()->create(['password' => Hash::make('password123')]);
+        $user->assignRole($created->json('data.name'));
+
+        $this->postJson('/api/auth/login', ['email' => $user->email, 'password' => 'password123'])
+            ->assertOk()->assertJsonPath('user.roles.0', 'kasir');
     }
 }

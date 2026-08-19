@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class UserResource extends JsonResource
 {
@@ -30,6 +31,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'roles' => $this->getRoleNames()->values(),
+            'role_labels' => $this->roles->map(fn ($role) => $role->display_name ?? Str::headline($role->name))->values(),
             'permissions' => $this->getAllPermissions()->pluck('name')->values(),
             'is_active' => $this->is_active,
             'is_self' => $isSelf,
