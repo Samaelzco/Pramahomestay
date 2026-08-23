@@ -23,7 +23,6 @@ class RoomRepository implements RoomRepositoryInterface
                 });
             })
             ->when($filters['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
-            ->when($filters['type'] ?? null, fn ($query, string $type) => $query->where('type', $type))
             ->when(array_key_exists('is_active', $filters), fn ($query) => $query->where('is_active', $filters['is_active']))
             ->orderBy('name')
             ->paginate($perPage)

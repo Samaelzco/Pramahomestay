@@ -13,7 +13,7 @@ const value = (input: string | string[] | undefined) => typeof input === "string
 
 export default async function RoomsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
-  const query = { search: value(params.search), status: value(params.status), type: value(params.type), is_active: value(params.is_active), page: value(params.page) };
+  const query = { search: value(params.search), status: value(params.status), is_active: value(params.is_active), page: value(params.page) };
   const apiParams = new URLSearchParams({ per_page: "15" });
   Object.entries(query).forEach(([key, item]) => { if (item) apiParams.set(key, item); });
   const rooms = await apiFetch<PaginatedRooms>(`/internal/rooms?${apiParams.toString()}`);
@@ -26,8 +26,8 @@ export default async function RoomsPage({ searchParams }: { searchParams: Promis
         <Link href="/internal/rooms/new" className="inline-flex h-12 items-center justify-center gap-2 rounded-sm bg-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-[#2f3131]"><PlusIcon className="size-4" />Tambah kamar</Link>
       </div>
       {success && <div className="mt-8 rounded-sm bg-[#edf4ef] px-5 py-4 text-sm text-[#28533b]" role="status">{success === "created" ? "Kamar baru berhasil ditambahkan." : "Perubahan kamar berhasil disimpan."}</div>}
-      <RoomFilters search={query.search} status={query.status} type={query.type} isActive={query.is_active} />
-      <div className="mt-8 flex items-baseline justify-between"><p className="text-sm font-medium">{rooms.meta.total} kamar ditemukan</p>{(query.search || query.status || query.type || query.is_active) && <Link href="/internal/rooms" className="text-sm font-semibold text-secondary underline-offset-4 hover:underline">Hapus filter</Link>}</div>
+      <RoomFilters search={query.search} status={query.status} isActive={query.is_active} />
+      <div className="mt-8 flex items-baseline justify-between"><p className="text-sm font-medium">{rooms.meta.total} kamar ditemukan</p>{(query.search || query.status || query.is_active) && <Link href="/internal/rooms" className="text-sm font-semibold text-secondary underline-offset-4 hover:underline">Hapus filter</Link>}</div>
       {rooms.data.length > 0 ? <RoomList rooms={rooms.data} /> : <div className="mt-5 rounded-lg bg-surface py-20 text-center shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)]"><h2 className="text-xl font-semibold">Belum ada kamar yang sesuai</h2><p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted">Ubah kata pencarian atau filter. Jika inventori masih kosong, tambahkan kamar pertama.</p><Link href="/internal/rooms/new" className="mt-6 inline-flex h-11 items-center rounded-sm bg-primary px-5 text-sm font-semibold text-white">Tambah kamar</Link></div>}
       <Pagination meta={rooms.meta} query={query} resourceName="kamar" />
     </main>

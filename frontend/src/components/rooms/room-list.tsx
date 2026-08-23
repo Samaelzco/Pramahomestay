@@ -27,13 +27,13 @@ export function RoomList({ rooms }: { rooms: Room[] }) {
   return (
     <div className="mt-5 overflow-hidden rounded-lg bg-surface shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)]">
       <div className="hidden grid-cols-[1.2fr_0.9fr_1.2fr_0.8fr_0.9fr_auto] gap-5 border-b bg-surface-low px-6 py-4 text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:grid">
-        <span>Kamar</span><span>Tipe</span><span>Status</span><span>Kapasitas</span><span>Tarif</span><span>Aksi</span>
+        <span>Kamar</span><span>Detail</span><span>Status</span><span>Kapasitas</span><span>Tarif</span><span>Aksi</span>
       </div>
       <div className="divide-y">
         {rooms.map((room) => (
           <article key={room.id} className="grid gap-5 px-5 py-6 transition-colors hover:bg-surface-low/60 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.9fr_1.2fr_0.8fr_0.9fr_auto] lg:items-center lg:px-6">
             <div><p className="font-semibold">{room.name}</p><p className="mt-1 text-xs text-muted">{room.is_active ? "Aktif di inventori" : "Dinonaktifkan"}</p></div>
-            <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Tipe</p><p className="mt-1 text-sm font-medium lg:mt-0">{room.type_label}</p><p className="mt-1 text-xs text-muted">{room.size_sqm ? `${Number(room.size_sqm).toLocaleString("id-ID")} m²` : "Ukuran belum dicatat"}</p></div>
+            <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Detail</p><p className="mt-1 text-sm font-medium lg:mt-0">{room.size_sqm ? `${Number(room.size_sqm).toLocaleString("id-ID")} m²` : "Ukuran belum dicatat"}</p><p className="mt-1 text-xs text-muted">{room.amenities.length} fasilitas</p></div>
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Status</p><div className="mt-2 lg:mt-0"><RoomStatus room={room} /></div><p className="mt-2 text-xs text-muted">{operationalCopy[room.status]}</p></div>
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Kapasitas</p><p className="mt-1 text-sm font-semibold tabular-nums lg:mt-0">{room.capacity} tamu</p><p className="mt-1 text-xs text-muted">{room.bed_count} tempat tidur</p></div>
             <div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase lg:hidden">Tarif</p><p className="mt-1 text-sm font-semibold tabular-nums lg:mt-0">{currency.format(Number(room.price_per_night))}</p><p className="mt-1 text-xs text-muted">per malam</p></div>

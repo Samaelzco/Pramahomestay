@@ -74,7 +74,7 @@ class InternalRoomApiTest extends TestCase
             'capacity' => 0,
         ])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['name', 'type', 'status', 'price_per_night', 'capacity']);
+            ->assertJsonValidationErrors(['name', 'status', 'price_per_night', 'capacity']);
     }
 
     public function test_authorized_user_can_deactivate_and_reactivate_a_room(): void
@@ -188,7 +188,6 @@ class InternalRoomApiTest extends TestCase
     {
         return [
             'name' => 'Unit 301',
-            'type' => 'studio',
             'status' => 'ready',
             'description' => 'Kamar terang untuk dua tamu.',
             'price_per_night' => 700000,

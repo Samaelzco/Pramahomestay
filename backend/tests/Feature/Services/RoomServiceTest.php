@@ -4,7 +4,6 @@ namespace Tests\Feature\Services;
 
 use App\Contracts\Services\RoomServiceInterface;
 use App\Enums\RoomStatus;
-use App\Enums\RoomType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,7 +18,6 @@ class RoomServiceTest extends TestCase
         $room = $service->create($this->attributes());
 
         $this->assertSame('unit-301', $room->slug);
-        $this->assertSame(RoomType::Studio, $room->type);
         $this->assertSame(RoomStatus::Ready, $room->status);
         $this->assertCount(1, $service->paginate(['status' => 'ready']));
         $this->assertTrue($service->findOrFail($room->id)->is($room));
@@ -40,7 +38,6 @@ class RoomServiceTest extends TestCase
     {
         return [
             'name' => 'Unit 301',
-            'type' => 'studio',
             'status' => 'ready',
             'description' => 'Kamar dengan cahaya alami.',
             'price_per_night' => 700000,

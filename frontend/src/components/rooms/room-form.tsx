@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { RoomImageInput } from "./room-image-input";
 
-const types = [["studio", "Studio"], ["suite", "Suite"], ["loft", "Loft"], ["deluxe", "Deluxe"]];
 const statuses = [["ready", "Siap"], ["occupied", "Terisi"], ["cleaning", "Dibersihkan"], ["maintenance", "Perawatan"]];
 
 function FieldError({ errors }: { errors?: string[] }) {
@@ -22,10 +21,9 @@ export function RoomForm({ room }: { room?: Room }) {
     <form action={formAction} className="mt-10 max-w-4xl">
       {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
       <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
-        <div><h2 className="text-lg font-semibold">Identitas kamar</h2><p className="mt-2 text-sm leading-6 text-muted">Nama unit, tipe, dan uraian yang dikenali tim.</p></div>
+        <div><h2 className="text-lg font-semibold">Identitas kamar</h2><p className="mt-2 text-sm leading-6 text-muted">Nama unit dan uraian yang dikenali tim.</p></div>
         <div className="grid gap-6 sm:grid-cols-2">
-          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Nama unit<input name="name" required maxLength={100} defaultValue={room?.name} placeholder="Contoh: Unit 301" className={inputClass} /><FieldError errors={state.errors?.name} /></label>
-          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Tipe<select name="type" required defaultValue={room?.type ?? "studio"} className={inputClass}>{types.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><FieldError errors={state.errors?.type} /></label>
+          <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:col-span-2">Nama unit<input name="name" required maxLength={100} defaultValue={room?.name} placeholder="Contoh: Unit 301" className={inputClass} /><FieldError errors={state.errors?.name} /></label>
           <label className="sm:col-span-2 text-xs font-semibold tracking-[0.08em] text-muted uppercase">Deskripsi<textarea name="description" maxLength={2000} defaultValue={room?.description ?? ""} rows={4} placeholder="Jelaskan karakter dan keunggulan kamar." className="mt-2 w-full resize-y rounded-sm border bg-surface px-4 py-3 text-sm leading-6 outline-none transition-colors focus:border-primary" /><FieldError errors={state.errors?.description} /></label>
         </div>
       </section>

@@ -26,7 +26,6 @@ class RoomSeeder extends Seeder
         return [
             [
                 'name' => 'Unit 101',
-                'type' => 'studio',
                 'status' => 'ready',
                 'description' => 'Studio tenang dengan cahaya alami dan sentuhan kayu hangat.',
                 'price_per_night' => 650000,
@@ -39,7 +38,6 @@ class RoomSeeder extends Seeder
             ],
             [
                 'name' => 'Unit 204',
-                'type' => 'loft',
                 'status' => 'occupied',
                 'description' => 'Loft premium dengan area duduk luas untuk tamu yang menginap lebih lama.',
                 'price_per_night' => 1250000,
@@ -52,7 +50,6 @@ class RoomSeeder extends Seeder
             ],
             [
                 'name' => 'Unit 102',
-                'type' => 'deluxe',
                 'status' => 'cleaning',
                 'description' => 'Kamar deluxe dengan kamar mandi lapang dan suasana yang terang.',
                 'price_per_night' => 850000,

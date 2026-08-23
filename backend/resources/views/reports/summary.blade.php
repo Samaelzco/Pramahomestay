@@ -79,7 +79,7 @@
 
     <section class="section">
         <div class="section-heading"><h2>Performa kamar</h2><p class="muted">Ringkasan booking, pemakaian malam, dan pendapatan per unit aktif.</p></div>
-        <table class="data"><thead><tr><th style="width:25%">Kamar</th><th style="width:13%">Booking</th><th style="width:15%">Malam terisi</th><th style="width:15%">Okupansi</th><th class="right" style="width:32%">Pendapatan</th></tr></thead><tbody>@foreach($report['rooms'] as $room)<tr><td><div class="primary-line">{{ $room['name'] }}</div><div class="secondary-line">{{ $room['type_label'] }}</div></td><td>{{ $room['bookings'] }}</td><td>{{ $room['occupied_nights'] }}</td><td>{{ $room['occupancy_rate'] }}%</td><td class="right"><div class="primary-line">{{ $rupiah($room['revenue']) }}</div><div class="secondary-line">Nilai booking {{ $rupiah($room['booking_value']) }}</div></td></tr>@endforeach</tbody></table>
+        <table class="data"><thead><tr><th style="width:25%">Kamar</th><th style="width:13%">Booking</th><th style="width:15%">Malam terisi</th><th style="width:15%">Okupansi</th><th class="right" style="width:32%">Pendapatan</th></tr></thead><tbody>@foreach($report['rooms'] as $room)<tr><td><div class="primary-line">{{ $room['name'] }}</div></td><td>{{ $room['bookings'] }}</td><td>{{ $room['occupied_nights'] }}</td><td>{{ $room['occupancy_rate'] }}%</td><td class="right"><div class="primary-line">{{ $rupiah($room['revenue']) }}</div><div class="secondary-line">Nilai booking {{ $rupiah($room['booking_value']) }}</div></td></tr>@endforeach</tbody></table>
     </section>
 
     <section class="section" style="page-break-inside: avoid">

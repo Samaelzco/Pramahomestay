@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Rooms;
 
 use App\Enums\RoomStatus;
-use App\Enums\RoomType;
 use App\Models\Room;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,7 +30,6 @@ class UpdateRoomRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:100', Rule::unique('rooms', 'name')->ignore($room)],
-            'type' => ['required', Rule::enum(RoomType::class)],
             'status' => ['required', Rule::enum(RoomStatus::class)],
             'description' => ['nullable', 'string', 'max:2000'],
             'price_per_night' => ['required', 'numeric', 'min:0', 'max:9999999999.99'],

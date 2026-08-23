@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\RoomStatus;
-use App\Enums\RoomType;
 use Database\Factories\RoomFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'name',
     'slug',
-    'type',
     'status',
     'description',
     'price_per_night',
@@ -34,7 +32,6 @@ class Room extends Model
     protected function casts(): array
     {
         return [
-            'type' => RoomType::class,
             'status' => RoomStatus::class,
             'price_per_night' => 'decimal:2',
             'capacity' => 'integer',

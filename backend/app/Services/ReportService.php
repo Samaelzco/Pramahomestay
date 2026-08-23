@@ -119,7 +119,7 @@ class ReportService implements ReportServiceInterface
                 $capacity = $start->diffInDays($end) + 1;
 
                 return [
-                    'id' => $room->id, 'name' => $room->name, 'type_label' => $room->type->label(),
+                    'id' => $room->id, 'name' => $room->name,
                     'bookings' => $roomBookings->count(), 'occupied_nights' => $nights,
                     'occupancy_rate' => $capacity > 0 ? round(($nights / $capacity) * 100, 1) : 0,
                     'booking_value' => $this->money($roomBookings->sum('total_amount')),

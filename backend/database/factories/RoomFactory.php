@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\RoomStatus;
-use App\Enums\RoomType;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -20,7 +19,6 @@ class RoomFactory extends Factory
         return [
             'name' => $name,
             'slug' => Str::slug($name),
-            'type' => fake()->randomElement(RoomType::cases()),
             'status' => fake()->randomElement(RoomStatus::cases()),
             'description' => fake()->paragraph(),
             'price_per_night' => fake()->numberBetween(350_000, 1_500_000),
