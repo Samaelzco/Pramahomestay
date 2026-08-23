@@ -35,6 +35,8 @@ class RoomService implements RoomServiceInterface
 
     public function create(array $attributes): Room
     {
+        $amenityIds = $attributes['amenity_ids'] ?? [];
+        unset($attributes['amenity_ids']);
         $image = $this->extractImage($attributes);
         unset($attributes['remove_image']);
         $imagePath = $image ? $this->storeImage($image) : null;
@@ -45,10 +47,10 @@ class RoomService implements RoomServiceInterface
         }
 
         try {
-            return DB::transaction(function () use ($attributes): Room {
+            return DB::transaction(function () use ($attributes, $amenityIds): Room {
                 $attributes['slug'] = $this->uniqueSlug((string) $attributes['name']);
 
-                return $this->rooms->create($attributes);
+                return $this->rooms->syncAmenities($this->rooms->create($attributes), $amenityIds);
             });
         } catch (Throwable $exception) {
             $this->deleteImage($imagePath);
@@ -58,6 +60,8 @@ class RoomService implements RoomServiceInterface
 
     public function update(Room $room, array $attributes): Room
     {
+        $amenityIds = $attributes['amenity_ids'] ?? [];
+        unset($attributes['amenity_ids']);
         $image = $this->extractImage($attributes);
         $removeImage = (bool) ($attributes['remove_image'] ?? false);
         unset($attributes['remove_image']);
@@ -74,12 +78,12 @@ class RoomService implements RoomServiceInterface
         }
 
         try {
-            $updated = DB::transaction(function () use ($room, $attributes): Room {
+            $updated = DB::transaction(function () use ($room, $attributes, $amenityIds): Room {
                 if (isset($attributes['name']) && $attributes['name'] !== $room->name) {
                     $attributes['slug'] = $this->uniqueSlug((string) $attributes['name'], $room->id);
                 }
 
-                return $this->rooms->update($room, $attributes);
+                return $this->rooms->syncAmenities($this->rooms->update($room, $attributes), $amenityIds);
             });
         } catch (Throwable $exception) {
             $this->deleteImage($newImagePath);

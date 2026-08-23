@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Amenity;
 use App\Models\AuditLog;
 use App\Models\Booking;
 use App\Models\Guest;
@@ -92,6 +93,7 @@ class AuditLogger
     {
         return match (true) {
             $subject instanceof Room => 'rooms',
+            $subject instanceof Amenity => 'amenities',
             $subject instanceof Booking => 'bookings',
             $subject instanceof Payment => 'payments',
             $subject instanceof Guest => 'guests',
@@ -118,6 +120,7 @@ class AuditLogger
     {
         $moduleLabel = [
             'rooms' => 'Kamar', 'bookings' => 'Booking', 'payments' => 'Pembayaran',
+            'amenities' => 'Fasilitas',
             'guests' => 'Tamu', 'users' => 'User', 'roles' => 'Role', 'system' => 'Data',
             'settings' => 'Pengaturan',
             'reports' => 'Laporan',

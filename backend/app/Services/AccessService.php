@@ -23,6 +23,7 @@ class AccessService implements AccessServiceInterface
             'dashboard' => ['label' => 'Ringkasan', 'permissions' => ['dashboard.view' => 'Lihat dashboard']],
             'reports' => ['label' => 'Laporan', 'permissions' => ['reports.view' => 'Lihat laporan', 'reports.export' => 'Ekspor laporan']],
             'rooms' => ['label' => 'Kamar', 'permissions' => ['rooms.view' => 'Lihat kamar', 'rooms.create' => 'Tambah kamar', 'rooms.update' => 'Ubah kamar']],
+            'amenities' => ['label' => 'Fasilitas', 'permissions' => ['amenities.view' => 'Lihat fasilitas', 'amenities.create' => 'Tambah fasilitas', 'amenities.update' => 'Ubah fasilitas']],
             'bookings' => ['label' => 'Booking', 'permissions' => ['bookings.view' => 'Lihat booking', 'bookings.create' => 'Tambah booking', 'bookings.update' => 'Ubah booking']],
             'payments' => ['label' => 'Pembayaran', 'permissions' => ['payments.view' => 'Lihat pembayaran', 'payments.create' => 'Tambah pembayaran', 'payments.update' => 'Ubah pembayaran']],
             'guests' => ['label' => 'Tamu', 'permissions' => ['guests.view' => 'Lihat tamu', 'guests.create' => 'Tambah tamu', 'guests.update' => 'Ubah tamu']],

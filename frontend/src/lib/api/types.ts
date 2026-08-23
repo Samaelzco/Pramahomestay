@@ -10,15 +10,28 @@ export type Room = {
   price_per_night: string;
   capacity: number;
   bed_count: number;
-  size_sqm: string | null;
   image_url: string | null;
-  amenities: string[];
+  amenities: Amenity[];
   is_active: boolean;
   can_delete: boolean;
   delete_block_reason: string | null;
   created_at: string;
   updated_at: string;
 };
+
+export type Amenity = {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  is_active: boolean;
+  room_count: number;
+  can_delete: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PaginatedAmenities = { data: Amenity[]; meta: PaginationMeta };
 
 export type PaginationMeta = {
   current_page: number;
@@ -52,7 +65,7 @@ export type InternalUser = {
 export type PaginatedUsers = { data: InternalUser[]; meta: PaginationMeta };
 
 export type AuditAction = "created" | "updated" | "deleted" | "activated" | "deactivated" | "cancelled" | "refunded" | "exported";
-export type AuditModule = "rooms" | "bookings" | "payments" | "guests" | "users" | "roles" | "settings" | "reports";
+export type AuditModule = "rooms" | "amenities" | "bookings" | "payments" | "guests" | "users" | "roles" | "settings" | "reports";
 
 export type AuditLog = {
   id: number;

@@ -26,6 +26,7 @@ class AuditLogResource extends JsonResource
             'module' => $this->module,
             'module_label' => [
                 'rooms' => 'Kamar', 'bookings' => 'Booking', 'payments' => 'Pembayaran',
+                'amenities' => 'Fasilitas',
                 'guests' => 'Tamu', 'users' => 'User', 'roles' => 'Hak akses',
                 'settings' => 'Pengaturan',
                 'reports' => 'Laporan',

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Contracts\Services\RoomServiceInterface;
+use App\Models\Amenity;
 use Illuminate\Database\Seeder;
 
 class RoomSeeder extends Seeder
@@ -12,6 +13,9 @@ class RoomSeeder extends Seeder
     public function run(): void
     {
         foreach ($this->rooms() as $attributes) {
+            $amenities = $attributes['amenities'];
+            unset($attributes['amenities']);
+            $attributes['amenity_ids'] = Amenity::query()->whereIn('name', $amenities)->pluck('id')->all();
             $room = $this->rooms->findByName($attributes['name']);
 
             $room === null
@@ -31,7 +35,6 @@ class RoomSeeder extends Seeder
                 'price_per_night' => 650000,
                 'capacity' => 2,
                 'bed_count' => 1,
-                'size_sqm' => 28,
                 'image_url' => 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=85',
                 'amenities' => ['Wi-Fi', 'AC', 'City view'],
                 'is_active' => true,
@@ -43,7 +46,6 @@ class RoomSeeder extends Seeder
                 'price_per_night' => 1250000,
                 'capacity' => 4,
                 'bed_count' => 2,
-                'size_sqm' => 54,
                 'image_url' => 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=85',
                 'amenities' => ['Wi-Fi', 'AC', 'Workspace', 'Smart TV'],
                 'is_active' => true,
@@ -55,7 +57,6 @@ class RoomSeeder extends Seeder
                 'price_per_night' => 850000,
                 'capacity' => 2,
                 'bed_count' => 1,
-                'size_sqm' => 34,
                 'image_url' => 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=85',
                 'amenities' => ['Wi-Fi', 'AC', 'Bathtub'],
                 'is_active' => true,

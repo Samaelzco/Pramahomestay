@@ -1,7 +1,7 @@
 "use client";
 
 import { logoutAction } from "@/app/internal/login/actions";
-import { BedIcon, CalendarIcon, ChartIcon, GridIcon, HistoryIcon, HomeIcon, LogOutIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
+import { AmenitiesIcon, BedIcon, CalendarIcon, ChartIcon, GridIcon, HistoryIcon, HomeIcon, LogOutIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type KeyboardEvent } from "react";
@@ -11,6 +11,7 @@ const navItems = [
   { label: "Booking", href: "/internal/bookings", icon: CalendarIcon, permission: "bookings.view" },
   { label: "Pembayaran", href: "/internal/payments", icon: WalletIcon, permission: "payments.view" },
   { label: "Kamar", href: "/internal/rooms", icon: BedIcon, permission: "rooms.view" },
+  { label: "Fasilitas", href: "/internal/amenities", icon: AmenitiesIcon, permission: "amenities.view" },
   { label: "Tamu", href: "/internal/guests", icon: UsersIcon, permission: "guests.view" },
   { label: "Laporan", href: "/internal/reports", icon: ChartIcon, permission: "reports.view" },
   { label: "User & akses", href: "/internal/users", icon: ShieldIcon, permission: "users.view" },

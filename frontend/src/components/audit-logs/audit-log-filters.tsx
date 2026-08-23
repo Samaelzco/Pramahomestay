@@ -3,6 +3,7 @@ import type { AuditAction, AuditModule } from "@/lib/api/types";
 
 const modules: Array<{ value: AuditModule; label: string }> = [
   { value: "rooms", label: "Kamar" },
+  { value: "amenities", label: "Fasilitas" },
   { value: "bookings", label: "Booking" },
   { value: "payments", label: "Pembayaran" },
   { value: "guests", label: "Tamu" },

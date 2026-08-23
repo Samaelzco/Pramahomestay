@@ -24,10 +24,8 @@ class RoomFactory extends Factory
             'price_per_night' => fake()->numberBetween(350_000, 1_500_000),
             'capacity' => fake()->numberBetween(1, 6),
             'bed_count' => fake()->numberBetween(1, 3),
-            'size_sqm' => fake()->randomFloat(2, 18, 80),
             'image_url' => null,
             'image_path' => null,
-            'amenities' => ['Wi-Fi', 'AC', 'Air panas'],
             'is_active' => true,
         ];
     }

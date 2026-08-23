@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Internal\AccessController;
+use App\Http\Controllers\Api\Internal\AmenityController;
 use App\Http\Controllers\Api\Internal\AuditLogController;
 use App\Http\Controllers\Api\Internal\BookingController;
 use App\Http\Controllers\Api\Internal\DashboardController;
@@ -23,6 +24,12 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::prefix('internal')->group(function (): void {
+        Route::get('/amenities', [AmenityController::class, 'index'])->middleware('permission:amenities.view');
+        Route::post('/amenities', [AmenityController::class, 'store'])->middleware('permission:amenities.create');
+        Route::get('/amenities/{amenity}', [AmenityController::class, 'show'])->middleware('permission:amenities.view');
+        Route::match(['put', 'patch'], '/amenities/{amenity}', [AmenityController::class, 'update'])->middleware('permission:amenities.update');
+        Route::patch('/amenities/{amenity}/activation', [AmenityController::class, 'activation'])->middleware('permission:amenities.update');
+        Route::delete('/amenities/{amenity}', [AmenityController::class, 'destroy'])->middleware('permission:amenities.update');
         Route::get('/settings', [HomestaySettingController::class, 'show'])->middleware('permission:settings.view');
         Route::match(['put', 'patch'], '/settings', [HomestaySettingController::class, 'update'])->middleware('permission:settings.update');
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->middleware('permission:audit_logs.view');

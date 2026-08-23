@@ -43,9 +43,8 @@ class RoomServiceTest extends TestCase
             'price_per_night' => 700000,
             'capacity' => 2,
             'bed_count' => 1,
-            'size_sqm' => 30,
             'image_url' => null,
-            'amenities' => ['Wi-Fi', 'AC'],
+            'amenity_ids' => [],
             'is_active' => true,
         ];
     }

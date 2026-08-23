@@ -3,6 +3,7 @@
 namespace Tests\Feature\Architecture;
 
 use App\Contracts\Repositories\AccessRepositoryInterface;
+use App\Contracts\Repositories\AmenityRepositoryInterface;
 use App\Contracts\Repositories\AuditLogRepositoryInterface;
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\DashboardRepositoryInterface;
@@ -12,6 +13,7 @@ use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Contracts\Services\AccessServiceInterface;
+use App\Contracts\Services\AmenityServiceInterface;
 use App\Contracts\Services\AuditLogServiceInterface;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Contracts\Services\DashboardServiceInterface;
@@ -21,6 +23,7 @@ use App\Contracts\Services\PaymentServiceInterface;
 use App\Contracts\Services\RoomServiceInterface;
 use App\Contracts\Services\UserServiceInterface;
 use App\Repositories\Eloquent\AccessRepository;
+use App\Repositories\Eloquent\AmenityRepository;
 use App\Repositories\Eloquent\AuditLogRepository;
 use App\Repositories\Eloquent\BookingRepository;
 use App\Repositories\Eloquent\DashboardRepository;
@@ -30,6 +33,7 @@ use App\Repositories\Eloquent\PaymentRepository;
 use App\Repositories\Eloquent\RoomRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\AccessService;
+use App\Services\AmenityService;
 use App\Services\AuditLogService;
 use App\Services\BookingService;
 use App\Services\DashboardService;
@@ -45,6 +49,8 @@ class ServiceRepositoryArchitectureTest extends TestCase
     public function test_repository_and_service_contracts_resolve_to_their_implementations(): void
     {
         $this->assertInstanceOf(AccessRepository::class, $this->app->make(AccessRepositoryInterface::class));
+        $this->assertInstanceOf(AmenityRepository::class, $this->app->make(AmenityRepositoryInterface::class));
+        $this->assertInstanceOf(AmenityService::class, $this->app->make(AmenityServiceInterface::class));
         $this->assertInstanceOf(AccessService::class, $this->app->make(AccessServiceInterface::class));
         $this->assertInstanceOf(AuditLogRepository::class, $this->app->make(AuditLogRepositoryInterface::class));
         $this->assertInstanceOf(AuditLogService::class, $this->app->make(AuditLogServiceInterface::class));

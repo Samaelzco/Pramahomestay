@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\Repositories\AccessRepositoryInterface;
+use App\Contracts\Repositories\AmenityRepositoryInterface;
 use App\Contracts\Repositories\AuditLogRepositoryInterface;
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\DashboardRepositoryInterface;
@@ -12,6 +13,7 @@ use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Contracts\Services\AccessServiceInterface;
+use App\Contracts\Services\AmenityServiceInterface;
 use App\Contracts\Services\AuditLogServiceInterface;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Contracts\Services\DashboardServiceInterface;
@@ -22,6 +24,7 @@ use App\Contracts\Services\ReportServiceInterface;
 use App\Contracts\Services\RoomServiceInterface;
 use App\Contracts\Services\UserServiceInterface;
 use App\Repositories\Eloquent\AccessRepository;
+use App\Repositories\Eloquent\AmenityRepository;
 use App\Repositories\Eloquent\AuditLogRepository;
 use App\Repositories\Eloquent\BookingRepository;
 use App\Repositories\Eloquent\DashboardRepository;
@@ -31,6 +34,7 @@ use App\Repositories\Eloquent\PaymentRepository;
 use App\Repositories\Eloquent\RoomRepository;
 use App\Repositories\Eloquent\UserRepository;
 use App\Services\AccessService;
+use App\Services\AmenityService;
 use App\Services\AuditLogService;
 use App\Services\BookingService;
 use App\Services\DashboardService;
@@ -47,6 +51,8 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(AccessRepositoryInterface::class, AccessRepository::class);
+        $this->app->bind(AmenityRepositoryInterface::class, AmenityRepository::class);
+        $this->app->bind(AmenityServiceInterface::class, AmenityService::class);
         $this->app->bind(AccessServiceInterface::class, AccessService::class);
         $this->app->bind(AuditLogRepositoryInterface::class, AuditLogRepository::class);
         $this->app->bind(AuditLogServiceInterface::class, AuditLogService::class);

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Amenity;
 use App\Models\Booking;
 use App\Models\Guest;
 use App\Models\HomestaySetting;
@@ -25,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        foreach ([Room::class, Booking::class, Payment::class, Guest::class, HomestaySetting::class] as $model) {
+        foreach ([Room::class, Amenity::class, Booking::class, Payment::class, Guest::class, HomestaySetting::class] as $model) {
             $model::observe(AuditObserver::class);
         }
     }

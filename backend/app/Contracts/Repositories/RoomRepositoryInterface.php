@@ -8,7 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface RoomRepositoryInterface
 {
     /**
-     * @param  array{search?: string, status?: string, type?: string, is_active?: bool}  $filters
+     * @param  array{search?: string, status?: string, is_active?: bool}  $filters
      * @return LengthAwarePaginator<int, Room>
      */
     public function paginate(array $filters = [], int $perPage = 12): LengthAwarePaginator;
@@ -21,6 +21,8 @@ interface RoomRepositoryInterface
 
     /** @param array<string, mixed> $attributes */
     public function create(array $attributes): Room;
+
+    public function syncAmenities(Room $room, array $amenityIds): Room;
 
     /** @param array<string, mixed> $attributes */
     public function update(Room $room, array $attributes): Room;

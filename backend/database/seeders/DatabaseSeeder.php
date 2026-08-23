@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             AuthorizationSeeder::class,
             AdminUserSeeder::class,
             HomestaySettingSeeder::class,
+            AmenitySeeder::class,
             RoomSeeder::class,
             BookingSeeder::class,
             PaymentSeeder::class,

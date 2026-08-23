@@ -134,9 +134,8 @@ class InternalAuditLogApiTest extends TestCase
             'price_per_night' => 700000,
             'capacity' => 2,
             'bed_count' => 1,
-            'size_sqm' => 30,
             'image_url' => null,
-            'amenities' => ['Wi-Fi'],
+            'amenity_ids' => [],
             'is_active' => true,
         ];
     }

@@ -6,18 +6,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 function roomPayload(formData: FormData, method: "POST" | "PUT") {
-  const amenities = String(formData.get("amenities") ?? "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter((item, index, items) => item && items.indexOf(item) === index);
-  const size = String(formData.get("size_sqm") ?? "").trim();
   const image = formData.get("image");
 
-  formData.delete("amenities");
-  formData.set("amenities_json", JSON.stringify(amenities));
   formData.set("is_active", formData.get("is_active") === "on" ? "1" : "0");
   formData.set("remove_image", formData.get("remove_image") === "1" ? "1" : "0");
-  if (!size) formData.delete("size_sqm");
   if (image instanceof File && image.size === 0) formData.delete("image");
   if (method === "PUT") formData.set("_method", "PUT");
 

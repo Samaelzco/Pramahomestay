@@ -7,6 +7,7 @@ use Database\Factories\RoomFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -18,10 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'price_per_night',
     'capacity',
     'bed_count',
-    'size_sqm',
     'image_url',
     'image_path',
-    'amenities',
     'is_active',
 ])]
 class Room extends Model
@@ -36,8 +35,6 @@ class Room extends Model
             'price_per_night' => 'decimal:2',
             'capacity' => 'integer',
             'bed_count' => 'integer',
-            'size_sqm' => 'decimal:2',
-            'amenities' => 'array',
             'is_active' => 'boolean',
         ];
     }
@@ -45,5 +42,10 @@ class Room extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function amenities(): BelongsToMany
+    {
+        return $this->belongsToMany(Amenity::class);
     }
 }

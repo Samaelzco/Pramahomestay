@@ -14,6 +14,7 @@ class RoomRepository implements RoomRepositoryInterface
     {
         return $this->model
             ->newQuery()
+            ->with('amenities')
             ->withCount(['bookings as all_bookings_count' => fn ($query) => $query->withTrashed()])
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $query->where(function ($query) use ($search): void {
@@ -31,7 +32,7 @@ class RoomRepository implements RoomRepositoryInterface
 
     public function findOrFail(int $id): Room
     {
-        return $this->model->newQuery()->findOrFail($id);
+        return $this->model->newQuery()->with('amenities')->findOrFail($id);
     }
 
     public function findForUpdate(int $id): Room
@@ -47,6 +48,13 @@ class RoomRepository implements RoomRepositoryInterface
     public function create(array $attributes): Room
     {
         return $this->model->newQuery()->create($attributes);
+    }
+
+    public function syncAmenities(Room $room, array $amenityIds): Room
+    {
+        $room->amenities()->sync($amenityIds);
+
+        return $room->load('amenities');
     }
 
     public function update(Room $room, array $attributes): Room
