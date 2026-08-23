@@ -37,6 +37,7 @@ class AuthorizationSeeder extends Seeder
                 'users.update',
                 'roles.view',
                 'roles.update',
+                'audit_logs.view',
             ])->map(fn (string $name): Permission => Permission::findOrCreate($name, 'web'));
 
             $admin = Role::findOrCreate('admin', 'web');

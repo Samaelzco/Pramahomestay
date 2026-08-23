@@ -13,6 +13,7 @@ class UserService implements UserServiceInterface
 {
     public function __construct(
         private readonly UserRepositoryInterface $users,
+        private readonly AuditLogger $auditLogger,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -38,7 +39,13 @@ class UserService implements UserServiceInterface
                 $user->syncRoles([$role]);
             }
 
-            return $user->load('roles:id,name');
+            $user = $user->load('roles:id,name');
+            $this->auditLogger->record($user, 'created', [], [
+                ...$user->getAttributes(),
+                'role' => $role,
+            ]);
+
+            return $user;
         });
     }
 
@@ -46,6 +53,10 @@ class UserService implements UserServiceInterface
     {
         return DB::transaction(function () use ($user, $attributes, $role, $actor): User {
             $locked = $this->users->findForUpdate($user->id);
+            $oldValues = collect(array_keys($attributes))
+                ->mapWithKeys(fn (string $key): array => [$key => $locked->getRawOriginal($key)])
+                ->all();
+            $oldValues['role'] = $locked->getRoleNames()->first();
             if ($actor?->is($locked) && $role !== null && ! $locked->hasRole($role)) {
                 throw ValidationException::withMessages(['role' => 'Role akun yang sedang digunakan tidak dapat diubah sendiri.']);
             }
@@ -55,7 +66,27 @@ class UserService implements UserServiceInterface
                 $updated->syncRoles([$role]);
             }
 
-            return $updated->load('roles:id,name');
+            $updated = $updated->load('roles:id,name');
+            $newValues = collect(array_keys($attributes))
+                ->mapWithKeys(fn (string $key): array => [$key => $updated->getRawOriginal($key)])
+                ->all();
+            $newValues['role'] = $updated->getRoleNames()->first();
+            if (array_key_exists('password', $attributes)) {
+                unset($oldValues['password'], $newValues['password']);
+                $oldValues['password_changed'] = false;
+                $newValues['password_changed'] = true;
+            }
+            $changed = collect(array_keys($newValues))
+                ->filter(fn (string $key): bool => json_encode($oldValues[$key] ?? null) !== json_encode($newValues[$key] ?? null))
+                ->values();
+            $this->auditLogger->record(
+                $updated,
+                'updated',
+                $changed->mapWithKeys(fn (string $key): array => [$key => $oldValues[$key] ?? null])->all(),
+                $changed->mapWithKeys(fn (string $key): array => [$key => $newValues[$key] ?? null])->all(),
+            );
+
+            return $updated;
         });
     }
 
@@ -71,6 +102,13 @@ class UserService implements UserServiceInterface
             if (! $isActive) {
                 $updated->tokens()->delete();
             }
+
+            $this->auditLogger->record(
+                $updated,
+                $isActive ? 'activated' : 'deactivated',
+                ['is_active' => ! $isActive],
+                ['is_active' => $isActive],
+            );
 
             return $updated->load('roles:id,name');
         });
@@ -93,6 +131,10 @@ class UserService implements UserServiceInterface
                 throw ValidationException::withMessages(['delete' => 'User tidak dapat dihapus karena memiliki riwayat operasional. Nonaktifkan akun sebagai gantinya.']);
             }
             $locked->tokens()->delete();
+            $this->auditLogger->record($locked, 'deleted', [
+                ...$locked->getAttributes(),
+                'role' => $locked->getRoleNames()->first(),
+            ]);
             $this->users->delete($locked);
         });
     }

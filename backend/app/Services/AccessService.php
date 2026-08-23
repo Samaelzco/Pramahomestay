@@ -12,7 +12,10 @@ use Illuminate\Validation\ValidationException;
 
 class AccessService implements AccessServiceInterface
 {
-    public function __construct(private readonly AccessRepositoryInterface $access) {}
+    public function __construct(
+        private readonly AccessRepositoryInterface $access,
+        private readonly AuditLogger $auditLogger,
+    ) {}
 
     public function catalogue(): array
     {
@@ -22,6 +25,7 @@ class AccessService implements AccessServiceInterface
             'bookings' => ['label' => 'Booking', 'permissions' => ['bookings.view' => 'Lihat booking', 'bookings.create' => 'Tambah booking', 'bookings.update' => 'Ubah booking']],
             'payments' => ['label' => 'Pembayaran', 'permissions' => ['payments.view' => 'Lihat pembayaran', 'payments.create' => 'Tambah pembayaran', 'payments.update' => 'Ubah pembayaran']],
             'guests' => ['label' => 'Tamu', 'permissions' => ['guests.view' => 'Lihat tamu', 'guests.create' => 'Tambah tamu', 'guests.update' => 'Ubah tamu']],
+            'audit_logs' => ['label' => 'Audit Log', 'permissions' => ['audit_logs.view' => 'Lihat riwayat aktivitas']],
         ];
     }
 
@@ -40,7 +44,14 @@ class AccessService implements AccessServiceInterface
             $attributes['is_protected'] = false;
             $role = $this->access->createRole($attributes);
 
-            return $this->access->syncPermissions($role, $permissions);
+            $role = $this->access->syncPermissions($role, $permissions);
+            $this->auditLogger->record($role, 'created', [], [
+                'display_name' => $role->display_name,
+                'description' => $role->description,
+                'permissions' => $permissions,
+            ]);
+
+            return $role;
         });
     }
 
@@ -49,11 +60,23 @@ class AccessService implements AccessServiceInterface
         return DB::transaction(function () use ($roleName, $attributes): Role {
             $role = $this->access->findRoleOrFail($roleName);
             $this->guardProtected($role);
+            $oldValues = [
+                'display_name' => $role->display_name,
+                'description' => $role->description,
+                'permissions' => $role->permissions->pluck('name')->values()->all(),
+            ];
             $permissions = $this->validatedPermissions($attributes['permissions'] ?? []);
             unset($attributes['permissions']);
             $role = $this->access->updateRole($role, $attributes);
 
-            return $this->access->syncPermissions($role, $permissions);
+            $role = $this->access->syncPermissions($role, $permissions);
+            $this->auditLogger->record($role, 'updated', $oldValues, [
+                'display_name' => $role->display_name,
+                'description' => $role->description,
+                'permissions' => $permissions,
+            ]);
+
+            return $role;
         });
     }
 
@@ -66,6 +89,11 @@ class AccessService implements AccessServiceInterface
                 throw ValidationException::withMessages(['delete' => 'Role tidak dapat dihapus karena masih digunakan oleh user. Pindahkan role user terlebih dahulu.']);
             }
 
+            $this->auditLogger->record($role, 'deleted', [
+                'display_name' => $role->display_name,
+                'description' => $role->description,
+                'permissions' => $role->permissions->pluck('name')->values()->all(),
+            ]);
             $this->access->deleteRole($role);
         });
     }

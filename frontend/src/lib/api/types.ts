@@ -54,6 +54,32 @@ export type InternalUser = {
 
 export type PaginatedUsers = { data: InternalUser[]; meta: PaginationMeta };
 
+export type AuditAction = "created" | "updated" | "deleted" | "activated" | "deactivated" | "cancelled" | "refunded";
+export type AuditModule = "rooms" | "bookings" | "payments" | "guests" | "users" | "roles";
+
+export type AuditLog = {
+  id: number;
+  actor: { id: number; name: string; email: string } | null;
+  action: AuditAction;
+  action_label: string;
+  module: AuditModule;
+  module_label: string;
+  subject_id: number | null;
+  subject_label: string | null;
+  description: string;
+  old_values: Record<string, unknown> | null;
+  new_values: Record<string, unknown> | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+};
+
+export type PaginatedAuditLogs = {
+  data: AuditLog[];
+  meta: PaginationMeta;
+  filter_options: { actors: Array<{ id: number; name: string }> };
+};
+
 export type AccessRole = {
   name: string;
   label: string;
