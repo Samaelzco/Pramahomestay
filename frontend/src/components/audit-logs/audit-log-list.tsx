@@ -10,6 +10,7 @@ const actionTone: Record<AuditAction, string> = {
   deactivated: "bg-surface-high text-muted",
   cancelled: "bg-[#ffdad6] text-[#93000a]",
   refunded: "bg-[#f2e8dc] text-[#694b27]",
+  exported: "bg-[#e5edf4] text-[#244b67]",
 };
 
 export function AuditLogList({ logs }: { logs: AuditLog[] }) {

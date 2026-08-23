@@ -52,6 +52,30 @@ class AuditLogger
         ]);
     }
 
+    /** @param array{start: string, end: string, days: int} $period */
+    public function recordReportExport(string $format, array $period): void
+    {
+        $actorId = auth()->id();
+        if ($actorId === null) {
+            return;
+        }
+
+        $setting = HomestaySetting::query()->first();
+        AuditLog::query()->create([
+            'actor_id' => $actorId,
+            'action' => 'exported',
+            'module' => 'reports',
+            'subject_type' => HomestaySetting::class,
+            'subject_id' => $setting?->getKey(),
+            'subject_label' => "{$period['start']}—{$period['end']}",
+            'description' => 'Laporan periode '.$period['start'].' sampai '.$period['end'].' diekspor sebagai '.strtoupper($format).'.',
+            'old_values' => null,
+            'new_values' => ['format' => $format, 'date_from' => $period['start'], 'date_to' => $period['end']],
+            'ip_address' => request()->ip(),
+            'user_agent' => mb_substr((string) request()->userAgent(), 0, 500) ?: null,
+        ]);
+    }
+
     /** @param array<string, mixed> $values
      * @return array<string, mixed>
      */
@@ -96,11 +120,13 @@ class AuditLogger
             'rooms' => 'Kamar', 'bookings' => 'Booking', 'payments' => 'Pembayaran',
             'guests' => 'Tamu', 'users' => 'User', 'roles' => 'Role', 'system' => 'Data',
             'settings' => 'Pengaturan',
+            'reports' => 'Laporan',
         ][$module];
         $actionLabel = [
             'created' => 'ditambahkan', 'updated' => 'diperbarui', 'deleted' => 'dihapus',
             'activated' => 'diaktifkan', 'deactivated' => 'dinonaktifkan',
             'cancelled' => 'dibatalkan', 'refunded' => 'dikembalikan',
+            'exported' => 'diekspor',
         ][$action] ?? 'diubah';
 
         return "{$moduleLabel} {$label} {$actionLabel}.";

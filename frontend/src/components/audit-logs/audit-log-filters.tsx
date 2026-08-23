@@ -9,6 +9,7 @@ const modules: Array<{ value: AuditModule; label: string }> = [
   { value: "users", label: "User" },
   { value: "roles", label: "Hak akses" },
   { value: "settings", label: "Pengaturan" },
+  { value: "reports", label: "Laporan" },
 ];
 const actions: Array<{ value: AuditAction; label: string }> = [
   { value: "created", label: "Ditambahkan" },
@@ -18,6 +19,7 @@ const actions: Array<{ value: AuditAction; label: string }> = [
   { value: "cancelled", label: "Dibatalkan" },
   { value: "refunded", label: "Dikembalikan" },
   { value: "deleted", label: "Dihapus" },
+  { value: "exported", label: "Diekspor" },
 ];
 
 type Props = {

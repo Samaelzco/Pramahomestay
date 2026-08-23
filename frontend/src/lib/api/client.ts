@@ -29,6 +29,14 @@ export async function apiFetch<T>(
   return payload as T;
 }
 
+export async function apiDownload(path: string): Promise<Response> {
+  const token = (await cookies()).get(authCookieName)?.value;
+  const headers = new Headers({ Accept: "*/*" });
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  return fetch(`${apiUrl}${path}`, { headers, cache: "no-store" });
+}
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,

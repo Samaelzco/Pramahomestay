@@ -54,8 +54,8 @@ export type InternalUser = {
 
 export type PaginatedUsers = { data: InternalUser[]; meta: PaginationMeta };
 
-export type AuditAction = "created" | "updated" | "deleted" | "activated" | "deactivated" | "cancelled" | "refunded";
-export type AuditModule = "rooms" | "bookings" | "payments" | "guests" | "users" | "roles" | "settings";
+export type AuditAction = "created" | "updated" | "deleted" | "activated" | "deactivated" | "cancelled" | "refunded" | "exported";
+export type AuditModule = "rooms" | "bookings" | "payments" | "guests" | "users" | "roles" | "settings" | "reports";
 
 export type AuditLog = {
   id: number;
@@ -238,4 +238,16 @@ export type DashboardSummary = {
   operations: { date: string; arrivals: DashboardBookingRow[]; departures: DashboardBookingRow[] };
   recent_bookings: DashboardBookingRow[];
   payment_followups: DashboardFollowup[];
+};
+
+export type ReportSummary = {
+  period: { start: string; end: string; days: number };
+  previous_period: { start: string; end: string; days: number };
+  metrics: { revenue: string; bookings: number; occupancy_rate: number; occupied_nights: number; available_nights: number; payments: number; average_booking_value: string };
+  previous_metrics: { revenue: string; bookings: number; occupancy_rate: number; occupied_nights: number; available_nights: number; payments: number; average_booking_value: string };
+  comparison: { revenue_percent: number | null; bookings_percent: number | null; occupancy_points: number; payments_percent: number | null };
+  rooms: Array<{ id: number; name: string; type_label: string; bookings: number; occupied_nights: number; occupancy_rate: number; booking_value: string; revenue: string }>;
+  payment_methods: Array<{ method: PaymentMethod; label: string; count: number; amount: string }>;
+  transactions: Array<{ id: number; payment_code: string; paid_at: string | null; created_at: string; booking_id: number; booking_code: string; guest_name: string; room_name: string; method: PaymentMethod | null; method_label: string; status: PaymentStatus; status_label: string; amount: string }>;
+  can_export: boolean;
 };

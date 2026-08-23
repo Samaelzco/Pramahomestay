@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Internal\DashboardController;
 use App\Http\Controllers\Api\Internal\GuestController;
 use App\Http\Controllers\Api\Internal\HomestaySettingController;
 use App\Http\Controllers\Api\Internal\PaymentController;
+use App\Http\Controllers\Api\Internal\ReportController;
 use App\Http\Controllers\Api\Internal\RoomController;
 use App\Http\Controllers\Api\Internal\UserController;
 use App\Http\Resources\UserResource;
@@ -39,6 +40,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::patch('/users/{user}/activation', [UserController::class, 'activation'])->middleware('permission:users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->middleware('permission:users.update');
         Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:dashboard.view');
+        Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:reports.view');
+        Route::get('/reports/export', [ReportController::class, 'export'])->middleware('permission:reports.export');
         Route::get('/guests', [GuestController::class, 'index'])->middleware('permission:guests.view');
         Route::post('/guests', [GuestController::class, 'store'])->middleware('permission:guests.create');
         Route::get('/guests/{guest}', [GuestController::class, 'show'])->middleware('permission:guests.view');

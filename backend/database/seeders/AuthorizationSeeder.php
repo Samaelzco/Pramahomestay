@@ -17,6 +17,8 @@ class AuthorizationSeeder extends Seeder
         DB::transaction(function (): void {
             $operationalPermissions = collect([
                 'dashboard.view',
+                'reports.view',
+                'reports.export',
                 'guests.view',
                 'guests.create',
                 'guests.update',
