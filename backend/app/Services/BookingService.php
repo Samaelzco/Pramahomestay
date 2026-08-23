@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\GuestRepositoryInterface;
+use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Services\BookingServiceInterface;
@@ -23,6 +24,7 @@ class BookingService implements BookingServiceInterface
         private readonly RoomRepositoryInterface $rooms,
         private readonly GuestRepositoryInterface $guests,
         private readonly PaymentRepositoryInterface $payments,
+        private readonly HomestaySettingRepositoryInterface $settings,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -163,8 +165,9 @@ class BookingService implements BookingServiceInterface
 
     private function uniqueCode(): string
     {
+        $prefix = $this->settings->current()->booking_code_prefix;
         do {
-            $code = 'PRM-'.now()->format('ym').'-'.Str::upper(Str::random(6));
+            $code = $prefix.'-'.now()->format('ym').'-'.Str::upper(Str::random(6));
         } while ($this->bookings->codeExists($code));
 
         return $code;

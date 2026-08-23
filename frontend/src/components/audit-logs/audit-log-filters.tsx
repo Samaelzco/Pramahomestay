@@ -8,6 +8,7 @@ const modules: Array<{ value: AuditModule; label: string }> = [
   { value: "guests", label: "Tamu" },
   { value: "users", label: "User" },
   { value: "roles", label: "Hak akses" },
+  { value: "settings", label: "Pengaturan" },
 ];
 const actions: Array<{ value: AuditAction; label: string }> = [
   { value: "created", label: "Ditambahkan" },

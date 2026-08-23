@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AuditLog;
 use App\Models\Booking;
 use App\Models\Guest;
+use App\Models\HomestaySetting;
 use App\Models\Payment;
 use App\Models\Role;
 use App\Models\Room;
@@ -72,6 +73,7 @@ class AuditLogger
             $subject instanceof Guest => 'guests',
             $subject instanceof User => 'users',
             $subject instanceof Role => 'roles',
+            $subject instanceof HomestaySetting => 'settings',
             default => 'system',
         };
     }
@@ -93,6 +95,7 @@ class AuditLogger
         $moduleLabel = [
             'rooms' => 'Kamar', 'bookings' => 'Booking', 'payments' => 'Pembayaran',
             'guests' => 'Tamu', 'users' => 'User', 'roles' => 'Role', 'system' => 'Data',
+            'settings' => 'Pengaturan',
         ][$module];
         $actionLabel = [
             'created' => 'ditambahkan', 'updated' => 'diperbarui', 'deleted' => 'dihapus',

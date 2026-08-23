@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AuthorizationSeeder::class,
             AdminUserSeeder::class,
+            HomestaySettingSeeder::class,
             RoomSeeder::class,
             BookingSeeder::class,
             PaymentSeeder::class,

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Internal\AuditLogController;
 use App\Http\Controllers\Api\Internal\BookingController;
 use App\Http\Controllers\Api\Internal\DashboardController;
 use App\Http\Controllers\Api\Internal\GuestController;
+use App\Http\Controllers\Api\Internal\HomestaySettingController;
 use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\RoomController;
 use App\Http\Controllers\Api\Internal\UserController;
@@ -21,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::prefix('internal')->group(function (): void {
+        Route::get('/settings', [HomestaySettingController::class, 'show'])->middleware('permission:settings.view');
+        Route::match(['put', 'patch'], '/settings', [HomestaySettingController::class, 'update'])->middleware('permission:settings.update');
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->middleware('permission:audit_logs.view');
         Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->middleware('permission:audit_logs.view');
         Route::get('/access/roles', [AccessController::class, 'index'])->middleware('permission:roles.view');

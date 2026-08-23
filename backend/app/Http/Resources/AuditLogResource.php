@@ -26,6 +26,7 @@ class AuditLogResource extends JsonResource
             'module_label' => [
                 'rooms' => 'Kamar', 'bookings' => 'Booking', 'payments' => 'Pembayaran',
                 'guests' => 'Tamu', 'users' => 'User', 'roles' => 'Hak akses',
+                'settings' => 'Pengaturan',
             ][$this->module] ?? ucfirst($this->module),
             'subject_id' => $this->subject_id,
             'subject_label' => $this->subject_label,

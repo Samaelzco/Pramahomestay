@@ -16,7 +16,7 @@ class IndexAuditLogRequest extends FormRequest
     {
         return [
             'search' => ['nullable', 'string', 'max:100'],
-            'module' => ['nullable', Rule::in(['rooms', 'bookings', 'payments', 'guests', 'users', 'roles'])],
+            'module' => ['nullable', Rule::in(['rooms', 'bookings', 'payments', 'guests', 'users', 'roles', 'settings'])],
             'action' => ['nullable', Rule::in(['created', 'updated', 'deleted', 'activated', 'deactivated', 'cancelled', 'refunded'])],
             'actor_id' => ['nullable', 'integer', Rule::exists('users', 'id')],
             'date_from' => ['nullable', 'date_format:Y-m-d'],

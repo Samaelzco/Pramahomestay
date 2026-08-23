@@ -55,7 +55,7 @@ export type InternalUser = {
 export type PaginatedUsers = { data: InternalUser[]; meta: PaginationMeta };
 
 export type AuditAction = "created" | "updated" | "deleted" | "activated" | "deactivated" | "cancelled" | "refunded";
-export type AuditModule = "rooms" | "bookings" | "payments" | "guests" | "users" | "roles";
+export type AuditModule = "rooms" | "bookings" | "payments" | "guests" | "users" | "roles" | "settings";
 
 export type AuditLog = {
   id: number;
@@ -78,6 +78,29 @@ export type PaginatedAuditLogs = {
   data: AuditLog[];
   meta: PaginationMeta;
   filter_options: { actors: Array<{ id: number; name: string }> };
+};
+
+export type HomestaySettings = {
+  id: number;
+  name: string;
+  address: string;
+  maps_url: string;
+  phone: string | null;
+  email: string | null;
+  logo_url: string | null;
+  check_in_time: string | null;
+  check_out_time: string | null;
+  timezone: "Asia/Jakarta" | "Asia/Makassar" | "Asia/Jayapura";
+  currency: "IDR";
+  bank_name: string | null;
+  bank_account_number: string | null;
+  bank_account_holder: string | null;
+  qris_notes: string | null;
+  booking_code_prefix: string;
+  payment_code_prefix: string;
+  cancellation_policy: string | null;
+  payment_instructions: string | null;
+  updated_at: string;
 };
 
 export type AccessRole = {

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\Repositories\BookingRepositoryInterface;
+use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Enums\PaymentStatus;
@@ -21,6 +22,7 @@ class PaymentService implements PaymentServiceInterface
     public function __construct(
         private readonly PaymentRepositoryInterface $payments,
         private readonly BookingRepositoryInterface $bookings,
+        private readonly HomestaySettingRepositoryInterface $settings,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -185,8 +187,9 @@ class PaymentService implements PaymentServiceInterface
 
     private function uniqueCode(): string
     {
+        $prefix = $this->settings->current()->payment_code_prefix;
         do {
-            $code = 'PAY-'.now()->format('ym').'-'.Str::upper(Str::random(6));
+            $code = $prefix.'-'.now()->format('ym').'-'.Str::upper(Str::random(6));
         } while ($this->payments->codeExists($code));
 
         return $code;
