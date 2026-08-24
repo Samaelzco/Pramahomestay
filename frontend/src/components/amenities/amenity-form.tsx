@@ -2,12 +2,13 @@
 
 import { createAmenityAction, updateAmenityAction } from "@/app/internal/(dashboard)/amenities/actions";
 import type { ActionState, Amenity } from "@/lib/api/types";
-import { localize, useLocale } from "@/lib/locale";
+import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import Link from "next/link";
 import { useActionState } from "react";
 
 function FieldError({ errors }: { errors?: string[] }) {
-  return errors?.map((error) => <p key={error} className="mt-2 text-sm font-normal tracking-normal text-danger normal-case">{error}</p>);
+  const locale = useLocale();
+  return errors?.map((error) => <p key={error} className="mt-2 text-sm font-normal tracking-normal text-danger normal-case">{localizeApiMessage(locale, error)}</p>);
 }
 
 export function AmenityForm({ amenity }: { amenity?: Amenity }) {
@@ -17,7 +18,7 @@ export function AmenityForm({ amenity }: { amenity?: Amenity }) {
   const inputClass = "mt-2 w-full rounded-sm border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none transition-colors focus:border-primary";
 
   return <form action={formAction} className="mt-10 max-w-4xl">
-    {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
+    {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{localizeApiMessage(locale, state.message)}</div>}
     <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]">
       <div><h2 className="text-lg font-semibold">{localize(locale, "Detail fasilitas", "Amenity details")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Isi kedua bahasa agar pelanggan melihat nama dan deskripsi yang tepat.", "Complete both languages so guests see the correct name and description.")}</p></div>
       <div className="grid gap-6">

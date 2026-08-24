@@ -2,26 +2,273 @@ import { BookingStatusBadge } from "@/components/bookings/booking-status";
 import { ArrowLeftIcon } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiItem, Guest } from "@/lib/api/types";
+import { bookingStatusLabel } from "@/lib/display-labels";
 import { localeCode, serverLocale, serverLocalize } from "@/lib/locale-server";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Profil Tamu" };
-export default async function GuestDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ success?: string }> }) {
+export default async function GuestDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ success?: string }>;
+}) {
   const locale = await serverLocale();
   const t = (id: string, en: string) => serverLocalize(locale, id, en);
   const code = localeCode(locale);
-  const currency = new Intl.NumberFormat(code, { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
-  const date = (value: string) => new Intl.DateTimeFormat(code, { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${value}T00:00:00`));
-  const { id } = await params; const { success } = await searchParams;
-  const { data: guest } = await apiFetch<ApiItem<Guest>>(`/internal/guests/${encodeURIComponent(id)}`);
+  const currency = new Intl.NumberFormat(code, {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  });
+  const date = (value: string) =>
+    new Intl.DateTimeFormat(code, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(`${value}T00:00:00`));
+  const { id } = await params;
+  const { success } = await searchParams;
+  const { data: guest } = await apiFetch<ApiItem<Guest>>(
+    `/internal/guests/${encodeURIComponent(id)}`,
+  );
   const bookings = guest.bookings ?? [];
-  return <main className="mx-auto max-w-[1200px] px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16">
-    <Link href="/internal/guests" className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-secondary underline-offset-4 hover:underline"><ArrowLeftIcon className="size-4" />{t("Kembali ke daftar tamu", "Back to guests")}</Link>
-    <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-4xl font-semibold tracking-[-0.03em] text-primary md:text-5xl">{guest.full_name}</h1><p className="mt-3 text-base text-muted">{guest.stats.bookings ? t(`${guest.stats.bookings} booking tercatat dalam profil ini.`, `${guest.stats.bookings} bookings are recorded on this profile.`) : t("Belum memiliki riwayat booking.", "No booking history yet.")}</p></div><div className="flex flex-col gap-3 sm:flex-row"><Link href={`/internal/bookings/new?guest_id=${guest.id}`} className="inline-flex h-12 items-center justify-center rounded-sm border bg-surface px-6 text-sm font-semibold hover:bg-surface-low">{t("Buat booking", "Create booking")}</Link><Link href={`/internal/guests/${guest.id}/edit`} className="inline-flex h-12 items-center justify-center rounded-sm bg-primary px-6 text-sm font-semibold text-white hover:bg-[#2f3131]">{t("Edit profil", "Edit profile")}</Link></div></div>
-    {success === "updated" && <div className="mt-8 rounded-sm bg-[#edf4ef] px-5 py-4 text-sm text-[#28533b]" role="status">{t("Data tamu berhasil diperbarui.", "Guest details were updated successfully.")}</div>}
-    <section aria-label={t("Ringkasan tamu", "Guest summary")} className="mt-10 grid border-y sm:grid-cols-2 lg:grid-cols-4">{[["Booking", String(guest.stats.bookings), t("Seluruh reservasi", "All reservations")], [t("Menginap selesai", "Completed stays"), String(guest.stats.completed_stays), "Check-out status"], [t("Nilai booking", "Booking value"), currency.format(Number(guest.stats.total_booking_value)), t("Akumulasi reservasi", "Total reservations")], [t("Pembayaran tercatat", "Recorded payments"), currency.format(Number(guest.stats.total_paid)), t("Pembayaran valid", "Valid payments")]].map(([label, value, note], index) => <div key={label} className={`py-7 sm:px-6 ${index % 2 ? "sm:border-l" : ""} ${index > 1 ? "border-t lg:border-t-0" : ""} ${index > 0 ? "lg:border-l" : ""} first:pl-0`}><p className="text-sm text-muted">{label}</p><p className="mt-2 text-2xl font-semibold tracking-[-0.02em] tabular-nums">{value}</p><p className="mt-1 text-xs text-muted">{note}</p></div>)}</section>
-    <div className="mt-10 grid gap-8 lg:grid-cols-[0.75fr_1.25fr]"><aside className="rounded-lg bg-primary p-6 text-white sm:p-8"><h2 className="text-xl font-semibold">{t("Kontak utama", "Primary contact")}</h2><dl className="mt-6 space-y-5"><div className="border-t border-white/20 pt-4"><dt className="text-xs text-white/60">Email</dt><dd className="mt-2 break-all text-sm"><a href={`mailto:${guest.email}`} className="underline underline-offset-4">{guest.email}</a></dd></div><div className="border-t border-white/20 pt-4"><dt className="text-xs text-white/60">{t("Telepon", "Phone")}</dt><dd className="mt-2 text-sm"><a href={`tel:${guest.phone}`} className="underline underline-offset-4">{guest.phone}</a></dd></div><div className="border-t border-white/20 pt-4"><dt className="text-xs text-white/60">{t("Alamat", "Address")}</dt><dd className="mt-2 whitespace-pre-line text-sm leading-6">{guest.address || t("Belum dicatat", "Not recorded")}</dd></div></dl></aside><section className="rounded-lg bg-surface p-6 shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)] sm:p-8"><h2 className="text-xl font-semibold">{t("Catatan internal", "Internal notes")}</h2><p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted">{guest.notes || t("Belum ada catatan internal untuk tamu ini.", "No internal notes for this guest yet.")}</p><p className="mt-8 border-t pt-4 text-xs leading-5 text-muted">{t("Profil diperbarui", "Profile updated")} {new Intl.DateTimeFormat(code, { dateStyle: "long" }).format(new Date(guest.updated_at))}.</p></section></div>
-    <section className="mt-12"><div><h2 className="text-2xl font-semibold tracking-[-0.02em]">Riwayat booking</h2><p className="mt-2 text-sm text-muted">Maksimal 20 reservasi terbaru.</p></div>{bookings.length ? <div className="mt-5 overflow-hidden rounded-lg bg-surface shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)]"><div className="hidden grid-cols-[1fr_1fr_1.1fr_0.9fr_auto] gap-5 border-b bg-surface-low px-6 py-4 text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:grid"><span>Booking</span><span>Kamar</span><span>Menginap</span><span>Total</span><span>Aksi</span></div><div className="divide-y">{bookings.map((booking) => <article key={booking.id} className="grid gap-4 px-5 py-5 md:grid-cols-[1fr_1fr_1.1fr_0.9fr_auto] md:items-center md:px-6"><div><p className="font-semibold">{booking.booking_code}</p><div className="mt-2"><BookingStatusBadge status={booking.status} label={booking.status_label} /></div></div><div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:hidden">Kamar</p><p className="mt-1 text-sm md:mt-0">{booking.room.name}</p></div><div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:hidden">Menginap</p><p className="mt-1 text-sm md:mt-0">{date(booking.check_in)}—{date(booking.check_out)}</p></div><div><p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:hidden">Total</p><p className="mt-1 text-sm font-semibold tabular-nums md:mt-0">{currency.format(Number(booking.total_amount))}</p></div><Link href={`/internal/bookings/${booking.id}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline-offset-4 hover:underline">Lihat booking</Link></article>)}</div></div> : <div className="mt-5 border-y py-14 text-center"><p className="text-sm text-muted">Belum ada booking yang terhubung dengan tamu ini.</p><Link href={`/internal/bookings/new?guest_id=${guest.id}`} className="mt-5 inline-flex h-11 items-center rounded-sm bg-primary px-5 text-sm font-semibold text-white">Buat booking pertama</Link></div>}</section>
-  </main>;
+  return (
+    <main className="mx-auto max-w-[1200px] px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16">
+      <Link
+        href="/internal/guests"
+        className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-secondary underline-offset-4 hover:underline"
+      >
+        <ArrowLeftIcon className="size-4" />
+        {t("Kembali ke daftar tamu", "Back to guests")}
+      </Link>
+      <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] text-primary md:text-5xl">
+            {guest.full_name}
+          </h1>
+          <p className="mt-3 text-base text-muted">
+            {guest.stats.bookings
+              ? t(
+                  `${guest.stats.bookings} booking tercatat dalam profil ini.`,
+                  `${guest.stats.bookings} bookings are recorded on this profile.`,
+                )
+              : t("Belum memiliki riwayat booking.", "No booking history yet.")}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link
+            href={`/internal/bookings/new?guest_id=${guest.id}`}
+            className="inline-flex h-12 items-center justify-center rounded-sm border bg-surface px-6 text-sm font-semibold hover:bg-surface-low"
+          >
+            {t("Buat booking", "Create booking")}
+          </Link>
+          <Link
+            href={`/internal/guests/${guest.id}/edit`}
+            className="inline-flex h-12 items-center justify-center rounded-sm bg-primary px-6 text-sm font-semibold text-white hover:bg-[#2f3131]"
+          >
+            {t("Edit profil", "Edit profile")}
+          </Link>
+        </div>
+      </div>
+      {success === "updated" && (
+        <div
+          className="mt-8 rounded-sm bg-[#edf4ef] px-5 py-4 text-sm text-[#28533b]"
+          role="status"
+        >
+          {t(
+            "Data tamu berhasil diperbarui.",
+            "Guest details were updated successfully.",
+          )}
+        </div>
+      )}
+      <section
+        aria-label={t("Ringkasan tamu", "Guest summary")}
+        className="mt-10 grid border-y sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {[
+          [
+            "Booking",
+            String(guest.stats.bookings),
+            t("Seluruh reservasi", "All reservations"),
+          ],
+          [
+            t("Menginap selesai", "Completed stays"),
+            String(guest.stats.completed_stays),
+            "Check-out status",
+          ],
+          [
+            t("Nilai booking", "Booking value"),
+            currency.format(Number(guest.stats.total_booking_value)),
+            t("Akumulasi reservasi", "Total reservations"),
+          ],
+          [
+            t("Pembayaran tercatat", "Recorded payments"),
+            currency.format(Number(guest.stats.total_paid)),
+            t("Pembayaran valid", "Valid payments"),
+          ],
+        ].map(([label, value, note], index) => (
+          <div
+            key={label}
+            className={`py-7 sm:px-6 ${index % 2 ? "sm:border-l" : ""} ${index > 1 ? "border-t lg:border-t-0" : ""} ${index > 0 ? "lg:border-l" : ""} first:pl-0`}
+          >
+            <p className="text-sm text-muted">{label}</p>
+            <p className="mt-2 text-2xl font-semibold tracking-[-0.02em] tabular-nums">
+              {value}
+            </p>
+            <p className="mt-1 text-xs text-muted">{note}</p>
+          </div>
+        ))}
+      </section>
+      <div className="mt-10 grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+        <aside className="rounded-lg bg-primary p-6 text-white sm:p-8">
+          <h2 className="text-xl font-semibold">
+            {t("Kontak utama", "Primary contact")}
+          </h2>
+          <dl className="mt-6 space-y-5">
+            <div className="border-t border-white/20 pt-4">
+              <dt className="text-xs text-white/60">Email</dt>
+              <dd className="mt-2 break-all text-sm">
+                <a
+                  href={`mailto:${guest.email}`}
+                  className="underline underline-offset-4"
+                >
+                  {guest.email}
+                </a>
+              </dd>
+            </div>
+            <div className="border-t border-white/20 pt-4">
+              <dt className="text-xs text-white/60">{t("Telepon", "Phone")}</dt>
+              <dd className="mt-2 text-sm">
+                <a
+                  href={`tel:${guest.phone}`}
+                  className="underline underline-offset-4"
+                >
+                  {guest.phone}
+                </a>
+              </dd>
+            </div>
+            <div className="border-t border-white/20 pt-4">
+              <dt className="text-xs text-white/60">
+                {t("Alamat", "Address")}
+              </dt>
+              <dd className="mt-2 whitespace-pre-line text-sm leading-6">
+                {guest.address || t("Belum dicatat", "Not recorded")}
+              </dd>
+            </div>
+          </dl>
+        </aside>
+        <section className="rounded-lg bg-surface p-6 shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)] sm:p-8">
+          <h2 className="text-xl font-semibold">
+            {t("Catatan internal", "Internal notes")}
+          </h2>
+          <p className="mt-4 whitespace-pre-line text-sm leading-7 text-muted">
+            {guest.notes ||
+              t(
+                "Belum ada catatan internal untuk tamu ini.",
+                "No internal notes for this guest yet.",
+              )}
+          </p>
+          <p className="mt-8 border-t pt-4 text-xs leading-5 text-muted">
+            {t("Profil diperbarui", "Profile updated")}{" "}
+            {new Intl.DateTimeFormat(code, { dateStyle: "long" }).format(
+              new Date(guest.updated_at),
+            )}
+            .
+          </p>
+        </section>
+      </div>
+      <section className="mt-12">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-[-0.02em]">
+            {t("Riwayat booking", "Booking history")}
+          </h2>
+          <p className="mt-2 text-sm text-muted">
+            {t(
+              "Maksimal 20 reservasi terbaru.",
+              "Up to 20 most recent reservations.",
+            )}
+          </p>
+        </div>
+        {bookings.length ? (
+          <div className="mt-5 overflow-hidden rounded-lg bg-surface shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)]">
+            <div className="hidden grid-cols-[1fr_1fr_1.1fr_0.9fr_auto] gap-5 border-b bg-surface-low px-6 py-4 text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:grid">
+              <span>Booking</span>
+              <span>{t("Kamar", "Room")}</span>
+              <span>{t("Menginap", "Stay")}</span>
+              <span>Total</span>
+              <span>{t("Aksi", "Actions")}</span>
+            </div>
+            <div className="divide-y">
+              {bookings.map((booking) => (
+                <article
+                  key={booking.id}
+                  className="grid gap-4 px-5 py-5 md:grid-cols-[1fr_1fr_1.1fr_0.9fr_auto] md:items-center md:px-6"
+                >
+                  <div>
+                    <p className="font-semibold">{booking.booking_code}</p>
+                    <div className="mt-2">
+                      <BookingStatusBadge
+                        status={booking.status}
+                        label={bookingStatusLabel(
+                          booking.status,
+                          booking.status_label,
+                          locale,
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:hidden">
+                      {t("Kamar", "Room")}
+                    </p>
+                    <p className="mt-1 text-sm md:mt-0">{booking.room.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:hidden">
+                      {t("Menginap", "Stay")}
+                    </p>
+                    <p className="mt-1 text-sm md:mt-0">
+                      {date(booking.check_in)}—{date(booking.check_out)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase md:hidden">
+                      Total
+                    </p>
+                    <p className="mt-1 text-sm font-semibold tabular-nums md:mt-0">
+                      {currency.format(Number(booking.total_amount))}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/internal/bookings/${booking.id}`}
+                    className="inline-flex min-h-10 items-center text-sm font-semibold text-secondary underline-offset-4 hover:underline"
+                  >
+                    {t("Lihat booking", "View booking")}
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-5 border-y py-14 text-center">
+            <p className="text-sm text-muted">
+              {t(
+                "Belum ada booking yang terhubung dengan tamu ini.",
+                "No bookings are linked to this guest yet.",
+              )}
+            </p>
+            <Link
+              href={`/internal/bookings/new?guest_id=${guest.id}`}
+              className="mt-5 inline-flex h-11 items-center rounded-sm bg-primary px-5 text-sm font-semibold text-white"
+            >
+              {t("Buat booking pertama", "Create first booking")}
+            </Link>
+          </div>
+        )}
+      </section>
+    </main>
+  );
 }

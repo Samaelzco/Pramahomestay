@@ -3,11 +3,11 @@
 import { createPaymentAction, updatePaymentAction } from "@/app/internal/(dashboard)/payments/actions";
 import { PaymentProofInput } from "@/components/payments/payment-proof-input";
 import type { ActionState, Booking, Payment } from "@/lib/api/types";
-import { localize, useLocale } from "@/lib/locale";
+import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 
-function FieldError({ errors }: { errors?: string[] }) { return errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{error}</p>); }
+function FieldError({ errors }: { errors?: string[] }) { const locale = useLocale(); return errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{localizeApiMessage(locale, error)}</p>); }
 
 export function PaymentForm({ bookings, payment }: { bookings: Booking[]; payment?: Payment }) {
   const locale = useLocale();
@@ -27,7 +27,7 @@ export function PaymentForm({ bookings, payment }: { bookings: Booking[]; paymen
   const inputClass = "mt-2 h-12 w-full rounded-sm border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none transition-colors focus:border-primary";
 
   return <form action={formAction} className="mt-10 max-w-5xl">
-    {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
+    {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{localizeApiMessage(locale, state.message)}</div>}
     <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]"><div><h2 className="text-lg font-semibold">{localize(locale, "Tagihan booking", "Booking charge")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Pilih reservasi dan catat nominal pembayaran yang diterima.", "Choose a reservation and record the amount received.")}</p></div><div className="grid gap-6 sm:grid-cols-2">
       <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:col-span-2">Booking<select name="booking_id" required value={bookingId} disabled={Boolean(payment)} onChange={(event) => setBookingId(event.target.value)} className={inputClass}>{bookings.map((item) => <option key={item.id} value={item.id}>{item.booking_code} · {item.guest_name} · {item.room.name}</option>)}</select>{payment && <input type="hidden" name="booking_id" value={bookingId} />}<FieldError errors={state.errors?.booking_id} /></label>
       <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{localize(locale, "Nominal dibayar", "Amount paid")}<input name="amount_paid" type="number" min="0" max={bill || undefined} step="0.01" required value={amount} onChange={(event) => setAmount(event.target.value)} className={inputClass} /><FieldError errors={state.errors?.amount_paid} /></label>

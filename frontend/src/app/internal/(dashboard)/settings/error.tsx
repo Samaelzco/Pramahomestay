@@ -1,5 +1,3 @@
 "use client";
-
-export default function SettingsError({ reset }: { reset: () => void }) {
-  return <main className="mx-auto max-w-[900px] px-6 py-20 text-center"><h1 className="text-3xl font-semibold tracking-[-0.03em]">Pengaturan gagal dimuat</h1><p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted">Periksa koneksi lalu coba muat kembali pengaturan homestay.</p><button type="button" onClick={reset} className="mt-6 h-12 rounded-sm bg-primary px-6 text-sm font-semibold text-white">Coba lagi</button></main>;
-}
+import { LocalizedErrorState } from "@/components/ui/localized-error-state";
+export default function SettingsError({ reset }: { reset: () => void }) { return <LocalizedErrorState reset={reset} title="Pengaturan gagal dimuat" titleEn="Settings could not be loaded" description="Periksa koneksi lalu coba muat kembali pengaturan homestay." descriptionEn="Check the connection and try loading the homestay settings again." />; }

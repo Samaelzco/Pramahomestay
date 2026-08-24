@@ -2,7 +2,7 @@
 
 import { ImageIcon, PlusIcon, TrashIcon } from "@/components/ui/icons";
 import type { RoomGalleryImage } from "@/lib/api/types";
-import { localize, useLocale } from "@/lib/locale";
+import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -117,6 +117,6 @@ export function RoomImageInput({ currentImages = [], errors }: RoomImageInputPro
       </div> : <div className="mt-4 grid min-h-28 place-items-center rounded-sm bg-surface px-5 text-center text-sm leading-6 text-muted">{localize(locale, "Belum ada foto kamar. Pilih hingga 10 foto untuk membuat galeri.", "No room photos yet. Select up to 10 photos to create a gallery.")}</div>}
     </div>
     {clientError && <p role="alert" className="mt-2 text-sm text-danger">{clientError}</p>}
-    {errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{error}</p>)}
+    {errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{localizeApiMessage(locale, error)}</p>)}
   </div>;
 }

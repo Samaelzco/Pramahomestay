@@ -1,14 +1,18 @@
 @php
+    $en = ($locale ?? 'id') === 'en';
+    $t = fn ($id, $english) => $en ? $english : $id;
     $rupiah = fn ($value) => 'Rp '.number_format((float) $value, 0, ',', '.');
     $tanggal = fn ($value) => \Carbon\CarbonImmutable::parse($value)->format('d/m/Y');
-    $perubahan = function ($value, $suffix = '%') {
-        if ($value === null) return 'Baru pada periode ini';
-        if ((float) $value === 0.0) return 'Sama dengan periode sebelumnya';
-        return ((float) $value > 0 ? '+' : '').$value.$suffix.' dari periode sebelumnya';
+    $perubahan = function ($value, $suffix = '%') use ($t) {
+        if ($value === null) return $t('Baru pada periode ini', 'New in this period');
+        if ((float) $value === 0.0) return $t('Sama dengan periode sebelumnya', 'Same as the previous period');
+        return ((float) $value > 0 ? '+' : '').$value.$suffix.' '.$t('dari periode sebelumnya', 'from the previous period');
     };
+    $methodLabels = ['cash' => 'Cash', 'bank_transfer' => 'Bank transfer', 'qris' => 'QRIS', 'card' => 'Card'];
+    $statusLabels = ['unpaid' => 'Unpaid', 'partial' => 'Partially paid', 'paid' => 'Paid', 'failed' => 'Failed', 'refunded' => 'Refunded'];
 @endphp
 <!doctype html>
-<html lang="id">
+<html lang="{{ $en ? 'en' : 'id' }}">
 <head>
     <meta charset="utf-8">
     <style>
@@ -63,33 +67,33 @@
     </style>
 </head>
 <body>
-    <footer class="document-footer"><span>{{ $settings?->name ?? 'Prama Homestay' }} · Laporan internal</span><span class="confidential">Dibuat {{ now()->timezone($settings?->timezone ?? 'Asia/Makassar')->format('d/m/Y H:i') }}</span></footer>
+    <footer class="document-footer"><span>{{ $settings?->name ?? 'Prama Homestay' }} · {{ $t('Laporan internal', 'Internal report') }}</span><span class="confidential">{{ $t('Dibuat', 'Generated') }} {{ now()->timezone($settings?->timezone ?? 'Asia/Makassar')->format('d/m/Y H:i') }}</span></footer>
     <header class="document-header"><table><tr>
-        <td><div class="brand">{{ $settings?->name ?? 'Prama Homestay' }}</div><h1>Laporan usaha</h1><p class="address muted">{{ $settings?->address }}</p></td>
-        <td class="period"><div class="period-label muted">Periode laporan</div><strong>{{ $tanggal($report['period']['start']) }} - {{ $tanggal($report['period']['end']) }}</strong><span class="muted">{{ $report['period']['days'] }} hari</span></td>
+        <td><div class="brand">{{ $settings?->name ?? 'Prama Homestay' }}</div><h1>{{ $t('Laporan usaha', 'Business report') }}</h1><p class="address muted">{{ $settings?->address }}</p></td>
+        <td class="period"><div class="period-label muted">{{ $t('Periode laporan', 'Report period') }}</div><strong>{{ $tanggal($report['period']['start']) }} - {{ $tanggal($report['period']['end']) }}</strong><span class="muted">{{ $report['period']['days'] }} {{ $t('hari', 'days') }}</span></td>
     </tr></table></header>
 
     <section class="summary">
         <table class="summary-table">
-            <tr><td><span class="metric-label">Pendapatan diterima</span><strong class="metric-value">{{ $rupiah($report['metrics']['revenue']) }}</strong><span class="metric-note">{{ $perubahan($report['comparison']['revenue_percent']) }}</span></td><td><span class="metric-label">Booking masuk</span><strong class="metric-value">{{ $report['metrics']['bookings'] }}</strong><span class="metric-note">{{ $perubahan($report['comparison']['bookings_percent']) }}</span></td></tr>
-            <tr><td><span class="metric-label">Okupansi</span><strong class="metric-value">{{ $report['metrics']['occupancy_rate'] }}%</strong><span class="metric-note">{{ $perubahan($report['comparison']['occupancy_points'], ' poin') }}</span></td><td><span class="metric-label">Pembayaran valid</span><strong class="metric-value">{{ $report['metrics']['payments'] }}</strong><span class="metric-note">{{ $perubahan($report['comparison']['payments_percent']) }}</span></td></tr>
+            <tr><td><span class="metric-label">{{ $t('Pendapatan diterima', 'Revenue received') }}</span><strong class="metric-value">{{ $rupiah($report['metrics']['revenue']) }}</strong><span class="metric-note">{{ $perubahan($report['comparison']['revenue_percent']) }}</span></td><td><span class="metric-label">{{ $t('Booking masuk', 'New bookings') }}</span><strong class="metric-value">{{ $report['metrics']['bookings'] }}</strong><span class="metric-note">{{ $perubahan($report['comparison']['bookings_percent']) }}</span></td></tr>
+            <tr><td><span class="metric-label">{{ $t('Okupansi', 'Occupancy') }}</span><strong class="metric-value">{{ $report['metrics']['occupancy_rate'] }}%</strong><span class="metric-note">{{ $perubahan($report['comparison']['occupancy_points'], $t(' poin', ' points')) }}</span></td><td><span class="metric-label">{{ $t('Pembayaran valid', 'Valid payments') }}</span><strong class="metric-value">{{ $report['metrics']['payments'] }}</strong><span class="metric-note">{{ $perubahan($report['comparison']['payments_percent']) }}</span></td></tr>
         </table>
-        <table class="support-strip"><tr><td><span class="muted">Rata-rata booking</span><strong>{{ $rupiah($report['metrics']['average_booking_value']) }}</strong></td><td><span class="muted">Malam terisi</span><strong>{{ $report['metrics']['occupied_nights'] }} malam</strong></td><td><span class="muted">Kapasitas periode</span><strong>{{ $report['metrics']['available_nights'] }} malam kamar</strong></td></tr></table>
+        <table class="support-strip"><tr><td><span class="muted">{{ $t('Rata-rata booking', 'Average booking') }}</span><strong>{{ $rupiah($report['metrics']['average_booking_value']) }}</strong></td><td><span class="muted">{{ $t('Malam terisi', 'Occupied nights') }}</span><strong>{{ $report['metrics']['occupied_nights'] }} {{ $t('malam', 'nights') }}</strong></td><td><span class="muted">{{ $t('Kapasitas periode', 'Period capacity') }}</span><strong>{{ $report['metrics']['available_nights'] }} {{ $t('malam kamar', 'room nights') }}</strong></td></tr></table>
     </section>
 
     <section class="section">
-        <div class="section-heading"><h2>Performa kamar</h2><p class="muted">Ringkasan booking, pemakaian malam, dan pendapatan per unit aktif.</p></div>
-        <table class="data"><thead><tr><th style="width:25%">Kamar</th><th style="width:13%">Booking</th><th style="width:15%">Malam terisi</th><th style="width:15%">Okupansi</th><th class="right" style="width:32%">Pendapatan</th></tr></thead><tbody>@foreach($report['rooms'] as $room)<tr><td><div class="primary-line">{{ $room['name'] }}</div></td><td>{{ $room['bookings'] }}</td><td>{{ $room['occupied_nights'] }}</td><td>{{ $room['occupancy_rate'] }}%</td><td class="right"><div class="primary-line">{{ $rupiah($room['revenue']) }}</div><div class="secondary-line">Nilai booking {{ $rupiah($room['booking_value']) }}</div></td></tr>@endforeach</tbody></table>
+        <div class="section-heading"><h2>{{ $t('Performa kamar', 'Room performance') }}</h2><p class="muted">{{ $t('Ringkasan booking, pemakaian malam, dan pendapatan per unit aktif.', 'Summary of bookings, occupied nights, and revenue for each active unit.') }}</p></div>
+        <table class="data"><thead><tr><th style="width:25%">{{ $t('Kamar', 'Room') }}</th><th style="width:13%">Booking</th><th style="width:15%">{{ $t('Malam terisi', 'Occupied nights') }}</th><th style="width:15%">{{ $t('Okupansi', 'Occupancy') }}</th><th class="right" style="width:32%">{{ $t('Pendapatan', 'Revenue') }}</th></tr></thead><tbody>@foreach($report['rooms'] as $room)<tr><td><div class="primary-line">{{ $room['name'] }}</div></td><td>{{ $room['bookings'] }}</td><td>{{ $room['occupied_nights'] }}</td><td>{{ $room['occupancy_rate'] }}%</td><td class="right"><div class="primary-line">{{ $rupiah($room['revenue']) }}</div><div class="secondary-line">{{ $t('Nilai booking', 'Booking value') }} {{ $rupiah($room['booking_value']) }}</div></td></tr>@endforeach</tbody></table>
     </section>
 
     <section class="section" style="page-break-inside: avoid">
-        <div class="section-heading"><h2>Rekap metode pembayaran</h2><p class="muted">Nilai pembayaran valid yang diterima pada periode terpilih.</p></div>
-        <table class="method-grid">@foreach(collect($report['payment_methods'])->chunk(2) as $methods)<tr>@foreach($methods as $method)<td><span>{{ $method['label'] }}</span><span class="amount">{{ $rupiah($method['amount']) }}</span><div class="count">{{ $method['count'] }} transaksi</div></td>@endforeach @if($methods->count() === 1)<td></td>@endif</tr>@endforeach</table>
+        <div class="section-heading"><h2>{{ $t('Rekap metode pembayaran', 'Payment method summary') }}</h2><p class="muted">{{ $t('Nilai pembayaran valid yang diterima pada periode terpilih.', 'Value of valid payments received in the selected period.') }}</p></div>
+        <table class="method-grid">@foreach(collect($report['payment_methods'])->chunk(2) as $methods)<tr>@foreach($methods as $method)<td><span>{{ $en ? ($methodLabels[$method['method']] ?? $method['label']) : $method['label'] }}</span><span class="amount">{{ $rupiah($method['amount']) }}</span><div class="count">{{ $method['count'] }} {{ $t('transaksi', 'transactions') }}</div></td>@endforeach @if($methods->count() === 1)<td></td>@endif</tr>@endforeach</table>
     </section>
 
     <section class="section">
-        <div class="section-heading"><h2>Transaksi pembayaran</h2><p class="muted">{{ count($report['transactions']) }} catatan pembayaran dibuat pada periode laporan.</p></div>
-        <table class="data"><thead><tr><th style="width:20%">Pembayaran</th><th style="width:27%">Booking / tamu</th><th style="width:14%">Kamar</th><th style="width:19%">Metode / status</th><th class="right" style="width:20%">Jumlah</th></tr></thead><tbody>@forelse($report['transactions'] as $row)<tr><td><div class="primary-line">{{ $row['payment_code'] }}</div><div class="secondary-line">{{ $tanggal($row['paid_at'] ?? $row['created_at']) }}</div></td><td><div class="primary-line">{{ $row['booking_code'] }}</div><div class="secondary-line">{{ $row['guest_name'] }}</div></td><td>{{ $row['room_name'] }}</td><td><div>{{ $row['method_label'] }}</div><div class="secondary-line">{{ $row['status_label'] }}</div></td><td class="right primary-line nowrap">{{ $rupiah($row['amount']) }}</td></tr>@empty<tr><td colspan="5" class="empty">Belum ada transaksi pada periode ini.</td></tr>@endforelse</tbody></table>
+        <div class="section-heading"><h2>{{ $t('Transaksi pembayaran', 'Payment transactions') }}</h2><p class="muted">{{ count($report['transactions']) }} {{ $t('catatan pembayaran dibuat pada periode laporan.', 'payment records were created in the report period.') }}</p></div>
+        <table class="data"><thead><tr><th style="width:20%">{{ $t('Pembayaran', 'Payment') }}</th><th style="width:27%">Booking / {{ $t('tamu', 'guest') }}</th><th style="width:14%">{{ $t('Kamar', 'Room') }}</th><th style="width:19%">{{ $t('Metode', 'Method') }} / status</th><th class="right" style="width:20%">{{ $t('Jumlah', 'Amount') }}</th></tr></thead><tbody>@forelse($report['transactions'] as $row)<tr><td><div class="primary-line">{{ $row['payment_code'] }}</div><div class="secondary-line">{{ $tanggal($row['paid_at'] ?? $row['created_at']) }}</div></td><td><div class="primary-line">{{ $row['booking_code'] }}</div><div class="secondary-line">{{ $row['guest_name'] }}</div></td><td>{{ $row['room_name'] }}</td><td><div>{{ $en ? ($methodLabels[$row['method']] ?? $row['method_label']) : $row['method_label'] }}</div><div class="secondary-line">{{ $en ? ($statusLabels[$row['status']] ?? $row['status_label']) : $row['status_label'] }}</div></td><td class="right primary-line nowrap">{{ $rupiah($row['amount']) }}</td></tr>@empty<tr><td colspan="5" class="empty">{{ $t('Belum ada transaksi pada periode ini.', 'There are no transactions in this period.') }}</td></tr>@endforelse</tbody></table>
     </section>
 </body>
 </html>

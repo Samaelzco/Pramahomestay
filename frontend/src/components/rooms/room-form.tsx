@@ -2,7 +2,7 @@
 
 import { createRoomAction, updateRoomAction } from "@/app/internal/(dashboard)/rooms/actions";
 import type { ActionState, Amenity, Room } from "@/lib/api/types";
-import { amenityName, localize, useLocale } from "@/lib/locale";
+import { amenityName, localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import Link from "next/link";
 import { useActionState } from "react";
 import { RoomImageInput } from "./room-image-input";
@@ -10,7 +10,8 @@ import { RoomImageInput } from "./room-image-input";
 const statuses = [{ value: "ready", id: "Siap", en: "Ready" }, { value: "occupied", id: "Terisi", en: "Occupied" }, { value: "cleaning", id: "Dibersihkan", en: "Cleaning" }, { value: "maintenance", id: "Perawatan", en: "Maintenance" }];
 
 function FieldError({ errors }: { errors?: string[] }) {
-  return errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{error}</p>);
+  const locale = useLocale();
+  return errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{localizeApiMessage(locale, error)}</p>);
 }
 
 export function RoomForm({ room, amenities }: { room?: Room; amenities: Amenity[] }) {
@@ -22,7 +23,7 @@ export function RoomForm({ room, amenities }: { room?: Room; amenities: Amenity[
 
   return (
     <form action={formAction} className="mt-10 max-w-4xl">
-      {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
+      {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{localizeApiMessage(locale, state.message)}</div>}
       <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
         <div><h2 className="text-lg font-semibold">{localize(locale, "Identitas kamar", "Room identity")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Nama unit dan uraian yang dikenali tim.", "The unit name and descriptions used by the team.")}</p></div>
         <div className="grid gap-6 sm:grid-cols-2">

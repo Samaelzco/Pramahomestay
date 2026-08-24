@@ -5,10 +5,9 @@ import { localize, useLocale } from "@/lib/locale";
 
 type Point = { date: string; endDate?: string; value: number };
 
-export function TrendChart({ points, formatValue, formatAxis, maxValue, title, description, granularity }: {
+export function TrendChart({ points, valueFormat, maxValue, title, description, granularity }: {
   points: Point[];
-  formatValue: (value: number) => string;
-  formatAxis: (value: number) => string;
+  valueFormat: "currency" | "percent";
   maxValue?: number;
   title: string;
   description: string;
@@ -16,6 +15,12 @@ export function TrendChart({ points, formatValue, formatAxis, maxValue, title, d
 }) {
   const locale = useLocale();
   const localeCode = locale === "en" ? "en-US" : "id-ID";
+  const formatValue = (value: number) => valueFormat === "currency"
+    ? new Intl.NumberFormat(localeCode, { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value)
+    : `${value}%`;
+  const formatAxis = (value: number) => valueFormat === "currency"
+    ? new Intl.NumberFormat(localeCode, { style: "currency", currency: "IDR", notation: "compact", maximumFractionDigits: 1 }).format(value)
+    : `${Math.round(value)}%`;
   const dateLabel = (value: string, long = false) => new Intl.DateTimeFormat(localeCode, long ? { day: "numeric", month: "short", year: "numeric" } : { day: "numeric", month: "short" }).format(new Date(`${value}T00:00:00`));
   const id = useId();
   const titleId = `${id}-title`;

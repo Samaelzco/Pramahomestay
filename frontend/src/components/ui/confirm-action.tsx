@@ -1,7 +1,7 @@
 "use client";
 
 import type { ActionState } from "@/lib/api/types";
-import { localize, useLocale } from "@/lib/locale";
+import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import { useActionState, useEffect, useRef } from "react";
 
 type ServerAction = (state: ActionState, formData: FormData) => Promise<ActionState>;
@@ -40,7 +40,7 @@ export function ConfirmAction({ action, trigger, title, description, confirmLabe
         {reason && <label className="mt-6 block text-xs font-semibold uppercase tracking-[0.08em] text-muted">{reason.label}
           <textarea name="reason" required={reason.required} maxLength={500} rows={3} placeholder={reason.placeholder} className="mt-2 w-full resize-y rounded-sm border bg-surface px-4 py-3 text-base font-normal leading-6 normal-case tracking-normal outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/10" />
         </label>}
-        {state.message && !state.success && <p role="alert" className="mt-5 rounded-sm bg-[#ffdad6] px-4 py-3 text-sm leading-5 text-[#93000a]">{state.message}</p>}
+        {state.message && !state.success && <p role="alert" className="mt-5 rounded-sm bg-[#ffdad6] px-4 py-3 text-sm leading-5 text-[#93000a]">{localizeApiMessage(locale, state.message)}</p>}
         <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button type="button" disabled={pending} onClick={close} className="min-h-11 rounded-sm border bg-surface px-5 text-sm font-semibold transition-colors hover:bg-surface-low disabled:opacity-60">{localize(locale, "Kembali", "Back")}</button>
           <button type="submit" disabled={pending} className={`min-h-11 rounded-sm px-5 text-sm font-semibold text-white transition-colors disabled:opacity-60 ${tone === "danger" ? "bg-[#93000a] hover:bg-[#720008]" : "bg-primary hover:bg-[#2f3131]"}`}>{pending ? localize(locale, "Memproses…", "Processing…") : confirmLabel}</button>

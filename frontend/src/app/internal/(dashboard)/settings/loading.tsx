@@ -1,3 +1,37 @@
-export default function SettingsLoading() {
-  return <main aria-busy="true" aria-label="Memuat pengaturan" className="mx-auto min-h-[calc(100vh-64px)] max-w-[1200px] animate-pulse px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16"><div className="h-12 w-80 max-w-full rounded-sm bg-surface-high" /><div className="mt-4 h-5 w-[min(620px,85vw)] rounded-sm bg-surface-high" /><div className="mt-10 max-w-5xl">{Array.from({ length: 4 }).map((_, section) => <div key={section} className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]"><div><div className="h-6 w-40 rounded-sm bg-surface-high" /><div className="mt-3 h-16 w-full rounded-sm bg-surface-high" /></div><div className="grid gap-5 sm:grid-cols-2">{Array.from({ length: section === 0 ? 5 : 4 }).map((__, field) => <div key={field} className="h-16 rounded-sm bg-surface-high" />)}</div></div>)}</div></main>;
+import { serverLocale, serverLocalize } from "@/lib/locale-server";
+export default async function SettingsLoading() {
+  const locale = await serverLocale();
+  return (
+    <main
+      aria-busy="true"
+      aria-label={serverLocalize(locale, "Memuat pengaturan", "Loading settings")}
+      className="mx-auto min-h-[calc(100vh-64px)] max-w-[1200px] animate-pulse px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16"
+    >
+      <div className="h-12 w-80 max-w-full rounded-sm bg-surface-high" />
+      <div className="mt-4 h-5 w-[min(620px,85vw)] rounded-sm bg-surface-high" />
+      <div className="mt-10 max-w-5xl">
+        {Array.from({ length: 4 }).map((_, section) => (
+          <div
+            key={section}
+            className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]"
+          >
+            <div>
+              <div className="h-6 w-40 rounded-sm bg-surface-high" />
+              <div className="mt-3 h-16 w-full rounded-sm bg-surface-high" />
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              {Array.from({ length: section === 0 ? 5 : 4 }).map(
+                (__, field) => (
+                  <div
+                    key={field}
+                    className="h-16 rounded-sm bg-surface-high"
+                  />
+                ),
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
 }

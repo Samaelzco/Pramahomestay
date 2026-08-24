@@ -1,21 +1,45 @@
+import { serverLocale, serverLocalize } from "@/lib/locale-server";
 function Line({ className = "" }: { className?: string }) {
   return <div className={`rounded-sm bg-surface-high ${className}`} />;
 }
 
-export default function GuestsLoading() {
+export default async function GuestsLoading() {
+  const locale = await serverLocale();
   return (
-    <main aria-busy="true" aria-label="Memuat data tamu" className="mx-auto min-h-[calc(100vh-64px)] max-w-[1440px] animate-pulse px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16">
+    <main
+      aria-busy="true"
+      aria-label={serverLocalize(locale, "Memuat data tamu", "Loading guest data")}
+      className="mx-auto min-h-[calc(100vh-64px)] max-w-[1440px] animate-pulse px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16"
+    >
       <div className="flex flex-col gap-6 sm:flex-row sm:justify-between">
-        <div><Line className="h-12 w-64" /><Line className="mt-4 h-5 w-[min(520px,80vw)]" /></div>
+        <div>
+          <Line className="h-12 w-64" />
+          <Line className="mt-4 h-5 w-[min(520px,80vw)]" />
+        </div>
         <Line className="h-12 w-full sm:w-40" />
       </div>
-      <div className="mt-8 grid gap-3 border-y py-5 sm:grid-cols-[1fr_110px]"><Line className="h-12" /><Line className="h-12" /></div>
+      <div className="mt-8 grid gap-3 border-y py-5 sm:grid-cols-[1fr_110px]">
+        <Line className="h-12" />
+        <Line className="h-12" />
+      </div>
       <Line className="mt-8 h-4 w-36" />
       <div className="mt-5 overflow-hidden rounded-lg bg-surface">
-        <div className="hidden grid-cols-6 gap-5 border-b bg-surface-low px-6 py-4 lg:grid">{Array.from({ length: 6 }, (_, index) => <Line key={index} className="h-3 w-16" />)}</div>
+        <div className="hidden grid-cols-6 gap-5 border-b bg-surface-low px-6 py-4 lg:grid">
+          {Array.from({ length: 6 }, (_, index) => (
+            <Line key={index} className="h-3 w-16" />
+          ))}
+        </div>
         {Array.from({ length: 4 }, (_, index) => (
-          <div key={index} className="grid gap-5 border-b px-5 py-6 sm:grid-cols-2 lg:grid-cols-6 lg:px-6">
-            {Array.from({ length: 6 }, (_, cell) => <div key={cell}><Line className="h-4 w-24 max-w-full" /><Line className="mt-2 h-3 w-20 max-w-full" /></div>)}
+          <div
+            key={index}
+            className="grid gap-5 border-b px-5 py-6 sm:grid-cols-2 lg:grid-cols-6 lg:px-6"
+          >
+            {Array.from({ length: 6 }, (_, cell) => (
+              <div key={cell}>
+                <Line className="h-4 w-24 max-w-full" />
+                <Line className="mt-2 h-3 w-20 max-w-full" />
+              </div>
+            ))}
           </div>
         ))}
       </div>

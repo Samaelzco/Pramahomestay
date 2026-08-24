@@ -46,14 +46,16 @@ class ReportService implements ReportServiceInterface
     public function csv(array $filters = []): string
     {
         $report = $this->summary($filters);
+        $en = ($filters['locale'] ?? 'id') === 'en';
+        $t = fn (string $id, string $english): string => $en ? $english : $id;
         $stream = fopen('php://temp', 'w+');
         fwrite($stream, "\xEF\xBB\xBF");
-        fputcsv($stream, ['Laporan Prama Homestay']);
-        fputcsv($stream, ['Periode', $report['period']['start'].' s.d. '.$report['period']['end']]);
+        fputcsv($stream, [$t('Laporan Prama Homestay', 'Prama Homestay Report')]);
+        fputcsv($stream, [$t('Periode', 'Period'), $report['period']['start'].' '.$t('s.d.', 'to').' '.$report['period']['end']]);
         fputcsv($stream, []);
-        fputcsv($stream, ['Kode pembayaran', 'Tanggal', 'Booking', 'Tamu', 'Kamar', 'Metode', 'Status', 'Jumlah']);
+        fputcsv($stream, [$t('Kode pembayaran', 'Payment code'), $t('Tanggal', 'Date'), 'Booking', $t('Tamu', 'Guest'), $t('Kamar', 'Room'), $t('Metode', 'Method'), 'Status', $t('Jumlah', 'Amount')]);
         foreach ($report['transactions'] as $row) {
-            fputcsv($stream, [$row['payment_code'], $row['paid_at'] ?? '-', $row['booking_code'], $row['guest_name'], $row['room_name'], $row['method_label'], $row['status_label'], $row['amount']]);
+            fputcsv($stream, [$row['payment_code'], $row['paid_at'] ?? '-', $row['booking_code'], $row['guest_name'], $row['room_name'], $this->paymentMethodLabel($row['method'], $row['method_label'], $en), $this->paymentStatusLabel($row['status'], $row['status_label'], $en), $row['amount']]);
         }
         rewind($stream);
         $contents = stream_get_contents($stream);
@@ -66,7 +68,7 @@ class ReportService implements ReportServiceInterface
     {
         $report = $this->summary($filters);
         $settings = HomestaySetting::query()->first();
-        $html = view('reports.summary', ['report' => $report, 'settings' => $settings])->render();
+        $html = view('reports.summary', ['report' => $report, 'settings' => $settings, 'locale' => $filters['locale'] ?? 'id'])->render();
         $options = new Options;
         $options->setDefaultFont('DejaVu Sans');
         $dompdf = new Dompdf($options);
@@ -186,5 +188,19 @@ class ReportService implements ReportServiceInterface
     private function money(float|int|string $amount): string
     {
         return number_format((float) $amount, 2, '.', '');
+    }
+
+    private function paymentMethodLabel(?string $method, string $fallback, bool $en): string
+    {
+        if (! $en) return $fallback;
+
+        return ['cash' => 'Cash', 'bank_transfer' => 'Bank transfer', 'qris' => 'QRIS', 'card' => 'Card'][$method] ?? $fallback;
+    }
+
+    private function paymentStatusLabel(string $status, string $fallback, bool $en): string
+    {
+        if (! $en) return $fallback;
+
+        return ['unpaid' => 'Unpaid', 'partial' => 'Partially paid', 'paid' => 'Paid', 'failed' => 'Failed', 'refunded' => 'Refunded'][$status] ?? $fallback;
     }
 }

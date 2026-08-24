@@ -2,11 +2,11 @@
 
 import { createGuestAction, updateGuestAction } from "@/app/internal/(dashboard)/guests/actions";
 import type { ActionState, Guest } from "@/lib/api/types";
-import { localize, useLocale } from "@/lib/locale";
+import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import Link from "next/link";
 import { useActionState } from "react";
 
-function FieldError({ errors }: { errors?: string[] }) { return errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{error}</p>); }
+function FieldError({ errors }: { errors?: string[] }) { const locale = useLocale(); return errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{localizeApiMessage(locale, error)}</p>); }
 
 export function GuestForm({ guest }: { guest?: Guest }) {
   const locale = useLocale();
@@ -15,7 +15,7 @@ export function GuestForm({ guest }: { guest?: Guest }) {
   const inputClass = "mt-2 h-12 w-full rounded-sm border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none transition-colors focus:border-primary";
 
   return <form action={formAction} className="mt-10 max-w-4xl">
-    {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{state.message}</div>}
+    {state.message && <div role="alert" className="mb-8 rounded-sm bg-[#ffdad6] px-5 py-4 text-sm text-[#93000a]">{localizeApiMessage(locale, state.message)}</div>}
     <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]"><div><h2 className="text-lg font-semibold">{localize(locale, "Kontak utama", "Primary contact")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Identitas kontak yang digunakan saat membuat booking baru.", "Contact details used when creating a new booking.")}</p></div><div className="grid gap-6 sm:grid-cols-2">
       <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{localize(locale, "Nama lengkap", "Full name")}<input name="full_name" required maxLength={120} defaultValue={guest?.full_name} placeholder={localize(locale, "Nama sesuai identitas", "Name as shown on ID")} className={inputClass} /><FieldError errors={state.errors?.full_name} /></label>
       <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{localize(locale, "Nomor telepon", "Phone number")}<input name="phone" required maxLength={30} defaultValue={guest?.phone} placeholder="+62 812 3456 7890" className={inputClass} /><FieldError errors={state.errors?.phone} /></label>

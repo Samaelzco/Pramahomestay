@@ -1,2 +1,3 @@
 "use client";
-export default function PaymentError({ reset }: { reset: () => void }) { return <main className="mx-auto max-w-[1000px] px-6 py-20 text-center"><h1 className="text-3xl font-semibold tracking-[-0.03em]">Data pembayaran belum dapat dimuat</h1><p className="mx-auto mt-4 max-w-md text-sm leading-6 text-muted">Periksa koneksi ke server, lalu coba lagi.</p><button onClick={reset} className="mt-7 h-11 rounded-sm bg-primary px-6 text-sm font-semibold text-white">Coba lagi</button></main>; }
+import { LocalizedErrorState } from "@/components/ui/localized-error-state";
+export default function PaymentsError({ reset }: { reset: () => void }) { return <LocalizedErrorState reset={reset} title="Data pembayaran belum dapat dimuat" titleEn="Payments could not be loaded" description="Periksa koneksi ke server, lalu coba lagi." descriptionEn="Check the server connection, then try again." />; }
