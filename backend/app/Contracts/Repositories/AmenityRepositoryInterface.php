@@ -4,6 +4,7 @@ namespace App\Contracts\Repositories;
 
 use App\Models\Amenity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 interface AmenityRepositoryInterface
 {
@@ -20,4 +21,7 @@ interface AmenityRepositoryInterface
     public function slugExists(string $slug, ?int $ignoreId = null): bool;
 
     public function hasRooms(int $id): bool;
+
+    /** @return Collection<int, Amenity> */
+    public function activeForPublic(): Collection;
 }

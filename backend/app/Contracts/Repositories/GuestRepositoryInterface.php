@@ -20,5 +20,7 @@ interface GuestRepositoryInterface
 
     public function findForUpdate(int $id): Guest;
 
+    public function findByEmailForUpdate(string $email): ?Guest;
+
     public function withDetails(Guest $guest): Guest;
 }

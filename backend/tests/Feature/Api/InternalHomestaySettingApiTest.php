@@ -111,6 +111,99 @@ class InternalHomestaySettingApiTest extends TestCase
         Storage::disk('public')->assertMissing($replacementPath);
     }
 
+    public function test_admin_can_manage_image_carousel_and_single_hero_video(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs($this->admin, ['internal']);
+
+        $imagePayload = $this->payload();
+        $imagePayload['_method'] = 'PUT';
+        $imagePayload['hero_media_type'] = 'image';
+        $imagePayload['hero_cycle_seconds'] = 4;
+        $imagePayload['hero_images'] = [
+            UploadedFile::fake()->image('hero-1.webp', 1600, 900)->size(500),
+            UploadedFile::fake()->image('hero-2.webp', 1600, 900)->size(500),
+        ];
+
+        $imageResponse = $this->post('/api/internal/settings', $imagePayload, ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.hero_media_type', 'image')
+            ->assertJsonPath('data.hero_cycle_seconds', 4)
+            ->assertJsonCount(2, 'data.hero_images');
+
+        $settings = HomestaySetting::query()->firstOrFail();
+        foreach ($settings->hero_images as $image) {
+            Storage::disk('public')->assertExists($image['path']);
+        }
+
+        $videoPayload = $this->payload();
+        $videoPayload['_method'] = 'PUT';
+        $videoPayload['hero_media_type'] = 'video';
+        $videoPayload['hero_video'] = UploadedFile::fake()->create('hero.mp4', 1024, 'video/mp4');
+        $this->post('/api/internal/settings', $videoPayload, ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.hero_media_type', 'video');
+
+        $settings->refresh();
+        Storage::disk('public')->assertExists($settings->hero_video_path);
+
+        $removePayload = $this->payload();
+        $removePayload['_method'] = 'PUT';
+        $removePayload['hero_media_type'] = 'image';
+        $removePayload['remove_hero_image_ids'] = [$imageResponse->json('data.hero_images.0.id')];
+        $this->post('/api/internal/settings', $removePayload, ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonCount(1, 'data.hero_images');
+    }
+
+    public function test_video_mode_requires_a_video_and_image_carousel_is_limited_to_five_files(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs($this->admin, ['internal']);
+
+        $this->post('/api/internal/settings', [
+            ...$this->payload(),
+            '_method' => 'PUT',
+            'hero_media_type' => 'video',
+        ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('hero_video');
+
+        $images = [];
+        foreach (range(1, 6) as $index) {
+            $images[] = UploadedFile::fake()->image("hero-{$index}.jpg", 1200, 800)->size(300);
+        }
+        $this->post('/api/internal/settings', [
+            ...$this->payload(),
+            '_method' => 'PUT',
+            'hero_media_type' => 'image',
+            'hero_images' => $images,
+        ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('hero_images');
+    }
+
+    public function test_admin_can_upload_replace_and_remove_final_cta_image(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs($this->admin, ['internal']);
+
+        $uploadPayload = $this->payload();
+        $uploadPayload['_method'] = 'PUT';
+        $uploadPayload['final_cta_image'] = UploadedFile::fake()->image('cta.webp', 1600, 900)->size(500);
+        $this->post('/api/internal/settings', $uploadPayload, ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.final_cta_image_url', fn (?string $url): bool => str_contains((string) $url, 'settings/final-cta/'));
+
+        $settings = HomestaySetting::query()->firstOrFail();
+        $storedPath = $settings->final_cta_image_path;
+        Storage::disk('public')->assertExists($storedPath);
+
+        $removePayload = $this->payload();
+        $removePayload['_method'] = 'PUT';
+        $removePayload['remove_final_cta_image'] = true;
+        $this->post('/api/internal/settings', $removePayload, ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('data.final_cta_image_url', null);
+        Storage::disk('public')->assertMissing($storedPath);
+    }
+
     /** @return array<string, mixed> */
     private function payload(): array
     {

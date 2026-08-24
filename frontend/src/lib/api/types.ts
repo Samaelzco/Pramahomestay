@@ -56,6 +56,19 @@ export type PaginatedRooms = { data: Room[]; meta: PaginationMeta };
 export type ApiItem<T> = { data: T; message?: string };
 export type ActionState = { message?: string; errors?: Record<string, string[]>; success?: boolean };
 
+export type PublicBookingResult = {
+  booking_code: string;
+  room_name: string;
+  check_in: string;
+  check_out: string;
+  guest_count: number;
+  total_nights: number;
+  total_amount: string;
+  status: "pending";
+};
+
+export type PublicBookingActionState = ActionState & { booking?: PublicBookingResult };
+
 export type InternalUser = {
   id: number;
   name: string;
@@ -108,6 +121,11 @@ export type HomestaySettings = {
   phone: string | null;
   email: string | null;
   logo_url: string | null;
+  hero_media_type: "image" | "video";
+  hero_images: Array<{ id: string; url: string }>;
+  hero_video_url: string | null;
+  hero_cycle_seconds: number;
+  final_cta_image_url: string | null;
   check_in_time: string | null;
   check_out_time: string | null;
   timezone: "Asia/Jakarta" | "Asia/Makassar" | "Asia/Jayapura";
@@ -121,6 +139,29 @@ export type HomestaySettings = {
   cancellation_policy: string | null;
   payment_instructions: string | null;
   updated_at: string;
+};
+
+export type PublicAmenity = Pick<Amenity, "id" | "name" | "name_en" | "slug" | "description" | "description_en">;
+
+export type PublicRoom = Pick<Room, "id" | "name" | "slug" | "description" | "description_en" | "price_per_night" | "capacity" | "bed_count"> & {
+  images: Array<{ id: number; url: string }>;
+  amenities: Array<Pick<Amenity, "id" | "name" | "name_en" | "slug">>;
+};
+
+export type PublicLandingData = {
+  property: Pick<HomestaySettings, "name" | "address" | "maps_url" | "phone" | "email" | "logo_url" | "check_in_time" | "check_out_time" | "currency">;
+  amenities: PublicAmenity[];
+  rooms: PublicRoom[];
+  hero_media: {
+    type: "image" | "video";
+    images: Array<{ id: string; url: string }>;
+    video_url: string | null;
+    cycle_seconds: number;
+  };
+  final_cta_media: {
+    image_url: string | null;
+  };
+  filters: { check_in: string | null; check_out: string | null; guests: number };
 };
 
 export type AccessRole = {

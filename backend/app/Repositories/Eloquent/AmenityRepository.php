@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Contracts\Repositories\AmenityRepositoryInterface;
 use App\Models\Amenity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class AmenityRepository implements AmenityRepositoryInterface
 {
@@ -51,5 +52,15 @@ class AmenityRepository implements AmenityRepositoryInterface
     public function slugExists(string $slug, ?int $ignoreId = null): bool
     {
         return $this->model->newQuery()->where('slug', $slug)->when($ignoreId, fn ($query, int $id) => $query->whereKeyNot($id))->exists();
+    }
+
+    public function activeForPublic(): Collection
+    {
+        return $this->model
+            ->newQuery()
+            ->where('is_active', true)
+            ->whereHas('rooms', fn ($query) => $query->where('rooms.is_active', true))
+            ->orderBy('name')
+            ->get();
     }
 }

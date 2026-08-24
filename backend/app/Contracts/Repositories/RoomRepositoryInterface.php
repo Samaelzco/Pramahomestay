@@ -4,6 +4,7 @@ namespace App\Contracts\Repositories;
 
 use App\Models\Room;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 interface RoomRepositoryInterface
 {
@@ -44,4 +45,7 @@ interface RoomRepositoryInterface
     public function hasAnyBooking(int $roomId): bool;
 
     public function slugExists(string $slug, ?int $ignoreId = null): bool;
+
+    /** @return Collection<int, Room> */
+    public function availableForPublic(?string $checkIn = null, ?string $checkOut = null, int $guests = 1): Collection;
 }

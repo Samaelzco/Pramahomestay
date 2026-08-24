@@ -12,12 +12,20 @@ use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\ReportController;
 use App\Http\Controllers\Api\Internal\RoomController;
 use App\Http\Controllers\Api\Internal\UserController;
+use App\Http\Controllers\Api\PublicSiteController;
+use App\Http\Controllers\Api\PublicBookingController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', [AuthController::class, 'login'])
-    ->middleware('throttle:5,1');
+    ->middleware('throttle:login');
+
+Route::get('/public/landing', [PublicSiteController::class, 'landing'])
+    ->middleware('throttle:120,1');
+
+Route::post('/public/bookings', [PublicBookingController::class, 'store'])
+    ->middleware('throttle:public-bookings');
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request) => new UserResource($request->user()));

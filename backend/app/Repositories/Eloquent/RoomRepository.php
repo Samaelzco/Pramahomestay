@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Models\Room;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class RoomRepository implements RoomRepositoryInterface
 {
@@ -104,5 +105,24 @@ class RoomRepository implements RoomRepositoryInterface
             ->where('slug', $slug)
             ->when($ignoreId, fn ($query, int $id) => $query->whereKeyNot($id))
             ->exists();
+    }
+
+    public function availableForPublic(?string $checkIn = null, ?string $checkOut = null, int $guests = 1): Collection
+    {
+        return $this->model
+            ->newQuery()
+            ->with(['amenities' => fn ($query) => $query->where('amenities.is_active', true), 'images'])
+            ->where('is_active', true)
+            ->where('status', '!=', 'maintenance')
+            ->where('capacity', '>=', $guests)
+            ->when($checkIn && $checkOut, fn ($query) => $query->whereDoesntHave('bookings', function ($query) use ($checkIn, $checkOut): void {
+                $query
+                    ->where('status', '!=', 'cancelled')
+                    ->where('check_in', '<', $checkOut)
+                    ->where('check_out', '>', $checkIn);
+            }))
+            ->orderBy('price_per_night')
+            ->orderBy('name')
+            ->get();
     }
 }

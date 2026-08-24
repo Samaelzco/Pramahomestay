@@ -2,6 +2,8 @@
 
 import { updateSettingsAction } from "@/app/internal/(dashboard)/settings/actions";
 import { SettingsLogoInput } from "@/components/settings/settings-logo-input";
+import { SettingsHeroMediaInput } from "@/components/settings/settings-hero-media-input";
+import { SettingsFinalCtaImageInput } from "@/components/settings/settings-final-cta-image-input";
 import type { ActionState, HomestaySettings } from "@/lib/api/types";
 import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import { useActionState } from "react";
@@ -29,6 +31,10 @@ export function SettingsForm({ settings }: { settings: HomestaySettings }) {
       <label className={labelClass}>{localize(locale, "Tautan Google Maps", "Google Maps link")}<input name="maps_url" type="url" required maxLength={2048} defaultValue={settings.maps_url} className={inputClass} /><FieldError errors={state.errors?.maps_url} /></label>
       <SettingsLogoInput currentLogoUrl={settings.logo_url} errors={state.errors?.logo} />
     </div></section>
+
+    <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]"><div><h2 className="text-lg font-semibold">{localize(locale, "Media hero", "Hero media")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Pilih carousel gambar atau video pendek yang tampil sebagai latar utama landing page.", "Choose an image carousel or short video for the landing page hero background.")}</p></div><SettingsHeroMediaInput settings={settings} errors={state.errors} /></section>
+
+    <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]"><div><h2 className="text-lg font-semibold">{localize(locale, "CTA penutup", "Final CTA")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Atur gambar latar ajakan reservasi yang muncul sebelum footer.", "Set the background image for the reservation call-to-action before the footer.")}</p></div><SettingsFinalCtaImageInput currentImageUrl={settings.final_cta_image_url} errors={state.errors?.final_cta_image} /></section>
 
     <section className="grid gap-6 border-t py-8 md:grid-cols-[220px_1fr]"><div><h2 className="text-lg font-semibold">{localize(locale, "Operasional", "Operations")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Atur waktu layanan properti. Jam check-in dan check-out boleh dikosongkan sampai kebijakan ditetapkan.", "Configure property service times. Check-in and check-out times may remain empty until a policy is set.")}</p></div><div className="grid gap-6 sm:grid-cols-2">
       <label className={labelClass}>{localize(locale, "Jam check-in", "Check-in time")}<input name="check_in_time" type="time" defaultValue={settings.check_in_time ?? ""} className={`${inputClass} tabular-nums`} /><FieldError errors={state.errors?.check_in_time} /></label>

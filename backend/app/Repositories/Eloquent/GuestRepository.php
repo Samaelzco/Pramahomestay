@@ -58,6 +58,11 @@ class GuestRepository implements GuestRepositoryInterface
         return $this->model->newQuery()->lockForUpdate()->findOrFail($id);
     }
 
+    public function findByEmailForUpdate(string $email): ?Guest
+    {
+        return $this->model->newQuery()->whereRaw('LOWER(email) = ?', [mb_strtolower($email)])->lockForUpdate()->first();
+    }
+
     public function withDetails(Guest $guest): Guest
     {
         return $this->summaryQuery()

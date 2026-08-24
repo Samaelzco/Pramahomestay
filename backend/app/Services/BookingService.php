@@ -55,6 +55,39 @@ class BookingService implements BookingServiceInterface
         });
     }
 
+    public function createPublic(array $attributes): Booking
+    {
+        return DB::transaction(function () use ($attributes): Booking {
+            $email = mb_strtolower(trim((string) $attributes['email']));
+            $guest = $this->guests->findByEmailForUpdate($email);
+            $guestAttributes = [
+                'full_name' => trim((string) $attributes['full_name']),
+                'email' => $email,
+                'phone' => trim((string) $attributes['phone']),
+            ];
+
+            if ($guest === null) {
+                $guest = $this->guests->create([...$guestAttributes, 'created_by' => null]);
+            } else {
+                if (! $guest->is_active) {
+                    throw ValidationException::withMessages(['email' => 'Profil tamu ini sedang tidak aktif. Hubungi pengelola untuk bantuan.']);
+                }
+                $guest = $this->guests->update($guest, $guestAttributes);
+            }
+
+            return $this->create([
+                'room_id' => (int) $attributes['room_id'],
+                'guest_id' => $guest->id,
+                'check_in' => $attributes['check_in'],
+                'check_out' => $attributes['check_out'],
+                'guest_count' => (int) $attributes['guest_count'],
+                'status' => BookingStatus::Pending->value,
+                'special_requests' => $attributes['special_requests'] ?? null,
+                'internal_notes' => null,
+            ]);
+        });
+    }
+
     public function update(Booking $booking, array $attributes): Booking
     {
         return DB::transaction(function () use ($booking, $attributes): Booking {
