@@ -2,14 +2,14 @@
 
 import { LanguageToggle } from "@/components/internal/language-toggle";
 import { ThemeToggle } from "@/components/internal/theme-toggle";
-import { ArrowRightIcon, BedIcon, CheckIcon, ExternalLinkIcon, HomeIcon, MapPinIcon, UsersIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, BedIcon, CheckIcon, ExternalLinkIcon, HomeIcon, MapPinIcon, MenuIcon, UsersIcon, XIcon } from "@/components/ui/icons";
 import type { PublicAmenity, PublicLandingData } from "@/lib/api/types";
 import { localize, type Locale } from "@/lib/locale";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useEffect, useRef, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -62,6 +62,7 @@ function formatMoney(value: string, locale: Locale) {
 export function LandingPage({ data, locale, today }: LandingPageProps) {
   const root = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const t = copy[locale];
   const hasSearch = Boolean(data.filters.check_in && data.filters.check_out);
   const visualImages = data.rooms.flatMap((room) => room.images.map((image) => ({ ...image, roomName: room.name }))).slice(0, 5);
@@ -136,7 +137,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
       });
 
       gsap.utils.toArray<HTMLElement>(".facility-row").forEach((row) => {
-        gsap.from(row, { y: 16, autoAlpha: 0, duration: 0.65, ease: "power2.out", scrollTrigger: { trigger: row, start: "top 88%", once: true } });
+        gsap.from(row, { y: 16, duration: 0.65, ease: "power2.out", scrollTrigger: { trigger: row, start: "top 88%", once: true } });
       });
 
       gsap.utils.toArray<HTMLElement>(".gallery-media img").forEach((image) => {
@@ -171,44 +172,55 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
           <LanguageToggle />
           <ThemeToggle />
           <a href="/booking" className="public-header-cta hidden h-11 items-center bg-primary px-5 text-sm font-bold text-background transition-transform hover:-translate-y-0.5 md:flex">{t.check}</a>
+          <button type="button" onClick={() => setMobileNavOpen((open) => !open)} aria-expanded={mobileNavOpen} aria-controls="public-mobile-navigation" aria-label={mobileNavOpen ? localize(locale, "Tutup navigasi", "Close navigation") : localize(locale, "Buka navigasi", "Open navigation")} className="grid size-11 place-items-center rounded-sm border bg-surface-low lg:hidden">{mobileNavOpen ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}</button>
         </div>
       </div>
+      {mobileNavOpen && <nav id="public-mobile-navigation" aria-label={t.menu} className="absolute inset-x-4 top-[calc(100%+8px)] grid gap-1 bg-background p-3 text-foreground shadow-[0_22px_60px_-28px_rgba(0,0,0,0.45)] sm:inset-x-8 lg:hidden">
+        <a href="#facilities" onClick={() => setMobileNavOpen(false)} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navFacilities}</a>
+        <a href="#stay" onClick={() => setMobileNavOpen(false)} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navStay}</a>
+        <a href="#location" onClick={() => setMobileNavOpen(false)} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navLocation}</a>
+        <a href="/booking" className="mt-2 flex min-h-12 items-center justify-center bg-primary px-5 text-sm font-bold text-background">{t.check}</a>
+      </nav>}
     </header>
 
     <main id="top">
-      <section className="hero-section relative isolate min-h-[max(900px,100svh)] overflow-hidden">
-        <div data-hero-media-slot className="hero-media absolute inset-0 -z-20 overflow-hidden bg-[#26211b]">
-          {useHeroVideo ? <video ref={heroVideoRef} src={data.hero_media.video_url ?? undefined} poster={heroImage?.url} muted loop playsInline preload="metadata" className="hero-media-object size-full object-cover" /> : heroSlides.map((image, index) => <Image key={image.id} data-hero-slide src={image.url} alt={image.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="100vw" className={`hero-media-object object-cover ${index === 0 ? "opacity-100" : "opacity-0"}`} />)}
-          {!useHeroVideo && heroSlides.length === 0 && <div className="absolute inset-0 bg-[#26211b]" />}
-        </div>
-        <div className="hero-scrim absolute inset-0 -z-10" />
+      <div className="hero-shell relative bg-background">
+        <section className="hero-section relative isolate min-h-[620px] overflow-hidden sm:min-h-[720px] lg:min-h-[max(900px,100svh)]">
+          <div data-hero-media-slot className="hero-media absolute inset-0 -z-20 overflow-hidden bg-[#26211b]">
+            {useHeroVideo ? <video ref={heroVideoRef} src={data.hero_media.video_url ?? undefined} poster={heroImage?.url} muted loop playsInline preload="metadata" className="hero-media-object size-full object-cover" /> : heroSlides.map((image, index) => <Image key={image.id} data-hero-slide src={image.url} alt={image.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="100vw" className={`hero-media-object object-cover ${index === 0 ? "opacity-100" : "opacity-0"}`} />)}
+            {!useHeroVideo && heroSlides.length === 0 && <div className="absolute inset-0 bg-[#26211b]" />}
+          </div>
+          <div className="hero-scrim absolute inset-0 -z-10" />
 
-        <div className="hero-copy relative flex min-h-[max(760px,100svh)] w-full flex-col justify-center px-5 pt-32 pb-52 text-white sm:px-8 sm:pb-56 lg:min-h-[max(900px,100svh)] lg:px-12 lg:pt-40 lg:pb-72 xl:px-16">
-            <h1 className="max-w-[11ch] text-balance text-[clamp(3.4rem,6.2vw,5.8rem)] leading-[0.94] font-semibold tracking-[-0.04em]">{t.heroTitle}</h1>
-            <p className="mt-8 max-w-[38rem] text-pretty text-lg leading-8 text-white/80">{t.heroBody}</p>
-            <div className="mt-10 flex flex-wrap items-center gap-5">
+          <div className="hero-copy relative flex min-h-[620px] w-full flex-col justify-center px-5 pt-28 pb-16 text-white sm:min-h-[720px] sm:px-8 sm:pt-32 sm:pb-20 lg:min-h-[max(900px,100svh)] lg:px-12 lg:pt-40 lg:pb-72 xl:px-16">
+            <h1 className="max-w-[11ch] text-balance text-[clamp(3rem,6.2vw,5.8rem)] leading-[0.94] font-semibold tracking-[-0.04em]">{t.heroTitle}</h1>
+            <p className="mt-6 max-w-[38rem] text-pretty text-base leading-7 text-white/80 sm:mt-8 sm:text-lg sm:leading-8">{t.heroBody}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-5 sm:mt-10">
               <a href="/booking" className="group inline-flex h-13 items-center gap-3 bg-white px-6 text-sm font-bold text-black transition-transform hover:-translate-y-0.5">{t.check}<ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" /></a>
               <a href="#stay" className="public-hero-link text-sm font-semibold">{t.explore}</a>
             </div>
-        </div>
-
-        <div id="availability" className="availability-panel relative z-10 mx-5 -mt-40 bg-surface p-6 shadow-[0_28px_70px_-36px_rgba(17,17,17,0.42)] sm:mx-8 sm:-mt-44 lg:absolute lg:inset-x-12 lg:bottom-8 lg:mx-0 lg:mt-0 lg:max-w-none lg:p-8 xl:inset-x-16">
-          <div className="mb-6 flex flex-col justify-between gap-2 lg:flex-row lg:items-end">
-            <div><h2 className="text-2xl font-semibold tracking-[-0.03em]">{t.availabilityTitle}</h2><p className="mt-1 text-sm text-muted">{t.availabilityBody}</p></div>
-            <p className="text-sm font-semibold text-secondary">{data.rooms.length} {hasSearch ? t.available : t.initialRooms}</p>
           </div>
-          <form action="/booking" onSubmit={validateDates} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_0.8fr_auto]">
-            <label className="public-field"><span>{t.arrival}</span><input required type="date" name="check_in" min={today} defaultValue={data.filters.check_in ?? ""} /></label>
-            <label className="public-field"><span>{t.departure}</span><input required type="date" name="check_out" min={data.filters.check_in ?? today} defaultValue={data.filters.check_out ?? ""} /></label>
-            <label className="public-field"><span>{t.guests}</span><select name="guests" defaultValue={String(data.filters.guests)}>{[1,2,3,4,5,6].map((count) => <option key={count} value={count}>{count} {t.guestUnit}</option>)}</select></label>
-            <button type="submit" className="h-14 self-end bg-primary px-7 text-sm font-bold text-background transition-transform hover:-translate-y-0.5">{t.check}</button>
-          </form>
-        </div>
-      </section>
+        </section>
 
-      <section id="facilities" className="facilities grid w-full gap-16 bg-surface-low px-5 py-28 sm:px-8 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20 lg:px-12 lg:py-36 xl:px-16">
+        <div className="bg-surface px-5 py-10 sm:px-8 sm:py-12 lg:absolute lg:inset-x-12 lg:bottom-8 lg:z-10 lg:bg-transparent lg:p-0 xl:inset-x-16">
+          <div id="availability" className="availability-panel lg:bg-surface lg:p-8 lg:shadow-[0_28px_70px_-36px_rgba(17,17,17,0.42)]">
+            <div className="mb-6 flex flex-col justify-between gap-2 lg:flex-row lg:items-end">
+              <div><h2 className="text-2xl font-semibold tracking-[-0.03em]">{t.availabilityTitle}</h2><p className="mt-1 text-sm text-muted">{t.availabilityBody}</p></div>
+              <p className="text-sm font-semibold text-secondary">{data.rooms.length} {hasSearch ? t.available : t.initialRooms}</p>
+            </div>
+            <form action="/booking" onSubmit={validateDates} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_0.8fr_auto]">
+              <label className="public-field"><span>{t.arrival}</span><input required type="date" name="check_in" min={today} defaultValue={data.filters.check_in ?? ""} /></label>
+              <label className="public-field"><span>{t.departure}</span><input required type="date" name="check_out" min={data.filters.check_in ?? today} defaultValue={data.filters.check_out ?? ""} /></label>
+              <label className="public-field"><span>{t.guests}</span><select name="guests" defaultValue={String(data.filters.guests)}>{[1,2,3,4,5,6].map((count) => <option key={count} value={count}>{count} {t.guestUnit}</option>)}</select></label>
+              <button type="submit" className="h-14 self-end bg-primary px-7 text-sm font-bold text-background transition-transform hover:-translate-y-0.5">{t.check}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <section id="facilities" className="facilities grid w-full gap-12 bg-surface-warm px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20 lg:px-12 lg:py-32 xl:px-16">
         <div className="facility-visual lg:sticky lg:top-28 lg:h-[calc(100vh-9rem)] lg:max-h-[46rem] lg:self-start">
-          <figure className="relative h-[30rem] overflow-hidden bg-surface-low sm:h-[38rem] lg:h-full">
+          <figure className="relative h-[26rem] overflow-hidden bg-surface-low sm:h-[34rem] lg:h-full">
             {facilityImage && <Image src={facilityImage.url} alt={facilityImage.alt} fill loading="eager" sizes="(min-width: 1024px) 42vw, 100vw" className="facility-image object-cover transition-transform duration-700 hover:scale-[1.015]" />}
             {!facilityImage && <div className="absolute inset-0 bg-surface-high" />}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-black/10" />
@@ -222,24 +234,24 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
           <p className="text-xs font-semibold tracking-[0.14em] text-secondary uppercase">{t.facilityEyebrow}</p>
           <h2 className="mt-7 max-w-[12ch] text-balance text-[clamp(2.7rem,4.6vw,4.8rem)] leading-[0.98] font-semibold tracking-[-0.04em]">{t.facilityTitle}</h2>
           {data.amenities.length ? <div className="mt-12 grid gap-3 sm:grid-cols-2">
-            {data.amenities.map((amenity, index) => <article key={amenity.id} className="facility-row group grid min-h-40 grid-cols-[2rem_1fr] gap-x-4 bg-background p-5 sm:min-h-44 sm:p-6">
+            {data.amenities.map((amenity, index) => <article key={amenity.id} className="facility-row group grid min-h-40 grid-cols-[2rem_1fr] gap-x-4 bg-surface p-5 sm:min-h-44 sm:p-6">
               <span className="pt-1 text-xs font-semibold text-secondary tabular-nums">{String(index + 1).padStart(2, "0")}</span>
               <div className="flex min-w-0 flex-col"><div className="flex items-start justify-between gap-4"><h3 className="text-xl font-semibold tracking-[-0.03em] sm:text-2xl">{amenityLabel(amenity, locale)}</h3><span className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary-soft text-secondary transition-transform duration-300 group-hover:scale-105"><CheckIcon className="size-4" /></span></div><p className="mt-auto pt-5 text-sm leading-6 text-muted">{amenityDescription(amenity, locale) ?? t.facilityAvailable}</p></div>
             </article>)}
-          </div> : <div className="mt-12 bg-background p-8"><p className="text-lg font-semibold">{t.notAvailable}</p></div>}
+          </div> : <div className="mt-12 bg-surface p-8"><p className="text-lg font-semibold">{t.notAvailable}</p></div>}
         </div>
       </section>
 
-      <section id="stay" className="bg-surface-low py-28 lg:py-40">
+      <section id="stay" className="bg-background py-20 sm:py-24 lg:py-36">
         <div className="w-full px-5 sm:px-8 lg:px-12 xl:px-16">
           <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
             <h2 className="max-w-[15ch] text-balance text-[clamp(2.7rem,5vw,5.2rem)] leading-[0.98] font-semibold tracking-[-0.04em]">{t.galleryTitle}</h2>
             <p className="max-w-xl text-lg leading-8 text-muted lg:justify-self-end">{t.galleryBody}</p>
           </div>
-          {visualImages.length ? <div className="mt-16 grid gap-4 md:auto-rows-[17rem] md:grid-flow-dense md:grid-cols-12 lg:auto-rows-[21rem]">
+          {visualImages.length ? <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 md:auto-rows-[15rem] md:grid-flow-dense md:grid-cols-12 lg:auto-rows-[20rem]">
             {visualImages.map((image, index) => {
               const layout = ["md:col-span-7 md:row-span-2", "md:col-span-5", "md:col-span-5", "md:col-span-5", "md:col-span-7"][index] ?? "md:col-span-4";
-              return <figure key={`${image.id}-${image.roomName}`} className={`gallery-media group relative min-h-72 overflow-hidden bg-surface-high ${layout}`}>
+              return <figure key={`${image.id}-${image.roomName}`} className={`gallery-media group relative min-h-64 overflow-hidden bg-surface-high ${layout}`}>
                 <Image src={image.url} alt={`${localize(locale, "Galeri kamar", "Room gallery")} · ${image.roomName}`} fill loading={index === 0 ? "eager" : "lazy"} sizes={index === 0 ? "(min-width: 768px) 58vw, 100vw" : "(min-width: 768px) 42vw, 100vw"} className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]" />
                 <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
               </figure>;
@@ -253,9 +265,9 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
         {data.rooms.length ? <div className="divide-y">{data.rooms.map((room) => <article key={room.id} className="grid gap-6 py-8 sm:grid-cols-[1fr_auto] sm:items-center"><div><h3 className="text-xl font-semibold">{room.name}</h3><p className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted"><span className="inline-flex items-center gap-2"><UsersIcon className="size-4" />{t.capacity} {room.capacity}</span><span className="inline-flex items-center gap-2"><BedIcon className="size-4" />{room.bed_count} {t.bed}</span></p></div><p className="text-lg font-bold">{formatMoney(room.price_per_night, locale)} <span className="text-sm font-normal text-muted">{t.perNight}</span></p></article>)}</div> : <div className="py-12"><h3 className="text-xl font-semibold">{t.noRooms}</h3><p className="mt-2 text-muted">{t.noRoomsBody}</p></div>}
       </section>}
 
-      <section id="location" className="grid w-full gap-12 px-5 py-28 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:px-12 lg:py-40 xl:px-16">
+      <section id="location" className="grid w-full gap-10 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:px-12 lg:py-36 xl:px-16">
         <div className="lg:pr-8"><h2 className="max-w-[12ch] text-balance text-[clamp(2.7rem,5vw,5.2rem)] leading-[0.98] font-semibold tracking-[-0.04em]">{t.locationTitle}</h2><p className="mt-7 max-w-xl text-lg leading-8 text-muted">{t.locationBody}</p></div>
-        <div className="relative min-h-[32rem] overflow-hidden bg-secondary-soft sm:min-h-[36rem]">
+        <div className="relative min-h-[28rem] overflow-hidden bg-secondary-soft sm:min-h-[32rem] lg:min-h-[36rem]">
           <iframe title={localize(locale, "Peta lokasi Prama Homestay", "Prama Homestay location map")} src={`https://maps.google.com/maps?q=${encodeURIComponent(data.property.address)}&z=16&output=embed`} loading="eager" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen className="absolute inset-0 size-full border-0" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
           <div className="absolute right-4 bottom-4 left-4 flex flex-col items-start justify-between gap-5 bg-background/95 p-5 text-foreground shadow-[0_16px_50px_rgba(0,0,0,0.2)] backdrop-blur-md sm:right-6 sm:bottom-6 sm:left-6 sm:flex-row sm:items-end sm:p-6">

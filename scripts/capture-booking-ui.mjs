@@ -17,11 +17,19 @@ await send("Network.setCookie", { name: "prama-locale", value: "id", url: "http:
 const outputDir = new URL("../.impeccable/review/", import.meta.url);
 await mkdir(outputDir, { recursive: true });
 
-for (const [name, width, height, mobile] of [["booking-desktop", 1920, 1080, false], ["booking-mobile", 390, 844, true]]) {
+for (const [name, width, height, mobile, theme] of [["booking-desktop", 1920, 1080, false, "light"], ["booking-tablet", 820, 1180, false, "light"], ["booking-mobile", 390, 844, true, "dark"]]) {
   await send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile });
   await send("Page.navigate", { url: `${url}&capture=${Date.now()}` });
+  await new Promise((resolve) => setTimeout(resolve, 900));
+  await send("Runtime.evaluate", { expression: `localStorage.setItem("prama-theme", "${theme}"); document.documentElement.dataset.theme = "${theme}";` });
+  await send("Page.reload", { ignoreCache: true });
   await new Promise((resolve) => setTimeout(resolve, 2400));
   const screenshot = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
   await writeFile(new URL(`${name}.png`, outputDir), Buffer.from(screenshot.data, "base64"));
 }
+
+await send("Runtime.evaluate", { expression: "document.querySelector('#guest-details')?.scrollIntoView({ block: 'start' }); scrollBy(0, -80);" });
+await new Promise((resolve) => setTimeout(resolve, 800));
+const detailsScreenshot = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
+await writeFile(new URL("booking-mobile-details.png", outputDir), Buffer.from(detailsScreenshot.data, "base64"));
 socket.close();

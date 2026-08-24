@@ -30,7 +30,7 @@ class PublicBookingApiTest extends TestCase
             'guest_count' => 2,
             'full_name' => 'Made Pranata',
             'email' => 'MADE@example.com',
-            'phone' => '+62 812 3456 7890',
+            'phone' => '6281234567890',
             'special_requests' => 'Late arrival',
         ])->assertCreated()
             ->assertJsonPath('data.status', 'pending')
@@ -55,7 +55,7 @@ class PublicBookingApiTest extends TestCase
 
         $payload = [
             'room_id' => $room->id, 'check_in' => $checkIn, 'check_out' => $checkOut,
-            'guest_count' => 2, 'full_name' => 'Guest Updated', 'email' => 'guest@example.com', 'phone' => '+62 811 1111',
+            'guest_count' => 2, 'full_name' => 'Guest Updated', 'email' => 'guest@example.com', 'phone' => '6281111111',
         ];
         $this->postJson('/api/public/bookings', $payload)->assertUnprocessable()->assertJsonValidationErrors('check_in');
         $this->postJson('/api/public/bookings', [...$payload, 'check_in' => now()->addDays(8)->toDateString(), 'check_out' => now()->addDays(9)->toDateString(), 'guest_count' => 3])

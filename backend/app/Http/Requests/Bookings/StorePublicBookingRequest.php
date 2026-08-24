@@ -21,7 +21,7 @@ class StorePublicBookingRequest extends FormRequest
             'guest_count' => ['required', 'integer', 'min:1', 'max:20'],
             'full_name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email:rfc', 'max:255'],
-            'phone' => ['required', 'string', 'max:30', 'regex:/^[0-9+() .-]+$/'],
+            'phone' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9]+$/'],
             'special_requests' => ['nullable', 'string', 'max:2000'],
             'website' => ['nullable', 'prohibited'],
         ];
