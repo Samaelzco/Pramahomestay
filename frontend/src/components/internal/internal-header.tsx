@@ -2,6 +2,7 @@
 
 import { MobileSidebar } from "@/components/internal/sidebar";
 import { MenuIcon } from "@/components/ui/icons";
+import { ThemeToggle } from "@/components/internal/theme-toggle";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -25,6 +26,7 @@ export function InternalHeader({ userName, permissions }: { userName: string; pe
     <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b bg-surface/95 px-6 sm:px-8 md:px-10 xl:ml-[264px]">
       <button ref={menuButtonRef} type="button" aria-label="Buka menu navigasi" aria-expanded={menuOpen} aria-controls="mobile-navigation" onClick={() => setMenuOpen(true)} className="grid size-12 shrink-0 place-items-center rounded-md bg-primary text-white xl:hidden"><MenuIcon className="size-5" /></button>
       <p className="hidden text-sm font-medium sm:block">{context}</p>
+      <ThemeToggle />
     </header>
     <div id="mobile-navigation"><MobileSidebar open={menuOpen} onClose={closeMenu} userName={userName} permissions={permissions} /></div>
   </>;

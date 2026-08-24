@@ -126,6 +126,9 @@ The palette is rooted in a high-contrast urban foundation, balanced by organic w
 - **Secondary (Oak/Walnut):** A warm, sophisticated wood tone used sparingly for interactive highlights, active states, and premium call-outs to evoke the homestay’s physical interior.
 - **Tertiary (Slate Gray):** A muted, professional tone used for secondary text, icons, and borders to provide depth without adding visual noise.
 - **Neutral/Crisp White:** The primary canvas. Use pure white for surfaces and a very light gray (#F9F9F9) for subtle section differentiation.
+- **Dark mode:** Use warm charcoal layers (`#111313`, `#191B1B`, `#202323`) instead of pure black, with soft off-white text (`#F2F1EF`) and a brighter wood accent (`#D8AE7B`). Preserve tonal separation between the page, cards, controls, and inverse primary actions.
+
+The internal header exposes the theme control in its trailing edge: opposite the menu trigger on compact screens and after the page context on desktop. The first visit follows the operating-system preference; an explicit light or dark choice is persisted for future visits.
 
 ## Typography
 

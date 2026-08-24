@@ -10,7 +10,7 @@ export default function LoginPage() {
       <section className="relative hidden overflow-hidden bg-primary p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="absolute inset-0 opacity-45" style={{ backgroundImage: "linear-gradient(120deg, rgba(0,0,0,.25), rgba(0,0,0,.72)), url('https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=1600&q=90')", backgroundSize: "cover", backgroundPosition: "center" }} />
         <div className="relative flex items-center gap-3">
-          <span className="grid size-12 place-items-center rounded-md bg-white text-primary"><BedIcon className="size-6" /></span>
+          <span className="grid size-12 place-items-center rounded-md bg-background text-primary"><BedIcon className="size-6" /></span>
           <div><p className="text-lg font-semibold">Prama Homestay</p><p className="text-xs tracking-[0.12em] text-white/70 uppercase">Internal operations</p></div>
         </div>
         <div className="relative max-w-xl pb-8">

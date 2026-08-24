@@ -17,7 +17,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className={`${inter.variable} h-full antialiased`}>
+    <html lang="id" data-theme="light" suppressHydrationWarning className={`${inter.variable} h-full antialiased`}>
+      <head>
+        <meta name="theme-color" content="#f9f9f9" />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var k="prama-theme",s=localStorage.getItem(k),t=s==="light"||s==="dark"?s:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",r=document.documentElement;r.setAttribute("data-theme",t);r.style.colorScheme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==="dark"?"#111313":"#f9f9f9"}catch(e){}})()` }} />
+      </head>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
