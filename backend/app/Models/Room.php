@@ -19,8 +19,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'price_per_night',
     'capacity',
     'bed_count',
-    'image_url',
-    'image_path',
     'is_active',
 ])]
 class Room extends Model
@@ -47,5 +45,10 @@ class Room extends Model
     public function amenities(): BelongsToMany
     {
         return $this->belongsToMany(Amenity::class);
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(RoomImage::class)->orderBy('sort_order')->orderBy('id');
     }
 }

@@ -24,6 +24,18 @@ interface RoomRepositoryInterface
 
     public function syncAmenities(Room $room, array $amenityIds): Room;
 
+    /** @param array<int, array{url: string, path: string|null, sort_order: int}> $images */
+    public function addImages(Room $room, array $images): Room;
+
+    /**
+     * @param  array<int, int>  $imageIds
+     * @return array<int, string>
+     */
+    public function imagePaths(Room $room, array $imageIds): array;
+
+    /** @param array<int, int> $imageIds */
+    public function deleteImages(Room $room, array $imageIds): void;
+
     /** @param array<string, mixed> $attributes */
     public function update(Room $room, array $attributes): Room;
 

@@ -134,7 +134,7 @@ class InternalRoomApiTest extends TestCase
         $this->assertNotSoftDeleted($room);
     }
 
-    public function test_authorized_user_can_upload_replace_and_remove_a_room_image(): void
+    public function test_authorized_user_can_upload_and_manage_multiple_room_images(): void
     {
         Storage::fake('public');
         $this->seed(AuthorizationSeeder::class);
@@ -144,43 +144,56 @@ class InternalRoomApiTest extends TestCase
 
         $payload = $this->payload();
         unset($payload['image_url']);
-        $payload['image'] = UploadedFile::fake()->image('unit-301.jpg', 1200, 800)->size(500);
+        $payload['images'] = [
+            UploadedFile::fake()->image('unit-301-cover.jpg', 1200, 800)->size(500),
+            UploadedFile::fake()->image('unit-301-bathroom.jpg', 1200, 800)->size(450),
+        ];
 
         $created = $this->post('/api/internal/rooms', $payload, ['Accept' => 'application/json'])
             ->assertCreated();
 
         $room = Room::query()->findOrFail($created->json('data.id'));
-        $firstPath = $room->image_path;
-        $this->assertNotNull($firstPath);
-        Storage::disk('public')->assertExists($firstPath);
-        $created->assertJsonPath('data.image_url', Storage::disk('public')->url($firstPath));
+        $firstImages = $room->images()->get();
+        $this->assertCount(2, $firstImages);
+        Storage::disk('public')->assertExists($firstImages[0]->path);
+        Storage::disk('public')->assertExists($firstImages[1]->path);
+        $created->assertJsonCount(2, 'data.images')
+            ->assertJsonPath('data.images.0.is_cover', true)
+            ->assertJsonPath('data.image_url', Storage::disk('public')->url($firstImages[0]->path));
 
         $replacementPayload = $this->payload();
         unset($replacementPayload['image_url']);
         $replacementPayload['_method'] = 'PUT';
-        $replacementPayload['image'] = UploadedFile::fake()->image('replacement.webp', 1200, 800)->size(600);
+        $replacementPayload['images'] = [UploadedFile::fake()->image('balcony.webp', 1200, 800)->size(600)];
+        $replacementPayload['remove_image_ids'] = [$firstImages[0]->id];
 
-        $this->post("/api/internal/rooms/{$room->id}", $replacementPayload, ['Accept' => 'application/json'])
-            ->assertOk();
+        $updated = $this->post("/api/internal/rooms/{$room->id}", $replacementPayload, ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonCount(2, 'data.images')
+            ->assertJsonPath('data.images.0.id', $firstImages[1]->id)
+            ->assertJsonPath('data.images.0.is_cover', true);
 
         $room->refresh();
-        $replacementPath = $room->image_path;
-        $this->assertNotSame($firstPath, $replacementPath);
-        Storage::disk('public')->assertMissing($firstPath);
-        Storage::disk('public')->assertExists($replacementPath);
+        $updatedImages = $room->images()->get();
+        $this->assertCount(2, $updatedImages);
+        Storage::disk('public')->assertMissing($firstImages[0]->path);
+        Storage::disk('public')->assertExists($firstImages[1]->path);
+        Storage::disk('public')->assertExists($updatedImages[1]->path);
+        $updated->assertJsonPath('data.image_url', $firstImages[1]->url);
 
         $removePayload = $this->payload();
         unset($removePayload['image_url']);
         $removePayload['_method'] = 'PUT';
-        $removePayload['remove_image'] = true;
+        $removePayload['remove_image_ids'] = $updatedImages->pluck('id')->all();
 
         $this->post("/api/internal/rooms/{$room->id}", $removePayload, ['Accept' => 'application/json'])
             ->assertOk()
             ->assertJsonPath('data.image_url', null);
 
         $room->refresh();
-        $this->assertNull($room->image_path);
-        Storage::disk('public')->assertMissing($replacementPath);
+        $this->assertCount(0, $room->images()->get());
+        Storage::disk('public')->assertMissing($firstImages[1]->path);
+        Storage::disk('public')->assertMissing($updatedImages[1]->path);
     }
 
     /** @return array<string, mixed> */

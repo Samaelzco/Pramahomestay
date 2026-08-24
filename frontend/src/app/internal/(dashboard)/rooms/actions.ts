@@ -6,11 +6,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 function roomPayload(formData: FormData, method: "POST" | "PUT") {
-  const image = formData.get("image");
+  const images = formData.getAll("images[]");
 
   formData.set("is_active", formData.get("is_active") === "on" ? "1" : "0");
-  formData.set("remove_image", formData.get("remove_image") === "1" ? "1" : "0");
-  if (image instanceof File && image.size === 0) formData.delete("image");
+  formData.delete("images[]");
+  images.forEach((image) => {
+    if (image instanceof File && image.size > 0) formData.append("images[]", image);
+  });
   if (method === "PUT") formData.set("_method", "PUT");
 
   return formData;

@@ -14,7 +14,7 @@ class RoomRepository implements RoomRepositoryInterface
     {
         return $this->model
             ->newQuery()
-            ->with('amenities')
+            ->with(['amenities', 'images'])
             ->withCount(['bookings as all_bookings_count' => fn ($query) => $query->withTrashed()])
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $query->where(function ($query) use ($search): void {
@@ -32,7 +32,7 @@ class RoomRepository implements RoomRepositoryInterface
 
     public function findOrFail(int $id): Room
     {
-        return $this->model->newQuery()->with('amenities')->findOrFail($id);
+        return $this->model->newQuery()->with(['amenities', 'images'])->findOrFail($id);
     }
 
     public function findForUpdate(int $id): Room
@@ -57,11 +57,32 @@ class RoomRepository implements RoomRepositoryInterface
         return $room->load('amenities');
     }
 
+    public function addImages(Room $room, array $images): Room
+    {
+        if ($images !== []) {
+            $room->images()->createMany($images);
+        }
+
+        return $room->load('images');
+    }
+
+    public function imagePaths(Room $room, array $imageIds): array
+    {
+        return $room->images()->whereKey($imageIds)->whereNotNull('path')->pluck('path')->all();
+    }
+
+    public function deleteImages(Room $room, array $imageIds): void
+    {
+        if ($imageIds !== []) {
+            $room->images()->whereKey($imageIds)->delete();
+        }
+    }
+
     public function update(Room $room, array $attributes): Room
     {
         $room->updateOrFail($attributes);
 
-        return $room->refresh();
+        return $room->refresh()->load(['amenities', 'images']);
     }
 
     public function delete(Room $room): void

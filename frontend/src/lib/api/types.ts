@@ -11,12 +11,19 @@ export type Room = {
   capacity: number;
   bed_count: number;
   image_url: string | null;
+  images: RoomGalleryImage[];
   amenities: Amenity[];
   is_active: boolean;
   can_delete: boolean;
   delete_block_reason: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type RoomGalleryImage = {
+  id: number;
+  url: string;
+  is_cover: boolean;
 };
 
 export type Amenity = {

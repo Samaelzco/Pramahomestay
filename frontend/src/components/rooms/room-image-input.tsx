@@ -1,88 +1,120 @@
 "use client";
 
-import { ImageIcon, TrashIcon } from "@/components/ui/icons";
+import { ImageIcon, PlusIcon, TrashIcon } from "@/components/ui/icons";
+import type { RoomGalleryImage } from "@/lib/api/types";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-type RoomImageInputProps = {
-  currentImageUrl?: string | null;
-  errors?: string[];
-};
+const MAX_IMAGES = 10;
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-export function RoomImageInput({ currentImageUrl, errors }: RoomImageInputProps) {
+type SelectedImage = { file: File; url: string };
+type RoomImageInputProps = { currentImages?: RoomGalleryImage[]; errors?: string[] };
+
+export function RoomImageInput({ currentImages = [], errors }: RoomImageInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [removeCurrent, setRemoveCurrent] = useState(false);
-  const previewUrl = selectedImageUrl ?? (removeCurrent ? null : currentImageUrl);
+  const previewUrls = useRef(new Set<string>());
+  const [selectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
+  const [removedImageIds, setRemovedImageIds] = useState<number[]>([]);
+  const [clientError, setClientError] = useState<string | null>(null);
+  const activeCurrentImages = currentImages.filter((image) => !removedImageIds.includes(image.id));
+  const totalImages = activeCurrentImages.length + selectedImages.length;
+  const coverId = activeCurrentImages[0]?.id;
 
-  useEffect(() => {
-    return () => {
-      if (selectedImageUrl) URL.revokeObjectURL(selectedImageUrl);
-    };
-  }, [selectedImageUrl]);
+  useEffect(() => () => {
+    previewUrls.current.forEach((url) => URL.revokeObjectURL(url));
+  }, []);
 
-  function selectImage(file?: File) {
-    if (selectedImageUrl) URL.revokeObjectURL(selectedImageUrl);
+  function syncFileInput(images: SelectedImage[]) {
+    if (!inputRef.current || typeof DataTransfer === "undefined") return;
+    const transfer = new DataTransfer();
+    images.forEach(({ file }) => transfer.items.add(file));
+    inputRef.current.files = transfer.files;
+  }
 
-    if (!file) {
-      setSelectedImageUrl(null);
-      setFileName(null);
+  function selectImages(files: FileList | null) {
+    if (!files?.length) return;
+
+    const candidates = Array.from(files);
+    const invalidType = candidates.find((file) => !ACCEPTED_TYPES.has(file.type));
+    if (invalidType) {
+      setClientError(`${invalidType.name} bukan JPG, PNG, atau WebP.`);
+      syncFileInput(selectedImages);
+      return;
+    }
+    const oversized = candidates.find((file) => file.size > MAX_FILE_SIZE);
+    if (oversized) {
+      setClientError(`${oversized.name} melebihi batas 5 MB.`);
+      syncFileInput(selectedImages);
       return;
     }
 
-    setSelectedImageUrl(URL.createObjectURL(file));
-    setFileName(file.name);
-    setRemoveCurrent(false);
+    const remainingSlots = MAX_IMAGES - totalImages;
+    if (candidates.length > remainingSlots) {
+      setClientError(`Hanya ${remainingSlots} foto lagi yang dapat ditambahkan. Maksimal 10 foto per kamar.`);
+      syncFileInput(selectedImages);
+      return;
+    }
+
+    const existingKeys = new Set(selectedImages.map(({ file }) => `${file.name}:${file.size}:${file.lastModified}`));
+    const additions = candidates.filter((file) => !existingKeys.has(`${file.name}:${file.size}:${file.lastModified}`)).map((file) => {
+      const url = URL.createObjectURL(file);
+      previewUrls.current.add(url);
+      return { file, url };
+    });
+    const nextImages = [...selectedImages, ...additions];
+    setSelectedImages(nextImages);
+    syncFileInput(nextImages);
+    setClientError(additions.length === candidates.length ? null : "Foto yang sama tidak ditambahkan dua kali.");
   }
 
-  function clearImage() {
-    if (selectedImageUrl) URL.revokeObjectURL(selectedImageUrl);
-    if (inputRef.current) inputRef.current.value = "";
-    setSelectedImageUrl(null);
-    setFileName(null);
-    setRemoveCurrent(Boolean(currentImageUrl));
+  function removeSelectedImage(index: number) {
+    const removed = selectedImages[index];
+    URL.revokeObjectURL(removed.url);
+    previewUrls.current.delete(removed.url);
+    const nextImages = selectedImages.filter((_, imageIndex) => imageIndex !== index);
+    setSelectedImages(nextImages);
+    syncFileInput(nextImages);
+    setClientError(null);
   }
 
-  return (
-    <div className="sm:col-span-2">
-      <span className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Foto kamar</span>
-      <input name="remove_image" type="hidden" value={removeCurrent ? "1" : "0"} />
-      <div className="mt-2 grid overflow-hidden rounded-lg bg-surface-low md:grid-cols-[minmax(0,1fr)_260px]">
-        <div className="flex min-h-52 flex-col items-start justify-center p-6 md:min-h-64 md:p-8">
-          <div className="grid size-10 place-items-center rounded-sm bg-surface text-secondary">
-            <ImageIcon className="size-5" />
-          </div>
-          <p className="mt-5 text-base font-semibold text-primary">Pilih gambar utama kamar</p>
-          <p className="mt-2 max-w-md text-sm leading-6 text-muted">Gunakan JPG, PNG, atau WebP hingga 5 MB. Foto horizontal akan tampil paling baik pada kartu kamar.</p>
-          <label className="mt-5 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-sm border bg-surface px-5 text-sm font-semibold transition-colors hover:bg-surface-high focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary">
-            <span>{previewUrl ? "Ganti gambar" : "Pilih gambar"}</span>
-            <input
-              ref={inputRef}
-              name="image"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="sr-only"
-              aria-describedby="room-image-help"
-              onChange={(event) => selectImage(event.target.files?.[0])}
-            />
-          </label>
-          <p id="room-image-help" className="mt-3 text-xs text-muted">{fileName ?? (currentImageUrl && !removeCurrent ? "Gambar yang tersimpan saat ini" : "Belum ada gambar dipilih")}</p>
-          {errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{error}</p>)}
-        </div>
-        <div className="relative min-h-52 bg-surface-high md:min-h-64">
-          {previewUrl ? (
-            <>
-              <Image src={previewUrl} alt="Preview foto kamar" fill sizes="260px" unoptimized={previewUrl.startsWith("blob:")} className="object-cover" />
-              <button type="button" onClick={clearImage} className="absolute top-3 right-3 inline-flex min-h-10 items-center gap-2 rounded-sm bg-primary/90 px-3 text-xs font-semibold text-white transition-colors hover:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                <TrashIcon className="size-4" /> Hapus
-              </button>
-            </>
-          ) : (
-            <div className="grid h-full min-h-52 place-items-center px-6 text-center text-sm leading-6 text-muted md:min-h-64">Preview gambar akan muncul di sini.</div>
-          )}
-        </div>
-      </div>
+  function toggleStoredImage(id: number) {
+    setRemovedImageIds((current) => {
+      if (current.includes(id) && totalImages >= MAX_IMAGES) {
+        setClientError("Hapus foto lain terlebih dahulu sebelum membatalkan penghapusan ini.");
+        return current;
+      }
+      setClientError(null);
+      return current.includes(id) ? current.filter((imageId) => imageId !== id) : [...current, id];
+    });
+  }
+
+  return <div className="sm:col-span-2">
+    <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Galeri kamar</p><p id="room-images-help" className="mt-2 text-sm leading-6 text-muted">Unggah JPG, PNG, atau WebP maksimal 5 MB per foto. Foto pertama menjadi cover.</p></div><p className="text-sm font-semibold tabular-nums">{totalImages} / {MAX_IMAGES} foto</p></div>
+    {removedImageIds.map((id) => <input key={id} type="hidden" name="remove_image_ids[]" value={id} />)}
+    <div className="mt-4 rounded-lg bg-surface-low p-4 sm:p-5">
+      <label className={`flex min-h-24 items-center gap-4 rounded-sm border border-dashed bg-surface px-4 py-4 transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary ${totalImages >= MAX_IMAGES ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-surface-high"}`}>
+        <span className="grid size-11 shrink-0 place-items-center rounded-sm bg-primary text-white">{totalImages ? <PlusIcon className="size-5" /> : <ImageIcon className="size-5" />}</span>
+        <span className="min-w-0"><span className="block text-sm font-semibold">{totalImages ? "Tambah foto lain" : "Pilih beberapa foto"}</span><span className="mt-1 block text-xs leading-5 text-muted">Pilih sekaligus atau tambahkan dalam beberapa kali pilihan.</span></span>
+        <input ref={inputRef} name="images[]" type="file" multiple accept="image/jpeg,image/png,image/webp" disabled={totalImages >= MAX_IMAGES} className="sr-only" aria-describedby="room-images-help" onChange={(event) => selectImages(event.target.files)} />
+      </label>
+
+      {(currentImages.length > 0 || selectedImages.length > 0) ? <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">
+        {currentImages.map((image) => {
+          const removed = removedImageIds.includes(image.id);
+          return <figure key={image.id} className={`relative min-w-0 overflow-hidden rounded-lg bg-surface-high ${removed ? "opacity-55" : ""}`}>
+            <div className="relative aspect-[4/3]"><Image src={image.url} alt="Foto kamar tersimpan" fill sizes="(max-width: 640px) 50vw, 240px" className="object-cover" /></div>
+            <figcaption className="flex min-h-12 items-center justify-between gap-2 px-3 py-2 text-xs"><span className="truncate font-semibold">{removed ? "Akan dihapus" : image.id === coverId ? "Cover" : "Tersimpan"}</span><button type="button" onClick={() => toggleStoredImage(image.id)} className="inline-flex min-h-9 shrink-0 items-center gap-1.5 font-semibold text-secondary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">{removed ? "Batalkan" : <><TrashIcon className="size-3.5" />Hapus</>}</button></figcaption>
+          </figure>;
+        })}
+        {selectedImages.map((image, index) => <figure key={image.url} className="relative min-w-0 overflow-hidden rounded-lg bg-surface-high">
+          <div className="relative aspect-[4/3]"><Image src={image.url} alt={`Preview ${image.file.name}`} fill sizes="(max-width: 640px) 50vw, 240px" unoptimized className="object-cover" /></div>
+          <figcaption className="flex min-h-12 items-center justify-between gap-2 px-3 py-2 text-xs"><span className="truncate font-semibold" title={image.file.name}>{activeCurrentImages.length === 0 && index === 0 ? "Cover baru" : image.file.name}</span><button type="button" onClick={() => removeSelectedImage(index)} aria-label={`Hapus ${image.file.name} dari pilihan`} className="grid size-9 shrink-0 place-items-center text-secondary hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"><TrashIcon className="size-4" /></button></figcaption>
+        </figure>)}
+      </div> : <div className="mt-4 grid min-h-28 place-items-center rounded-sm bg-surface px-5 text-center text-sm leading-6 text-muted">Belum ada foto kamar. Pilih hingga 10 foto untuk membuat galeri.</div>}
     </div>
-  );
+    {clientError && <p role="alert" className="mt-2 text-sm text-danger">{clientError}</p>}
+    {errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{error}</p>)}
+  </div>;
 }

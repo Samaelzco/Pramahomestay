@@ -16,6 +16,7 @@ export function RoomForm({ room, amenities }: { room?: Room; amenities: Amenity[
   const action = room ? updateRoomAction.bind(null, room.id) : createRoomAction;
   const [state, formAction, pending] = useActionState<ActionState, FormData>(action, {});
   const inputClass = "mt-2 h-12 w-full rounded-sm border bg-surface px-4 text-sm outline-none transition-colors focus:border-primary";
+  const imageErrors = Object.entries(state.errors ?? {}).filter(([key]) => key === "images" || key.startsWith("images.")).flatMap(([, messages]) => messages);
 
   return (
     <form action={formAction} className="mt-10 max-w-4xl">
@@ -40,7 +41,7 @@ export function RoomForm({ room, amenities }: { room?: Room; amenities: Amenity[
         <div className="grid gap-6 sm:grid-cols-2">
           <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Status<select name="status" required defaultValue={room?.status ?? "ready"} className={inputClass}>{statuses.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><FieldError errors={state.errors?.status} /></label>
           <fieldset className="sm:col-span-2"><legend className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">Fasilitas kamar</legend><input type="hidden" name="amenity_ids_present" value="1" />{amenities.length ? <div className="mt-3 grid gap-3 sm:grid-cols-2">{amenities.map((amenity) => { const selected = room?.amenities.some((item) => item.id === amenity.id) ?? false; return <label key={amenity.id} className={`flex min-h-14 items-start gap-3 rounded-sm border px-4 py-3 text-sm ${!amenity.is_active && !selected ? "cursor-not-allowed bg-surface-low text-muted" : "bg-surface"}`}><input type="checkbox" name="amenity_ids[]" value={amenity.id} defaultChecked={selected} disabled={!amenity.is_active && !selected} className="mt-0.5 size-4 accent-[#795830]" /><span><span className="font-semibold">{amenity.name}</span>{!amenity.is_active && <span className="mt-1 block text-xs text-muted">Nonaktif</span>}</span></label>; })}</div> : <div className="mt-3 rounded-sm bg-surface-low p-4 text-sm text-muted">Belum ada fasilitas. <Link href="/internal/amenities/new" className="font-semibold text-secondary underline-offset-4 hover:underline">Tambah fasilitas</Link> terlebih dahulu.</div>}<FieldError errors={state.errors?.amenity_ids} /></fieldset>
-          <RoomImageInput currentImageUrl={room?.image_url} errors={state.errors?.image} />
+          <RoomImageInput currentImages={room?.images} errors={imageErrors} />
           <label className="sm:col-span-2 flex items-start gap-3 rounded-sm bg-surface-low p-4 text-sm"><input name="is_active" type="checkbox" defaultChecked={room?.is_active ?? true} className="mt-0.5 size-4 accent-[#795830]" /><span><span className="block font-semibold">Kamar aktif</span><span className="mt-1 block leading-6 text-muted">Kamar dapat digunakan dalam alur operasional dan pemesanan.</span></span></label>
         </div>
       </section>
