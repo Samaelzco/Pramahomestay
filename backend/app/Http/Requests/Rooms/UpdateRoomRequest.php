@@ -32,6 +32,7 @@ class UpdateRoomRequest extends FormRequest
             'name' => ['required', 'string', 'max:100', Rule::unique('rooms', 'name')->ignore($room)],
             'status' => ['required', Rule::enum(RoomStatus::class)],
             'description' => ['nullable', 'string', 'max:2000'],
+            'description_en' => ['nullable', 'string', 'max:2000'],
             'price_per_night' => ['required', 'numeric', 'min:0', 'max:9999999999.99'],
             'capacity' => ['required', 'integer', 'min:1', 'max:20'],
             'bed_count' => ['required', 'integer', 'min:1', 'max:10'],

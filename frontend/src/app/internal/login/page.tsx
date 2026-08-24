@@ -1,5 +1,8 @@
 import { LoginForm } from "@/components/auth/login-form";
+import { LanguageToggle } from "@/components/internal/language-toggle";
+import { ThemeToggle } from "@/components/internal/theme-toggle";
 import { BedIcon } from "@/components/ui/icons";
+import { LocalizedText } from "@/components/ui/localized-text";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Masuk" };
@@ -14,20 +17,21 @@ export default function LoginPage() {
           <div><p className="text-lg font-semibold">Prama Homestay</p><p className="text-xs tracking-[0.12em] text-white/70 uppercase">Internal operations</p></div>
         </div>
         <div className="relative max-w-xl pb-8">
-          <p className="text-4xl leading-[1.12] font-semibold tracking-[-0.03em]">Ruang kerja yang setenang pengalaman tamu.</p>
-          <p className="mt-5 max-w-md text-base leading-7 text-white/72">Kelola ketersediaan, kondisi, dan detail kamar dalam satu alur operasional.</p>
+          <p className="text-4xl leading-[1.12] font-semibold tracking-[-0.03em]"><LocalizedText id="Ruang kerja yang setenang pengalaman tamu." en="A workspace as calm as the guest experience." /></p>
+          <p className="mt-5 max-w-md text-base leading-7 text-white/72"><LocalizedText id="Kelola ketersediaan, kondisi, dan detail kamar dalam satu alur operasional." en="Manage room availability, condition, and details in one operational flow." /></p>
         </div>
       </section>
       <section className="flex items-center justify-center px-6 py-12 sm:px-12">
+        <div className="absolute top-5 right-6 flex items-center gap-2 sm:right-8"><LanguageToggle /><ThemeToggle /></div>
         <div className="w-full max-w-md">
           <div className="mb-12 flex items-center gap-3 lg:hidden">
             <span className="grid size-11 place-items-center rounded-md bg-primary text-white"><BedIcon className="size-5" /></span>
             <div><p className="font-semibold">Prama Homestay</p><p className="text-xs tracking-[0.1em] text-muted uppercase">Internal</p></div>
           </div>
-          <h1 className="text-4xl font-semibold tracking-[-0.03em] text-primary">Selamat datang kembali</h1>
-          <p className="mt-3 max-w-sm leading-7 text-muted">Masuk menggunakan akun admin atau staff untuk melanjutkan operasional.</p>
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] text-primary"><LocalizedText id="Selamat datang kembali" en="Welcome back" /></h1>
+          <p className="mt-3 max-w-sm leading-7 text-muted"><LocalizedText id="Masuk menggunakan akun admin atau staff untuk melanjutkan operasional." en="Sign in with an admin or staff account to continue operations." /></p>
           <LoginForm />
-          <p className="mt-8 text-sm leading-6 text-muted">Akses dilindungi dan setiap perubahan terkait dengan akun internal Anda.</p>
+          <p className="mt-8 text-sm leading-6 text-muted"><LocalizedText id="Akses dilindungi dan setiap perubahan terkait dengan akun internal Anda." en="Access is protected and every change is linked to your internal account." /></p>
         </div>
       </section>
     </main>

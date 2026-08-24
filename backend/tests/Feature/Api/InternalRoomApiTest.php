@@ -43,6 +43,7 @@ class InternalRoomApiTest extends TestCase
         $created = $this->postJson('/api/internal/rooms', $this->payload())
             ->assertCreated()
             ->assertJsonPath('data.name', 'Unit 301')
+            ->assertJsonPath('data.description_en', 'A bright room for two guests.')
             ->assertJsonPath('data.slug', 'unit-301');
 
         $roomId = $created->json('data.id');
@@ -50,6 +51,10 @@ class InternalRoomApiTest extends TestCase
         $this->getJson("/api/internal/rooms/{$roomId}")
             ->assertOk()
             ->assertJsonPath('data.name', 'Unit 301');
+
+        $this->getJson('/api/internal/rooms?search=bright')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
 
         $this->putJson("/api/internal/rooms/{$roomId}", [
             ...$this->payload(),
@@ -203,6 +208,7 @@ class InternalRoomApiTest extends TestCase
             'name' => 'Unit 301',
             'status' => 'ready',
             'description' => 'Kamar terang untuk dua tamu.',
+            'description_en' => 'A bright room for two guests.',
             'price_per_night' => 700000,
             'capacity' => 2,
             'bed_count' => 1,

@@ -17,10 +17,12 @@ class RoomRepository implements RoomRepositoryInterface
             ->with(['amenities', 'images'])
             ->withCount(['bookings as all_bookings_count' => fn ($query) => $query->withTrashed()])
             ->when($filters['search'] ?? null, function ($query, string $search): void {
-                $query->where(function ($query) use ($search): void {
+                $term = '%'.mb_strtolower($search).'%';
+                $query->where(function ($query) use ($term): void {
                     $query
-                        ->where('name', 'ilike', "%{$search}%")
-                        ->orWhere('description', 'ilike', "%{$search}%");
+                        ->whereRaw('LOWER(name) LIKE ?', [$term])
+                        ->orWhereRaw('LOWER(description) LIKE ?', [$term])
+                        ->orWhereRaw('LOWER(description_en) LIKE ?', [$term]);
                 });
             })
             ->when($filters['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))

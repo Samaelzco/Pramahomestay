@@ -7,6 +7,7 @@ export type Room = {
   status: RoomStatus;
   status_label: string;
   description: string | null;
+  description_en: string | null;
   price_per_night: string;
   capacity: number;
   bed_count: number;
@@ -29,8 +30,10 @@ export type RoomGalleryImage = {
 export type Amenity = {
   id: number;
   name: string;
+  name_en: string | null;
   slug: string;
   description: string | null;
+  description_en: string | null;
   is_active: boolean;
   room_count: number;
   can_delete: boolean;

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable(['name', 'slug', 'description', 'is_active'])]
+#[Fillable(['name', 'name_en', 'slug', 'description', 'description_en', 'is_active'])]
 class Amenity extends Model
 {
     use HasFactory, SoftDeletes;

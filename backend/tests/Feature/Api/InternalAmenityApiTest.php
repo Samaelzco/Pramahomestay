@@ -37,10 +37,11 @@ class InternalAmenityApiTest extends TestCase
     public function test_admin_can_create_filter_update_and_toggle_amenity(): void
     {
         $this->actingAsAdmin();
-        $id = $this->postJson('/api/internal/amenities', ['name' => 'Air panas', 'description' => 'Tersedia setiap saat.', 'is_active' => true])
-            ->assertCreated()->assertJsonPath('data.name', 'Air panas')->json('data.id');
+        $id = $this->postJson('/api/internal/amenities', ['name' => 'Air panas', 'name_en' => 'Hot water', 'description' => 'Tersedia setiap saat.', 'description_en' => 'Available at all times.', 'is_active' => true])
+            ->assertCreated()->assertJsonPath('data.name', 'Air panas')->assertJsonPath('data.name_en', 'Hot water')->assertJsonPath('data.description_en', 'Available at all times.')->json('data.id');
         $this->getJson('/api/internal/amenities?search=panas')->assertOk()->assertJsonCount(1, 'data');
-        $this->putJson("/api/internal/amenities/{$id}", ['name' => 'Shower air panas', 'description' => null, 'is_active' => true])
+        $this->getJson('/api/internal/amenities?search=water')->assertOk()->assertJsonCount(1, 'data');
+        $this->putJson("/api/internal/amenities/{$id}", ['name' => 'Shower air panas', 'name_en' => 'Hot shower', 'description' => null, 'description_en' => null, 'is_active' => true])
             ->assertOk()->assertJsonPath('data.slug', 'shower-air-panas');
         $this->patchJson("/api/internal/amenities/{$id}/activation", ['is_active' => false])->assertOk()->assertJsonPath('data.is_active', false);
     }

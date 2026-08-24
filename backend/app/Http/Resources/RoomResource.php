@@ -22,6 +22,7 @@ class RoomResource extends JsonResource
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
             'description' => $this->description,
+            'description_en' => $this->description_en,
             'price_per_night' => $this->price_per_night,
             'capacity' => $this->capacity,
             'bed_count' => $this->bed_count,

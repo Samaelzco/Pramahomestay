@@ -7,7 +7,9 @@ import { redirect } from "next/navigation";
 
 const payload = (formData: FormData) => ({
   name: formData.get("name"),
+  name_en: formData.get("name_en") || null,
   description: formData.get("description") || null,
+  description_en: formData.get("description_en") || null,
   is_active: formData.get("is_active") === "1",
 });
 

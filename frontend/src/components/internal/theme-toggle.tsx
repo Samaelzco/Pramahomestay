@@ -1,6 +1,7 @@
 "use client";
 
 import { MoonIcon, SunIcon } from "@/components/ui/icons";
+import { localize, useLocale } from "@/lib/locale";
 import { useSyncExternalStore } from "react";
 
 type Theme = "light" | "dark";
@@ -54,6 +55,7 @@ function themeSnapshot(): Theme {
 
 export function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, themeSnapshot, () => "light");
+  const locale = useLocale();
 
   function toggleTheme() {
     const next = themeSnapshot() === "dark" ? "light" : "dark";
@@ -66,7 +68,7 @@ export function ThemeToggle() {
     window.setTimeout(() => document.documentElement.classList.remove("theme-transition"), 220);
   }
 
-  const label = theme === "dark" ? "Gunakan mode terang" : "Gunakan mode gelap";
+  const label = theme === "dark" ? localize(locale, "Gunakan mode terang", "Use light mode") : localize(locale, "Gunakan mode gelap", "Use dark mode");
 
-  return <button type="button" onClick={toggleTheme} aria-label={label} aria-pressed={theme === "dark"} title={label} className="ml-auto grid size-11 shrink-0 place-items-center rounded-sm border bg-surface-low text-primary transition-colors hover:bg-surface-high focus-visible:outline-offset-2"><SunIcon className="theme-show-light size-5" /><MoonIcon className="theme-show-dark size-5" /></button>;
+  return <button type="button" onClick={toggleTheme} aria-label={label} aria-pressed={theme === "dark"} title={label} className="grid size-11 shrink-0 place-items-center rounded-sm border bg-surface-low text-primary transition-colors hover:bg-surface-high focus-visible:outline-offset-2"><SunIcon className="theme-show-light size-5" /><MoonIcon className="theme-show-dark size-5" /></button>;
 }

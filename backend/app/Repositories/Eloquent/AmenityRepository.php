@@ -15,7 +15,7 @@ class AmenityRepository implements AmenityRepositoryInterface
         return $this->model->newQuery()->withCount('rooms')
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $term = '%'.mb_strtolower($search).'%';
-                $query->where(fn ($query) => $query->whereRaw('LOWER(name) LIKE ?', [$term])->orWhereRaw('LOWER(description) LIKE ?', [$term]));
+                $query->where(fn ($query) => $query->whereRaw('LOWER(name) LIKE ?', [$term])->orWhereRaw('LOWER(name_en) LIKE ?', [$term])->orWhereRaw('LOWER(description) LIKE ?', [$term])->orWhereRaw('LOWER(description_en) LIKE ?', [$term]));
             })
             ->when(array_key_exists('is_active', $filters), fn ($query) => $query->where('is_active', $filters['is_active']))
             ->orderBy('name')->paginate($perPage)->withQueryString();

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'slug',
     'status',
     'description',
+    'description_en',
     'price_per_night',
     'capacity',
     'bed_count',

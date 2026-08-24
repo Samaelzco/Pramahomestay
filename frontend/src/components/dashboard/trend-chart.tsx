@@ -1,10 +1,9 @@
+"use client";
+
 import { useId } from "react";
+import { localize, useLocale } from "@/lib/locale";
 
 type Point = { date: string; endDate?: string; value: number };
-
-const dateLabel = (value: string, long = false) => new Intl.DateTimeFormat("id-ID", long
-  ? { day: "numeric", month: "short", year: "numeric" }
-  : { day: "numeric", month: "short" }).format(new Date(`${value}T00:00:00`));
 
 export function TrendChart({ points, formatValue, formatAxis, maxValue, title, description, granularity }: {
   points: Point[];
@@ -15,6 +14,9 @@ export function TrendChart({ points, formatValue, formatAxis, maxValue, title, d
   description: string;
   granularity: "day" | "week" | "month";
 }) {
+  const locale = useLocale();
+  const localeCode = locale === "en" ? "en-US" : "id-ID";
+  const dateLabel = (value: string, long = false) => new Intl.DateTimeFormat(localeCode, long ? { day: "numeric", month: "short", year: "numeric" } : { day: "numeric", month: "short" }).format(new Date(`${value}T00:00:00`));
   const id = useId();
   const titleId = `${id}-title`;
   const descriptionId = `${id}-description`;
@@ -40,15 +42,15 @@ export function TrendChart({ points, formatValue, formatAxis, maxValue, title, d
   const yTicks = [scaleMax, scaleMax / 2, 0];
 
   return <figure>
-    <figcaption className="flex items-start justify-between gap-5"><div><h3 className="text-base font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted">{description}</p></div><div className="shrink-0 text-right"><p className="text-xs text-muted">Terakhir</p><p className="mt-1 text-sm font-semibold tabular-nums">{formatValue(latest)}</p></div></figcaption>
+    <figcaption className="flex items-start justify-between gap-5"><div><h3 className="text-base font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-muted">{description}</p></div><div className="shrink-0 text-right"><p className="text-xs text-muted">{localize(locale, "Terakhir", "Latest")}</p><p className="mt-1 text-sm font-semibold tabular-nums">{formatValue(latest)}</p></div></figcaption>
     <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby={`${titleId} ${descriptionId}`} className="mt-5 h-auto w-full overflow-visible">
-      <title id={titleId}>{title}</title><desc id={descriptionId}>{`${description}. Nilai terakhir ${formatValue(latest)} dan nilai tertinggi ${formatValue(dataMax)}.`}</desc>
+      <title id={titleId}>{title}</title><desc id={descriptionId}>{localize(locale, `${description}. Nilai terakhir ${formatValue(latest)} dan nilai tertinggi ${formatValue(dataMax)}.`, `${description}. Latest value ${formatValue(latest)} and highest value ${formatValue(dataMax)}.`)}</desc>
       {yTicks.map((tick, index) => { const y = pad.top + innerHeight * (index / 2); return <g key={index}><line x1={pad.left} x2={width - pad.right} y1={y} y2={y} stroke="currentColor" className="text-outline/55" strokeWidth="1" /><text x={pad.left - 7} y={y + 4} textAnchor="end" fill="var(--muted)" fontSize="11">{formatAxis(tick)}</text></g>; })}
       <path d={area} fill={`url(#${gradientId})`} />
       <defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="var(--secondary)" stopOpacity=".24" /><stop offset="1" stopColor="var(--secondary)" stopOpacity=".015" /></linearGradient></defs>
       <path d={line} fill="none" stroke="var(--secondary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {markers.map((point) => <circle key={point.date} cx={point.x} cy={point.y} r="3" fill="var(--surface)" stroke="var(--secondary)" strokeWidth="2"><title>{`${dateLabel(point.date, true)}${point.endDate && point.endDate !== point.date ? `–${dateLabel(point.endDate, true)}` : ""}: ${formatValue(point.value)}`}</title></circle>)}
-      {xLabels.map((index) => <text key={index} x={coordinates[index]?.x} y={height - 6} textAnchor={index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"} fill="var(--muted)" fontSize="11">{coordinates[index] ? (granularity === "month" ? new Intl.DateTimeFormat("id-ID", { month: "short", year: "2-digit" }).format(new Date(`${coordinates[index].date}T00:00:00`)) : dateLabel(coordinates[index].date)) : ""}</text>)}
+      {xLabels.map((index) => <text key={index} x={coordinates[index]?.x} y={height - 6} textAnchor={index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"} fill="var(--muted)" fontSize="11">{coordinates[index] ? (granularity === "month" ? new Intl.DateTimeFormat(localeCode, { month: "short", year: "2-digit" }).format(new Date(`${coordinates[index].date}T00:00:00`)) : dateLabel(coordinates[index].date)) : ""}</text>)}
     </svg>
   </figure>;
 }

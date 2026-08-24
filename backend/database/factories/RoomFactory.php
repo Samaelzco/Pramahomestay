@@ -21,6 +21,7 @@ class RoomFactory extends Factory
             'slug' => Str::slug($name),
             'status' => fake()->randomElement(RoomStatus::cases()),
             'description' => fake()->paragraph(),
+            'description_en' => fake()->paragraph(),
             'price_per_night' => fake()->numberBetween(350_000, 1_500_000),
             'capacity' => fake()->numberBetween(1, 6),
             'bed_count' => fake()->numberBetween(1, 3),

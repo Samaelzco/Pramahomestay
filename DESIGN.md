@@ -130,6 +130,8 @@ The palette is rooted in a high-contrast urban foundation, balanced by organic w
 
 The internal header exposes the theme control in its trailing edge: opposite the menu trigger on compact screens and after the page context on desktop. The first visit follows the operating-system preference; an explicit light or dark choice is persisted for future visits.
 
+The language selector sits immediately before the theme control and shows the active locale (`ID` or `EN`) with a short menu for Bahasa Indonesia and English. Bahasa Indonesia is the default and saved choices persist in the browser. Guest-facing room descriptions and amenity content store both languages; when English content is missing, the Indonesian source is shown as a deliberate fallback rather than an empty value.
+
 ## Typography
 
 The design system utilizes **Inter** exclusively to maintain a utilitarian, modern, and highly legible aesthetic. 
