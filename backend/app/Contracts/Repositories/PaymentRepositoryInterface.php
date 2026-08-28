@@ -16,6 +16,10 @@ interface PaymentRepositoryInterface
 
     public function findForUpdate(int $id): Payment;
 
+    public function findByBookingId(int $bookingId): ?Payment;
+
+    public function findByBookingForUpdate(int $bookingId): ?Payment;
+
     public function existsForBooking(int $bookingId, ?int $ignoreId = null): bool;
 
     public function hasCreditedPaymentForBooking(int $bookingId): bool;

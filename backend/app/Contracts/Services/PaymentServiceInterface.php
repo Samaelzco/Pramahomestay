@@ -2,6 +2,7 @@
 
 namespace App\Contracts\Services;
 
+use App\Models\Booking;
 use App\Models\Payment;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -11,6 +12,10 @@ interface PaymentServiceInterface
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator;
 
     public function create(array $attributes, ?int $createdBy = null): Payment;
+
+    public function findForBooking(int $bookingId): ?Payment;
+
+    public function submitPublicProof(Booking $booking, array $attributes): Payment;
 
     public function update(Payment $payment, array $attributes): Payment;
 

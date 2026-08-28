@@ -26,6 +26,8 @@ class PublicBookingController extends Controller
                 'total_nights' => $booking->total_nights,
                 'total_amount' => $booking->total_amount,
                 'status' => $booking->status->value,
+                'payment_token' => $booking->public_access_token,
+                'payment_due_at' => $booking->payment_due_at?->toIso8601String(),
             ],
         ], 201);
     }

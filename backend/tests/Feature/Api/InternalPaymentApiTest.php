@@ -66,6 +66,8 @@ class InternalPaymentApiTest extends TestCase
         ])->assertOk()
             ->assertJsonPath('data.status', 'paid')
             ->assertJsonPath('data.remaining_amount', '0.00');
+
+        $this->assertDatabaseHas('bookings', ['id' => $this->booking->id, 'status' => 'confirmed']);
     }
 
     public function test_it_rejects_overpayment_and_duplicate_booking_payment(): void

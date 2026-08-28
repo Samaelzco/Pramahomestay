@@ -201,6 +201,6 @@ class ReportService implements ReportServiceInterface
     {
         if (! $en) return $fallback;
 
-        return ['unpaid' => 'Unpaid', 'partial' => 'Partially paid', 'paid' => 'Paid', 'failed' => 'Failed', 'refunded' => 'Refunded'][$status] ?? $fallback;
+        return ['unpaid' => 'Unpaid', 'pending_verification' => 'Pending verification', 'partial' => 'Partially paid', 'paid' => 'Paid', 'failed' => 'Failed', 'refunded' => 'Refunded'][$status] ?? $fallback;
     }
 }

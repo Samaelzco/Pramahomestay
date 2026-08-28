@@ -58,6 +58,14 @@ class BookingRepository implements BookingRepositoryInterface
         return $this->model->newQuery()->lockForUpdate()->findOrFail($id);
     }
 
+    public function findByPublicTokenHash(string $tokenHash): Booking
+    {
+        return $this->model->newQuery()
+            ->with(['room.images', 'payment'])
+            ->where('public_access_token_hash', $tokenHash)
+            ->firstOrFail();
+    }
+
     public function hasDateConflict(int $roomId, string $checkIn, string $checkOut, ?int $ignoreId = null): bool
     {
         return $this->model->newQuery()

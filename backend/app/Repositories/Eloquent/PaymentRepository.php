@@ -54,6 +54,16 @@ class PaymentRepository implements PaymentRepositoryInterface
         return $this->model->newQuery()->lockForUpdate()->findOrFail($id);
     }
 
+    public function findByBookingId(int $bookingId): ?Payment
+    {
+        return $this->model->newQuery()->with('booking.room')->where('booking_id', $bookingId)->first();
+    }
+
+    public function findByBookingForUpdate(int $bookingId): ?Payment
+    {
+        return $this->model->newQuery()->where('booking_id', $bookingId)->lockForUpdate()->first();
+    }
+
     public function existsForBooking(int $bookingId, ?int $ignoreId = null): bool
     {
         return $this->model->newQuery()

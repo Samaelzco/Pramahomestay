@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'booking_code', 'room_id', 'guest_id', 'guest_name', 'guest_email', 'guest_phone',
+    'booking_code', 'public_access_token_hash', 'room_id', 'guest_id', 'guest_name', 'guest_email', 'guest_phone',
     'check_in', 'check_out', 'guest_count', 'price_per_night', 'total_nights',
-    'total_amount', 'status', 'special_requests', 'internal_notes', 'created_by',
+    'total_amount', 'status', 'payment_due_at', 'special_requests', 'internal_notes', 'created_by',
 ])]
 class Booking extends Model
 {
@@ -31,6 +31,7 @@ class Booking extends Model
             'price_per_night' => 'decimal:2',
             'total_nights' => 'integer',
             'total_amount' => 'decimal:2',
+            'payment_due_at' => 'datetime',
         ];
     }
 

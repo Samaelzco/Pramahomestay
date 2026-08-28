@@ -18,6 +18,8 @@ interface BookingRepositoryInterface
 
     public function findForUpdate(int $id): Booking;
 
+    public function findByPublicTokenHash(string $tokenHash): Booking;
+
     public function hasDateConflict(int $roomId, string $checkIn, string $checkOut, ?int $ignoreId = null): bool;
 
     public function codeExists(string $code): bool;

@@ -42,7 +42,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const seriesCopy = granularityCopy[data.period.granularity];
   const periodNote = data.period.is_custom ? `${date(data.period.start)}–${date(data.period.end)}` : t(`Dalam ${data.period.days} hari`, `Over ${data.period.days} days`);
   const bookingLabels: Record<string, string> = { pending: "Pending", confirmed: "Confirmed", checked_in: "Checked in", checked_out: "Checked out", cancelled: "Cancelled" };
-  const paymentLabels: Record<string, string> = { unpaid: "Unpaid", partial: "Partially paid", paid: "Paid", failed: "Failed", refunded: "Refunded" };
+  const paymentLabels: Record<string, string> = { unpaid: "Unpaid", pending_verification: "Pending verification", partial: "Partially paid", paid: "Paid", failed: "Failed", refunded: "Refunded" };
   const bookingStatuses = data.booking_statuses.map((row) => ({ ...row, label: locale === "en" ? bookingLabels[row.status] ?? row.label : row.label }));
   const paymentStatuses = data.payment_statuses.map((row) => ({ ...row, label: locale === "en" ? paymentLabels[row.status] ?? row.label : row.label }));
 

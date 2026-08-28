@@ -2,6 +2,7 @@
 
 import { ApiError, apiFetch } from "@/lib/api/client";
 import type { ApiItem, PublicBookingActionState, PublicBookingResult } from "@/lib/api/types";
+import { redirect } from "next/navigation";
 
 export async function createPublicBookingAction(_state: PublicBookingActionState, formData: FormData): Promise<PublicBookingActionState> {
   const payload = {
@@ -14,11 +15,14 @@ export async function createPublicBookingAction(_state: PublicBookingActionState
     phone: String(formData.get("phone") ?? ""),
   };
 
+  let booking: PublicBookingResult;
   try {
     const response = await apiFetch<ApiItem<PublicBookingResult>>("/public/bookings", { method: "POST", body: JSON.stringify(payload) }, false);
-    return { success: true, message: response.message, booking: response.data };
+    booking = response.data;
   } catch (error) {
     if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
     return { message: "Permintaan booking belum dapat dikirim. Silakan coba lagi." };
   }
+
+  redirect(`/booking/payment/${booking.payment_token}`);
 }

@@ -31,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('login', fn (Request $request): Limit => Limit::perMinute(5)->by(mb_strtolower((string) $request->input('email')).'|'.$request->ip()));
         RateLimiter::for('public-bookings', fn (Request $request): Limit => Limit::perMinute(5)->by((string) $request->ip()));
+        RateLimiter::for('public-payments', fn (Request $request): Limit => Limit::perMinute(10)->by((string) $request->ip()));
 
         foreach ([Room::class, Amenity::class, Booking::class, Payment::class, Guest::class, HomestaySetting::class] as $model) {
             $model::observe(AuditObserver::class);

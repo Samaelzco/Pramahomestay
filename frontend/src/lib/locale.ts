@@ -93,6 +93,11 @@ const apiMessageTranslations: Record<string, string> = {
   "Akun yang sedang digunakan tidak dapat dihapus.": "The account currently in use cannot be deleted.",
   "User tidak dapat dihapus karena memiliki riwayat operasional. Nonaktifkan akun sebagai gantinya.": "The user cannot be deleted because they have operational history. Deactivate the account instead.",
   "Bukti pembayaran gagal disimpan.": "The payment receipt could not be saved.",
+  "Pilih bukti pembayaran untuk diunggah.": "Choose a payment receipt to upload.",
+  "Booking ini sudah dibatalkan.": "This booking has been cancelled.",
+  "Batas waktu pembayaran telah berakhir. Hubungi pengelola untuk bantuan.": "The payment deadline has expired. Contact the property for assistance.",
+  "Bukti pembayaran sudah dikirim dan sedang diproses.": "The payment receipt has already been submitted and is being processed.",
+  "Bukti pembayaran belum dapat dikirim. Periksa koneksi lalu coba lagi.": "The payment receipt could not be submitted. Check the connection and try again.",
 };
 
 export function localizeApiMessage(locale: Locale, message: string): string {

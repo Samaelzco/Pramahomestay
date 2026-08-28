@@ -7,7 +7,7 @@ const bookingStatuses: Record<string, [string, string]> = {
   checked_in: ["Check-in", "Checked in"], checked_out: ["Selesai", "Checked out"], cancelled: ["Dibatalkan", "Cancelled"],
 };
 const paymentStatuses: Record<string, [string, string]> = {
-  unpaid: ["Belum dibayar", "Unpaid"], partial: ["Dibayar sebagian", "Partially paid"], paid: ["Lunas", "Paid"],
+  unpaid: ["Belum dibayar", "Unpaid"], pending_verification: ["Menunggu verifikasi", "Pending verification"], partial: ["Dibayar sebagian", "Partially paid"], paid: ["Lunas", "Paid"],
   failed: ["Gagal", "Failed"], refunded: ["Dikembalikan", "Refunded"],
 };
 const roomStatuses: Record<string, [string, string]> = {

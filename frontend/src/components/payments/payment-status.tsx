@@ -5,6 +5,7 @@ import { localize, useLocale } from "@/lib/locale";
 
 const styles: Record<Status, string> = {
   unpaid: "bg-[#f2ece2] text-[#6d5733]",
+  pending_verification: "bg-[#e5e9f2] text-[#3f4f70]",
   partial: "bg-[#fff0cc] text-[#735500]",
   paid: "bg-[#dcefe3] text-[#28533b]",
   failed: "bg-[#ffdad6] text-[#93000a]",
@@ -13,6 +14,6 @@ const styles: Record<Status, string> = {
 
 export function PaymentStatus({ status, label }: { status: Status; label: string }) {
   const locale = useLocale();
-  const labels: Record<Status, string> = { unpaid: "Unpaid", partial: "Partially paid", paid: "Paid", failed: "Failed", refunded: "Refunded" };
+  const labels: Record<Status, string> = { unpaid: "Unpaid", pending_verification: "Pending verification", partial: "Partially paid", paid: "Paid", failed: "Failed", refunded: "Refunded" };
   return <span className={`inline-flex rounded-sm px-2.5 py-1.5 text-[10px] font-semibold tracking-[0.08em] uppercase ${styles[status]}`}>{localize(locale, label, labels[status])}</span>;
 }

@@ -6,7 +6,10 @@ use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Services\PaymentServiceInterface;
+use App\Enums\BookingStatus;
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Models\Booking;
 use App\Models\Payment;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
@@ -49,12 +52,78 @@ class PaymentService implements PaymentServiceInterface
                 $attributes['created_by'] = $createdBy;
                 $this->applyProof($attributes, $proofPath);
 
-                return $this->payments->create($attributes);
+                $payment = $this->payments->create($attributes);
+                $this->confirmBookingWhenPaid($booking, $payment);
+
+                return $payment;
             });
         } catch (Throwable $exception) {
             $this->deleteProof($proofPath);
             throw $exception;
         }
+    }
+
+    public function findForBooking(int $bookingId): ?Payment
+    {
+        return $this->payments->findByBookingId($bookingId);
+    }
+
+    public function submitPublicProof(Booking $booking, array $attributes): Payment
+    {
+        $proof = $this->extractProof($attributes);
+        if (! $proof) {
+            throw ValidationException::withMessages(['proof' => 'Pilih bukti pembayaran untuk diunggah.']);
+        }
+
+        if ($booking->status === BookingStatus::Cancelled) {
+            throw ValidationException::withMessages(['booking' => 'Booking ini sudah dibatalkan.']);
+        }
+        if ($booking->payment_due_at?->isPast()) {
+            throw ValidationException::withMessages(['booking' => 'Batas waktu pembayaran telah berakhir. Hubungi pengelola untuk bantuan.']);
+        }
+
+        $proofPath = $this->storeProof($proof);
+        $oldProofPath = null;
+
+        try {
+            $payment = DB::transaction(function () use ($booking, $attributes, $proofPath, &$oldProofPath): Payment {
+                $lockedBooking = $this->bookings->findForUpdate($booking->id);
+                $existing = $this->payments->findByBookingForUpdate($booking->id);
+
+                if ($existing && ! in_array($existing->status, [PaymentStatus::Unpaid, PaymentStatus::Failed], true)) {
+                    throw ValidationException::withMessages(['proof' => 'Bukti pembayaran sudah dikirim dan sedang diproses.']);
+                }
+
+                $values = [
+                    'booking_id' => $lockedBooking->id,
+                    'amount_paid' => $lockedBooking->total_amount,
+                    'method' => PaymentMethod::BankTransfer->value,
+                    'status' => PaymentStatus::PendingVerification->value,
+                    'reference_number' => $attributes['reference_number'] ?? null,
+                    'paid_at' => now(),
+                    'proof_path' => $proofPath,
+                    'proof_url' => Storage::disk('public')->url($proofPath),
+                    'created_by' => null,
+                ];
+
+                if ($existing) {
+                    $oldProofPath = $existing->proof_path;
+                    return $this->payments->update($existing, $values);
+                }
+
+                $values['payment_code'] = $this->uniqueCode();
+                return $this->payments->create($values);
+            });
+        } catch (Throwable $exception) {
+            $this->deleteProof($proofPath);
+            throw $exception;
+        }
+
+        if ($oldProofPath && $oldProofPath !== $proofPath) {
+            $this->deleteProof($oldProofPath);
+        }
+
+        return $payment;
     }
 
     public function update(Payment $payment, array $attributes): Payment
@@ -82,7 +151,10 @@ class PaymentService implements PaymentServiceInterface
                     $attributes['proof_url'] = null;
                 }
 
-                return $this->payments->update($payment, $attributes);
+                $updated = $this->payments->update($payment, $attributes);
+                $this->confirmBookingWhenPaid($booking, $updated);
+
+                return $updated;
             });
         } catch (Throwable $exception) {
             $this->deleteProof($newProofPath);
@@ -133,7 +205,7 @@ class PaymentService implements PaymentServiceInterface
         if ($requested === PaymentStatus::Refunded && ! $alreadyRefunded) {
             throw ValidationException::withMessages(['status' => 'Gunakan aksi Kembalikan dan sertakan alasan pengembalian.']);
         }
-        if (! in_array($requested, [PaymentStatus::Failed, PaymentStatus::Refunded], true)) {
+        if (! in_array($requested, [PaymentStatus::Failed, PaymentStatus::Refunded, PaymentStatus::PendingVerification], true)) {
             $attributes['status'] = match (bccomp($amount, '0', 2)) {
                 0 => PaymentStatus::Unpaid->value,
                 default => bccomp($amount, $total, 2) === 0
@@ -193,5 +265,12 @@ class PaymentService implements PaymentServiceInterface
         } while ($this->payments->codeExists($code));
 
         return $code;
+    }
+
+    private function confirmBookingWhenPaid(Booking $booking, Payment $payment): void
+    {
+        if ($payment->status === PaymentStatus::Paid && $booking->status === BookingStatus::Pending) {
+            $this->bookings->update($booking, ['status' => BookingStatus::Confirmed->value]);
+        }
     }
 }

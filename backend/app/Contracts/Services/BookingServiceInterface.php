@@ -14,6 +14,8 @@ interface BookingServiceInterface
 
     public function createPublic(array $attributes): Booking;
 
+    public function findPublicByToken(string $token): Booking;
+
     public function update(Booking $booking, array $attributes): Booking;
 
     public function cancel(Booking $booking, ?string $reason = null): Booking;

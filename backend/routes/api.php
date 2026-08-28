@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Internal\RoomController;
 use App\Http\Controllers\Api\Internal\UserController;
 use App\Http\Controllers\Api\PublicSiteController;
 use App\Http\Controllers\Api\PublicBookingController;
+use App\Http\Controllers\Api\PublicPaymentController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,11 @@ Route::get('/public/landing', [PublicSiteController::class, 'landing'])
 
 Route::post('/public/bookings', [PublicBookingController::class, 'store'])
     ->middleware('throttle:public-bookings');
+
+Route::get('/public/payments/{token}', [PublicPaymentController::class, 'show'])
+    ->middleware('throttle:public-payments');
+Route::post('/public/payments/{token}/proof', [PublicPaymentController::class, 'store'])
+    ->middleware('throttle:public-payments');
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request) => new UserResource($request->user()));

@@ -58,6 +58,7 @@ class BookingService implements BookingServiceInterface
     public function createPublic(array $attributes): Booking
     {
         return DB::transaction(function () use ($attributes): Booking {
+            $publicToken = Str::random(64);
             $email = mb_strtolower(trim((string) $attributes['email']));
             $guest = $this->guests->findByEmailForUpdate($email);
             $guestAttributes = [
@@ -75,17 +76,28 @@ class BookingService implements BookingServiceInterface
                 $guest = $this->guests->update($guest, $guestAttributes);
             }
 
-            return $this->create([
+            $booking = $this->create([
+                'public_access_token_hash' => hash('sha256', $publicToken),
                 'room_id' => (int) $attributes['room_id'],
                 'guest_id' => $guest->id,
                 'check_in' => $attributes['check_in'],
                 'check_out' => $attributes['check_out'],
                 'guest_count' => (int) $attributes['guest_count'],
                 'status' => BookingStatus::Pending->value,
+                'payment_due_at' => now()->addHours(24),
                 'special_requests' => $attributes['special_requests'] ?? null,
                 'internal_notes' => null,
             ]);
+
+            return $booking->setAttribute('public_access_token', $publicToken);
         });
+    }
+
+    public function findPublicByToken(string $token): Booking
+    {
+        abort_unless(preg_match('/^[A-Za-z0-9]{64}$/', $token) === 1, 404);
+
+        return $this->bookings->findByPublicTokenHash(hash('sha256', $token));
     }
 
     public function update(Booking $booking, array $attributes): Booking

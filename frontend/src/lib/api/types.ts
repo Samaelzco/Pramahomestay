@@ -65,6 +65,8 @@ export type PublicBookingResult = {
   total_nights: number;
   total_amount: string;
   status: "pending";
+  payment_token: string;
+  payment_due_at: string;
 };
 
 export type PublicBookingActionState = ActionState & { booking?: PublicBookingResult };
@@ -215,7 +217,42 @@ export type Booking = {
 export type PaginatedBookings = { data: Booking[]; meta: PaginationMeta };
 
 export type PaymentMethod = "cash" | "bank_transfer" | "qris" | "card";
-export type PaymentStatus = "unpaid" | "partial" | "paid" | "failed" | "refunded";
+export type PaymentStatus = "unpaid" | "pending_verification" | "partial" | "paid" | "failed" | "refunded";
+
+export type PublicPaymentData = {
+  property: {
+    name: string;
+    phone: string | null;
+    email: string | null;
+    bank_name: string | null;
+    bank_account_number: string | null;
+    bank_account_holder: string | null;
+    qris_notes: string | null;
+    payment_instructions: string | null;
+  };
+  booking: {
+    booking_code: string;
+    room_name: string;
+    room_image_url: string | null;
+    guest_name: string;
+    check_in: string;
+    check_out: string;
+    guest_count: number;
+    total_nights: number;
+    total_amount: string;
+    status: BookingStatus;
+    payment_due_at: string | null;
+    payment_expired: boolean;
+  };
+  payment: null | {
+    payment_code: string;
+    status: PaymentStatus;
+    status_label: string;
+    reference_number: string | null;
+    proof_url: string | null;
+    submitted_at: string | null;
+  };
+};
 
 export type Payment = {
   id: number;
