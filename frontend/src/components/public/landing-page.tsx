@@ -7,11 +7,12 @@ import type { PublicAmenity, PublicLandingData } from "@/lib/api/types";
 import { localize, type Locale } from "@/lib/locale";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollSmoother);
 
 type LandingPageProps = { data: PublicLandingData; locale: Locale; today: string };
 
@@ -98,8 +99,41 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
     }
   }
 
+  function scrollToSection(event: MouseEvent<HTMLAnchorElement>, target: string) {
+    event.preventDefault();
+    setMobileNavOpen(false);
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const smoother = ScrollSmoother.get();
+
+    if (smoother) {
+      smoother.scrollTo(target, !reduceMotion, "top 80px");
+      return;
+    }
+
+    document.querySelector(target)?.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  }
+
   useGSAP(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
     const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
+      const smoother = ScrollSmoother.create({
+        wrapper: "#smooth-wrapper",
+        content: "#smooth-content",
+        smooth: 0.9,
+        smoothTouch: false,
+        effects: false,
+      });
+
+      return () => smoother.kill();
+    });
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       gsap.timeline({ defaults: { ease: "expo.out" } })
@@ -144,29 +178,42 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
         gsap.fromTo(image, { yPercent: -5, scale: 1.04 }, { yPercent: 5, ease: "none", scrollTrigger: { trigger: image.parentElement, start: "top bottom", end: "bottom top", scrub: 0.7 } });
       });
 
+      const facilityMediaElement = root.current?.querySelector<HTMLElement>(".facility-image");
+      const facilitiesSection = root.current?.querySelector<HTMLElement>(".facilities");
+      if (facilityMediaElement && facilitiesSection) {
+        gsap.fromTo(
+          facilityMediaElement,
+          { yPercent: -5, scale: 1.08 },
+          { yPercent: 5, scale: 1.08, ease: "none", scrollTrigger: { trigger: facilitiesSection, start: "top bottom", end: "bottom top", scrub: 0.7 } },
+        );
+      }
+
       gsap.fromTo(".final-media img", { scale: 1.02 }, { scale: 1.12, ease: "none", scrollTrigger: { trigger: ".final-cta", start: "top bottom", end: "bottom top", scrub: 0.8 } });
       requestAnimationFrame(() => ScrollTrigger.refresh());
       return () => carouselTimer?.kill();
     });
 
     mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
-      gsap.from(".facility-visual", { y: 40, autoAlpha: 0, duration: 0.8, ease: "expo.out", scrollTrigger: { trigger: ".facilities", start: "top 70%" } });
+      gsap.from(".facility-visual", { y: 40, duration: 0.8, ease: "expo.out", scrollTrigger: { trigger: ".facilities", start: "top 70%" } });
     });
 
-    return () => mm.revert();
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+      mm.revert();
+    };
   }, { scope: root });
 
-  return <div ref={root} className="public-site overflow-clip bg-background text-foreground">
+  return <div ref={root} className="public-site bg-background text-foreground">
     <header className="public-header fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,box-shadow] duration-300">
       <div className="flex h-20 w-full items-center justify-between px-5 sm:px-8 lg:px-12 xl:px-16">
-        <a href="#top" className="public-brand flex items-center gap-3" aria-label={`${data.property.name} home`}>
+        <a href="#top" onClick={(event) => scrollToSection(event, "#top")} className="public-brand flex items-center gap-3" aria-label={`${data.property.name} home`}>
           <span className="public-brand-mark grid size-10 place-items-center rounded-sm bg-primary text-background"><HomeIcon className="size-5" /></span>
           <span className="text-sm font-bold tracking-[-0.02em] sm:text-base">{data.property.name}</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm font-medium lg:flex" aria-label={t.menu}>
-          <a className="public-nav-link" href="#facilities">{t.navFacilities}</a>
-          <a className="public-nav-link" href="#stay">{t.navStay}</a>
-          <a className="public-nav-link" href="#location">{t.navLocation}</a>
+          <a className="public-nav-link" href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")}>{t.navFacilities}</a>
+          <a className="public-nav-link" href="#stay" onClick={(event) => scrollToSection(event, "#stay")}>{t.navStay}</a>
+          <a className="public-nav-link" href="#location" onClick={(event) => scrollToSection(event, "#location")}>{t.navLocation}</a>
         </nav>
         <div className="public-header-tools flex items-center gap-2">
           <LanguageToggle />
@@ -176,13 +223,15 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
         </div>
       </div>
       {mobileNavOpen && <nav id="public-mobile-navigation" aria-label={t.menu} className="absolute inset-x-4 top-[calc(100%+8px)] grid gap-1 bg-background p-3 text-foreground shadow-[0_22px_60px_-28px_rgba(0,0,0,0.45)] sm:inset-x-8 lg:hidden">
-        <a href="#facilities" onClick={() => setMobileNavOpen(false)} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navFacilities}</a>
-        <a href="#stay" onClick={() => setMobileNavOpen(false)} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navStay}</a>
-        <a href="#location" onClick={() => setMobileNavOpen(false)} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navLocation}</a>
+        <a href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navFacilities}</a>
+        <a href="#stay" onClick={(event) => scrollToSection(event, "#stay")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navStay}</a>
+        <a href="#location" onClick={(event) => scrollToSection(event, "#location")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navLocation}</a>
         <a href="/booking" className="mt-2 flex min-h-12 items-center justify-center bg-primary px-5 text-sm font-bold text-background">{t.check}</a>
       </nav>}
     </header>
 
+    <div id="smooth-wrapper">
+      <div id="smooth-content" className="overflow-clip">
     <main id="top">
       <div className="hero-shell relative bg-background">
         <section className="hero-section relative isolate min-h-[620px] overflow-hidden sm:min-h-[720px] lg:min-h-[max(900px,100svh)]">
@@ -197,7 +246,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
             <p className="mt-6 max-w-[38rem] text-pretty text-base leading-7 text-white/80 sm:mt-8 sm:text-lg sm:leading-8">{t.heroBody}</p>
             <div className="mt-8 flex flex-wrap items-center gap-5 sm:mt-10">
               <a href="/booking" className="group inline-flex h-13 items-center gap-3 bg-white px-6 text-sm font-bold text-black transition-transform hover:-translate-y-0.5">{t.check}<ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" /></a>
-              <a href="#stay" className="public-hero-link text-sm font-semibold">{t.explore}</a>
+              <a href="#stay" onClick={(event) => scrollToSection(event, "#stay")} className="public-hero-link text-sm font-semibold">{t.explore}</a>
             </div>
           </div>
         </section>
@@ -219,9 +268,9 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
       </div>
 
       <section id="facilities" className="facilities grid w-full gap-12 bg-surface-warm px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20 lg:px-12 lg:py-32 xl:px-16">
-        <div className="facility-visual lg:sticky lg:top-28 lg:h-[calc(100vh-9rem)] lg:max-h-[46rem] lg:self-start">
+        <div className="facility-visual lg:h-[calc(100vh-9rem)] lg:max-h-[46rem] lg:self-start">
           <figure className="relative h-[26rem] overflow-hidden bg-surface-low sm:h-[34rem] lg:h-full">
-            {facilityImage && <Image src={facilityImage.url} alt={facilityImage.alt} fill loading="eager" sizes="(min-width: 1024px) 42vw, 100vw" className="facility-image object-cover transition-transform duration-700 hover:scale-[1.015]" />}
+            {facilityImage && <Image src={facilityImage.url} alt={facilityImage.alt} fill loading="eager" sizes="(min-width: 1024px) 42vw, 100vw" className="facility-image object-cover" />}
             {!facilityImage && <div className="absolute inset-0 bg-surface-high" />}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-black/10" />
             <figcaption className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
@@ -248,11 +297,12 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
             <h2 className="max-w-[15ch] text-balance text-[clamp(2.7rem,5vw,5.2rem)] leading-[0.98] font-semibold tracking-[-0.04em]">{t.galleryTitle}</h2>
             <p className="max-w-xl text-lg leading-8 text-muted lg:justify-self-end">{t.galleryBody}</p>
           </div>
-          {visualImages.length ? <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 md:auto-rows-[15rem] md:grid-flow-dense md:grid-cols-12 lg:auto-rows-[20rem]">
+          {visualImages.length ? <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 md:grid-cols-2 lg:auto-rows-[20rem] lg:grid-flow-dense lg:grid-cols-12">
             {visualImages.map((image, index) => {
-              const layout = ["md:col-span-7 md:row-span-2", "md:col-span-5", "md:col-span-5", "md:col-span-5", "md:col-span-7"][index] ?? "md:col-span-4";
-              return <figure key={`${image.id}-${image.roomName}`} className={`gallery-media group relative min-h-64 overflow-hidden bg-surface-high ${layout}`}>
-                <Image src={image.url} alt={`${localize(locale, "Galeri kamar", "Room gallery")} · ${image.roomName}`} fill loading={index === 0 ? "eager" : "lazy"} sizes={index === 0 ? "(min-width: 768px) 58vw, 100vw" : "(min-width: 768px) 42vw, 100vw"} className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]" />
+              const layout = ["md:col-span-2 md:aspect-[16/9] lg:col-span-7 lg:row-span-2 lg:aspect-auto", "lg:col-span-5", "lg:col-span-5", "lg:col-span-5", "lg:col-span-7"][index] ?? "lg:col-span-4";
+              const imageSizes = index === 0 ? "(min-width: 1024px) 58vw, (min-width: 768px) calc(100vw - 4rem), 100vw" : "(min-width: 1024px) 42vw, (min-width: 768px) calc(50vw - 2.5rem), 100vw";
+              return <figure key={`${image.id}-${image.roomName}`} className={`gallery-media group relative min-h-64 overflow-hidden bg-surface-high md:aspect-[4/3] md:min-h-0 lg:aspect-auto ${layout}`}>
+                <Image src={image.url} alt={`${localize(locale, "Galeri kamar", "Room gallery")} · ${image.roomName}`} fill loading={index === 0 ? "eager" : "lazy"} sizes={imageSizes} className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]" />
                 <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
               </figure>;
             })}
@@ -261,7 +311,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
       </section>
 
       {hasSearch && <section aria-live="polite" className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
-        <div className="flex flex-col justify-between gap-4 border-b pb-8 sm:flex-row sm:items-end"><div><h2 className="text-3xl font-semibold tracking-[-0.03em]">{data.rooms.length} {t.available}</h2><p className="mt-2 text-muted">{data.filters.check_in} / {data.filters.check_out} · {data.filters.guests} {t.guestUnit}</p></div><a href="#availability" className="public-text-link text-sm font-semibold">{t.check}</a></div>
+        <div className="flex flex-col justify-between gap-4 border-b pb-8 sm:flex-row sm:items-end"><div><h2 className="text-3xl font-semibold tracking-[-0.03em]">{data.rooms.length} {t.available}</h2><p className="mt-2 text-muted">{data.filters.check_in} / {data.filters.check_out} · {data.filters.guests} {t.guestUnit}</p></div><a href="#availability" onClick={(event) => scrollToSection(event, "#availability")} className="public-text-link text-sm font-semibold">{t.check}</a></div>
         {data.rooms.length ? <div className="divide-y">{data.rooms.map((room) => <article key={room.id} className="grid gap-6 py-8 sm:grid-cols-[1fr_auto] sm:items-center"><div><h3 className="text-xl font-semibold">{room.name}</h3><p className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted"><span className="inline-flex items-center gap-2"><UsersIcon className="size-4" />{t.capacity} {room.capacity}</span><span className="inline-flex items-center gap-2"><BedIcon className="size-4" />{room.bed_count} {t.bed}</span></p></div><p className="text-lg font-bold">{formatMoney(room.price_per_night, locale)} <span className="text-sm font-normal text-muted">{t.perNight}</span></p></article>)}</div> : <div className="py-12"><h3 className="text-xl font-semibold">{t.noRooms}</h3><p className="mt-2 text-muted">{t.noRoomsBody}</p></div>}
       </section>}
 
@@ -289,10 +339,12 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
     <footer className="bg-[#111313] text-white">
       <div className="grid w-full gap-12 px-5 py-16 sm:px-8 md:grid-cols-3 lg:px-12 xl:px-16">
         <div><p className="text-xl font-bold">{data.property.name}</p><p className="mt-3 max-w-xs text-sm leading-6 text-white/60">{t.footer}</p></div>
-        <div><p className="text-sm font-bold">{t.menu}</p><div className="mt-4 flex flex-col items-start gap-3 text-sm text-white/60"><a href="#facilities">{t.navFacilities}</a><a href="#stay">{t.navStay}</a><a href="#location">{t.navLocation}</a></div></div>
+        <div><p className="text-sm font-bold">{t.menu}</p><div className="mt-4 flex flex-col items-start gap-3 text-sm text-white/60"><a href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")}>{t.navFacilities}</a><a href="#stay" onClick={(event) => scrollToSection(event, "#stay")}>{t.navStay}</a><a href="#location" onClick={(event) => scrollToSection(event, "#location")}>{t.navLocation}</a></div></div>
         <div><p className="text-sm font-bold">{t.contact}</p><div className="mt-4 space-y-2 text-sm text-white/60"><p>{data.property.phone ?? t.notAvailable}</p><p>{data.property.email ?? t.notAvailable}</p></div></div>
       </div>
       <div className="public-footer-divider mx-5 border-t py-6 text-xs text-white/45 sm:mx-8 lg:mx-12 xl:mx-16">© {new Date().getFullYear()} {data.property.name}</div>
     </footer>
+      </div>
+    </div>
   </div>;
 }

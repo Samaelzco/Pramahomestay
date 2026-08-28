@@ -12,8 +12,6 @@ export async function createPublicBookingAction(_state: PublicBookingActionState
     full_name: String(formData.get("full_name") ?? ""),
     email: String(formData.get("email") ?? ""),
     phone: String(formData.get("phone") ?? ""),
-    special_requests: String(formData.get("special_requests") ?? "") || null,
-    website: String(formData.get("website") ?? "") || null,
   };
 
   try {

@@ -31,7 +31,6 @@ class PublicBookingApiTest extends TestCase
             'full_name' => 'Made Pranata',
             'email' => 'MADE@example.com',
             'phone' => '6281234567890',
-            'special_requests' => 'Late arrival',
         ])->assertCreated()
             ->assertJsonPath('data.status', 'pending')
             ->assertJsonPath('data.total_nights', 3)

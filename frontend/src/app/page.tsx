@@ -9,6 +9,19 @@ export const metadata: Metadata = {
   description: "Temukan ruang menginap yang tenang, fasilitas yang lengkap, dan akses mudah dari Prama Homestay di Bali.",
 };
 
+const landingScrollResetScript = `
+  (() => {
+    try {
+      window.history.scrollRestoration = "manual";
+      const navigation = window.performance.getEntriesByType("navigation")[0];
+      if (navigation && navigation.type === "reload") {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        window.scrollTo(0, 0);
+      }
+    } catch {}
+  })();
+`;
+
 type PageProps = {
   searchParams: Promise<{ check_in?: string; check_out?: string; guests?: string }>;
 };
@@ -29,5 +42,8 @@ export default async function Home({ searchParams }: PageProps) {
   if (Number.isInteger(guests) && guests >= 1 && guests <= 20) query.set("guests", String(guests));
 
   const payload = await apiFetch<ApiItem<PublicLandingData>>(`/public/landing${query.size ? `?${query}` : ""}`, {}, false);
-  return <LandingPage data={payload.data} locale={locale} today={today} />;
+  return <>
+    <script dangerouslySetInnerHTML={{ __html: landingScrollResetScript }} />
+    <LandingPage data={payload.data} locale={locale} today={today} />
+  </>;
 }
