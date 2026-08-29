@@ -4,6 +4,7 @@ import { LanguageToggle } from "@/components/internal/language-toggle";
 import { ThemeToggle } from "@/components/internal/theme-toggle";
 import { ArrowRightIcon, BedIcon, CheckIcon, ExternalLinkIcon, HomeIcon, MapPinIcon, MenuIcon, UsersIcon, XIcon } from "@/components/ui/icons";
 import type { PublicAmenity, PublicLandingData } from "@/lib/api/types";
+import { nextDate } from "@/lib/date";
 import { shouldBypassImageOptimization } from "@/lib/image";
 import { localize, type Locale } from "@/lib/locale";
 import { useGSAP } from "@gsap/react";
@@ -65,6 +66,8 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
   const root = useRef<HTMLDivElement>(null);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [arrivalDate, setArrivalDate] = useState(data.filters.check_in ?? "");
+  const [departureDate, setDepartureDate] = useState(data.filters.check_out ?? "");
   const t = copy[locale];
   const hasSearch = Boolean(data.filters.check_in && data.filters.check_out);
   const visualImages = data.rooms.flatMap((room) => room.images.map((image) => ({ ...image, roomName: room.name }))).slice(0, 5);
@@ -75,6 +78,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
   const facilityImage = visualImages[0] ? { url: visualImages[0].url, alt: visualImages[0].roomName } : heroImage;
   const finalCtaImageUrl = data.final_cta_media.image_url ?? heroImage?.url;
   const useHeroVideo = data.hero_media.type === "video" && Boolean(data.hero_media.video_url);
+  const minimumDeparture = nextDate(arrivalDate || today);
 
   useEffect(() => {
     const video = heroVideoRef.current;
@@ -90,14 +94,19 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
   }, [useHeroVideo, data.hero_media.video_url]);
 
   function validateDates(event: FormEvent<HTMLFormElement>) {
-    const checkIn = event.currentTarget.elements.namedItem("check_in") as HTMLInputElement;
     const checkOut = event.currentTarget.elements.namedItem("check_out") as HTMLInputElement;
     checkOut.setCustomValidity("");
-    if (checkIn.value && checkOut.value && checkOut.value <= checkIn.value) {
+    if (arrivalDate && departureDate && departureDate <= arrivalDate) {
       event.preventDefault();
-      checkOut.setCustomValidity(locale === "en" ? "Departure must be after arrival." : "Tanggal pulang harus setelah tanggal datang.");
+      checkOut.setCustomValidity(locale === "en" ? "Departure must be at least one day after arrival." : "Tanggal pulang minimal satu hari setelah tanggal datang.");
       checkOut.reportValidity();
     }
+  }
+
+  function updateArrivalDate(value: string) {
+    setArrivalDate(value);
+    const nextMinimum = nextDate(value || today);
+    if (departureDate && nextMinimum && departureDate < nextMinimum) setDepartureDate("");
   }
 
   function scrollToSection(event: MouseEvent<HTMLAnchorElement>, target: string) {
@@ -261,8 +270,8 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
               <p className="text-sm font-semibold text-secondary">{data.rooms.length} {hasSearch ? t.available : t.initialRooms}</p>
             </div>
             <form action="/booking" onSubmit={validateDates} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_0.8fr_auto]">
-              <label className="public-field"><span>{t.arrival}</span><input required type="date" name="check_in" min={today} defaultValue={data.filters.check_in ?? ""} /></label>
-              <label className="public-field"><span>{t.departure}</span><input required type="date" name="check_out" min={data.filters.check_in ?? today} defaultValue={data.filters.check_out ?? ""} /></label>
+              <label className="public-field"><span>{t.arrival}</span><input required type="date" name="check_in" min={today} value={arrivalDate} onChange={(event) => updateArrivalDate(event.target.value)} /></label>
+              <label className="public-field"><span>{t.departure}</span><input required type="date" name="check_out" min={minimumDeparture} value={departureDate} onChange={(event) => setDepartureDate(event.target.value)} /></label>
               <label className="public-field"><span>{t.guests}</span><select name="guests" defaultValue={String(data.filters.guests)}>{[1,2,3,4,5,6].map((count) => <option key={count} value={count}>{count} {t.guestUnit}</option>)}</select></label>
               <button type="submit" className="h-14 self-end bg-primary px-7 text-sm font-bold text-background transition-transform hover:-translate-y-0.5">{t.check}</button>
             </form>

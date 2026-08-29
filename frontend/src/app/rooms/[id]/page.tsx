@@ -65,26 +65,51 @@ export default async function RoomDetailPage({ params, searchParams }: PageProps
   const { room, property, availability } = data;
   const description = locale === "en" && room.description_en?.trim() ? room.description_en : room.description;
   const nights = checkIn && checkOut ? Math.round((Date.parse(`${checkOut}T00:00:00Z`) - Date.parse(`${checkIn}T00:00:00Z`)) / 86400000) : 0;
+  const stayQuery = new URLSearchParams({ check_in: checkIn, check_out: checkOut, guests: String(guests) });
   const bookingQuery = new URLSearchParams({ check_in: checkIn, check_out: checkOut, guests: String(guests), room_id: String(room.id) });
+  const canBook = availability.checked && availability.is_available;
+  const reservationHref = canBook ? `/booking?${bookingQuery}#guest-details` : "#room-reservation";
 
   return <div className="booking-page min-h-screen bg-background text-foreground">
     <BookingFlowHeader propertyName={property.name} locale={locale} />
 
-    <main className="mx-auto w-full max-w-[1600px] px-5 py-7 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-      <Link href="/booking" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-foreground"><ArrowLeftIcon className="size-4" />{serverLocalize(locale, "Kembali pilih kamar", "Back to room selection")}</Link>
+    <main className="mx-auto w-full max-w-[1440px] px-5 pt-7 pb-28 sm:px-8 sm:pt-10 lg:px-12 lg:pt-12 lg:pb-24">
+      <Link href={`/booking?${stayQuery}`} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-foreground"><ArrowLeftIcon className="size-4" />{serverLocalize(locale, "Kembali pilih kamar", "Back to room selection")}</Link>
 
-      <div className="mt-5 flex flex-col justify-between gap-5 sm:mt-7 sm:flex-row sm:items-end">
-        <div><h1 className="text-balance text-[clamp(2.7rem,5vw,5.6rem)] leading-[0.96] font-semibold tracking-[-0.04em]">{room.name}</h1><p className="mt-4 max-w-2xl text-base leading-7 text-muted sm:text-lg">{description}</p></div>
-        <p className="shrink-0 text-xl font-bold sm:text-right">{formatMoney(room.price_per_night, locale)}<span className="ml-1 text-sm font-normal text-muted">/{serverLocalize(locale, "malam", "night")}</span></p>
+      <div className="mt-5 grid gap-7 sm:mt-7 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end lg:gap-16">
+        <div><h1 className="text-balance text-[clamp(3rem,5vw,5.5rem)] leading-[0.96] font-semibold tracking-[-0.04em]">{room.name}</h1><p className="mt-5 max-w-[68ch] text-base leading-7 text-muted sm:text-lg sm:leading-8">{description}</p></div>
+        <div className="flex items-end justify-between gap-6 border-t pt-5 lg:block lg:border-t-0 lg:pt-0 lg:text-right"><p className="text-sm text-muted">{serverLocalize(locale, "Harga per malam", "Price per night")}</p><p className="text-2xl font-bold tracking-[-0.02em] tabular-nums sm:text-3xl">{formatMoney(room.price_per_night, locale)}</p></div>
       </div>
 
-      <div className="mt-8 sm:mt-10"><RoomDetailGallery images={room.images} roomName={room.name} locale={locale} /></div>
+      <div className="mt-8 sm:mt-10 lg:mt-12"><RoomDetailGallery images={room.images} roomName={room.name} locale={locale} /></div>
 
-      <div className="mt-12 grid gap-12 lg:mt-16 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_27rem] xl:gap-20">
-        <div>
-          <section aria-labelledby="room-facts" className="border-y py-6">
+      <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start lg:gap-14 xl:grid-cols-[minmax(0,1fr)_27rem] xl:gap-20">
+        <aside id="room-reservation" className="order-1 scroll-mt-24 lg:order-2">
+          <div className="overflow-hidden rounded-lg bg-surface shadow-[0_28px_80px_-48px_rgba(20,17,12,0.55)]">
+            <div className="bg-[#171817] p-6 text-white sm:p-7">
+              <div className="flex items-end justify-between gap-4"><div><p className="text-sm text-white/60">{serverLocalize(locale, "Mulai dari", "From")}</p><p className="mt-1 text-2xl font-bold tracking-[-0.02em] tabular-nums">{formatMoney(room.price_per_night, locale)}</p></div><p className="pb-1 text-sm text-white/55">/{serverLocalize(locale, "malam", "night")}</p></div>
+            </div>
+            <div className="p-6 sm:p-7">
+              <RoomAvailabilityForm roomId={room.id} today={today} maxGuests={room.capacity} checkIn={checkIn} checkOut={checkOut} guests={guests} locale={locale} />
+
+              {availability.checked && <div aria-live="polite" className={`mt-5 rounded-sm p-4 text-sm ${availability.is_available ? "bg-[#edf4ef] text-[#28533b]" : "bg-[#fff0cc] text-[#735500]"}`}>
+                <p className="font-semibold">{availability.is_available ? serverLocalize(locale, "Kamar tersedia pada tanggal ini", "Room available for these dates") : availability.reason === "capacity" ? serverLocalize(locale, "Jumlah tamu melebihi kapasitas kamar", "Guest count exceeds room capacity") : serverLocalize(locale, "Kamar tidak tersedia pada tanggal ini", "Room unavailable for these dates")}</p>
+                {availability.is_available && <p className="mt-1 opacity-80">{nights} {serverLocalize(locale, "malam", nights === 1 ? "night" : "nights")} · {guests} {serverLocalize(locale, "tamu", guests === 1 ? "guest" : "guests")}</p>}
+              </div>}
+
+              {canBook && <>
+                <div className="mt-5 flex items-center justify-between border-t pt-5"><span className="text-sm text-muted">{serverLocalize(locale, "Estimasi total", "Estimated total")}</span><strong className="text-lg tabular-nums">{formatMoney(Number(room.price_per_night) * nights, locale)}</strong></div>
+                <Link href={`/booking?${bookingQuery}#guest-details`} className="group mt-5 flex min-h-13 items-center justify-center gap-3 rounded-sm bg-secondary px-6 text-sm font-bold text-white transition-transform hover:-translate-y-0.5">{serverLocalize(locale, "Pesan kamar ini", "Book this room")}<ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" /></Link>
+              </>}
+              <p className="mt-5 text-center text-xs leading-5 text-muted">{serverLocalize(locale, "Belum ada pembayaran pada tahap pengecekan ini.", "No payment is required at this availability check.")}</p>
+            </div>
+          </div>
+        </aside>
+
+        <div className="order-2 lg:order-1">
+          <section aria-labelledby="room-facts" className="border-y py-7">
             <h2 id="room-facts" className="sr-only">{serverLocalize(locale, "Detail kamar", "Room details")}</h2>
-            <dl className="grid gap-6 text-sm sm:grid-cols-2 xl:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-x-5 gap-y-7 text-sm sm:grid-cols-4">
               <div className="flex items-center gap-3"><UsersIcon className="size-5 text-secondary" /><div><dt className="text-muted">{serverLocalize(locale, "Kapasitas", "Capacity")}</dt><dd className="mt-1 font-semibold">{room.capacity} {serverLocalize(locale, "tamu", room.capacity === 1 ? "guest" : "guests")}</dd></div></div>
               <div className="flex items-center gap-3"><BedIcon className="size-5 text-secondary" /><div><dt className="text-muted">{serverLocalize(locale, "Tempat tidur", "Beds")}</dt><dd className="mt-1 font-semibold">{room.bed_count}</dd></div></div>
               <div className="flex items-center gap-3"><CalendarIcon className="size-5 text-secondary" /><div><dt className="text-muted">{serverLocalize(locale, "Check-in", "Check-in")}</dt><dd className="mt-1 font-semibold">{property.check_in_time ?? "—"}</dd></div></div>
@@ -92,40 +117,24 @@ export default async function RoomDetailPage({ params, searchParams }: PageProps
             </dl>
           </section>
 
-          <section className="py-12 sm:py-16">
+          <section className="mt-10 rounded-lg bg-surface-warm p-6 sm:mt-14 sm:p-8 lg:p-10">
             <h2 className="text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">{serverLocalize(locale, "Fasilitas di kamar", "Amenities in the room")}</h2>
-            {room.amenities.length ? <div className="mt-8 grid gap-x-10 sm:grid-cols-2">
-              {room.amenities.map((amenity) => <article key={amenity.id} className="flex gap-4 border-t py-5"><span className="mt-0.5 grid size-8 shrink-0 place-items-center bg-secondary-soft text-secondary"><CheckIcon className="size-4" /></span><div><h3 className="font-semibold">{locale === "en" && amenity.name_en?.trim() ? amenity.name_en : amenity.name}</h3>{localizedDescription(amenity, locale) && <p className="mt-1.5 text-sm leading-6 text-muted">{localizedDescription(amenity, locale)}</p>}</div></article>)}
+            {room.amenities.length ? <div className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+              {room.amenities.map((amenity) => <article key={amenity.id} className="flex gap-4"><span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-sm bg-secondary text-white"><CheckIcon className="size-4" /></span><div><h3 className="font-semibold">{locale === "en" && amenity.name_en?.trim() ? amenity.name_en : amenity.name}</h3>{localizedDescription(amenity, locale) && <p className="mt-1.5 text-sm leading-6 text-muted">{localizedDescription(amenity, locale)}</p>}</div></article>)}
             </div> : <p className="mt-6 text-muted">{serverLocalize(locale, "Fasilitas kamar belum dicantumkan.", "Room amenities have not been listed yet.")}</p>}
           </section>
 
-          <section className="bg-surface-warm p-6 sm:p-8">
+          <section className="mt-10 border-t pt-10 sm:mt-14 sm:pt-12">
             <h2 className="text-2xl font-semibold tracking-[-0.03em]">{serverLocalize(locale, "Yang perlu diketahui", "Things to know")}</h2>
             <div className="mt-6 grid gap-5 text-sm leading-6 sm:grid-cols-2"><div><p className="font-semibold">{serverLocalize(locale, "Waktu menginap", "Stay times")}</p><p className="mt-1 text-muted">{serverLocalize(locale, `Check-in mulai ${property.check_in_time ?? "sesuai konfirmasi"}, check-out sebelum ${property.check_out_time ?? "sesuai konfirmasi"}.`, `Check-in from ${property.check_in_time ?? "as confirmed"}, check-out before ${property.check_out_time ?? "as confirmed"}.`)}</p></div><div><p className="font-semibold">{serverLocalize(locale, "Konfirmasi reservasi", "Reservation confirmation")}</p><p className="mt-1 text-muted">{serverLocalize(locale, "Permintaan booking dikonfirmasi setelah detail dan pembayaran diperiksa oleh tim.", "Booking requests are confirmed after the team reviews the details and payment.")}</p></div></div>
           </section>
         </div>
-
-        <aside className="lg:sticky lg:top-28">
-          <div className="bg-surface p-6 shadow-[0_22px_60px_-42px_rgba(0,0,0,0.5)] sm:p-7">
-            <div className="flex items-end justify-between gap-4"><div><p className="text-sm text-muted">{serverLocalize(locale, "Mulai dari", "From")}</p><p className="mt-1 text-2xl font-bold">{formatMoney(room.price_per_night, locale)}</p></div><p className="pb-1 text-sm text-muted">/{serverLocalize(locale, "malam", "night")}</p></div>
-            <div className="my-6 border-t" />
-            <RoomAvailabilityForm roomId={room.id} today={today} maxGuests={room.capacity} checkIn={checkIn} checkOut={checkOut} guests={guests} locale={locale} />
-
-            {availability.checked && <div aria-live="polite" className={`mt-5 p-4 text-sm ${availability.is_available ? "bg-[#edf4ef] text-[#28533b]" : "bg-[#fff0cc] text-[#735500]"}`}>
-              <p className="font-semibold">{availability.is_available ? serverLocalize(locale, "Kamar tersedia pada tanggal ini", "Room available for these dates") : availability.reason === "capacity" ? serverLocalize(locale, "Jumlah tamu melebihi kapasitas kamar", "Guest count exceeds room capacity") : serverLocalize(locale, "Kamar tidak tersedia pada tanggal ini", "Room unavailable for these dates")}</p>
-              {availability.is_available && <p className="mt-1 opacity-80">{nights} {serverLocalize(locale, "malam", nights === 1 ? "night" : "nights")} · {guests} {serverLocalize(locale, "tamu", guests === 1 ? "guest" : "guests")}</p>}
-            </div>}
-
-            {availability.checked && availability.is_available && <>
-              <div className="mt-5 flex items-center justify-between border-t pt-5"><span className="text-sm text-muted">{serverLocalize(locale, "Estimasi total", "Estimated total")}</span><strong className="text-lg">{formatMoney(Number(room.price_per_night) * nights, locale)}</strong></div>
-              <Link href={`/booking?${bookingQuery}#guest-details`} className="group mt-5 flex min-h-13 items-center justify-center gap-3 bg-primary px-6 text-sm font-bold text-background transition-transform hover:-translate-y-0.5">{serverLocalize(locale, "Pesan kamar ini", "Book this room")}<ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" /></Link>
-            </>}
-            <p className="mt-5 text-center text-xs leading-5 text-muted">{serverLocalize(locale, "Belum ada pembayaran pada tahap pengecekan ini.", "No payment is required at this availability check.")}</p>
-          </div>
-        </aside>
       </div>
     </main>
 
-    <footer className="mt-16 bg-[#111313] text-white sm:mt-24"><div className="mx-auto grid w-full max-w-[1600px] gap-8 px-5 py-12 sm:grid-cols-2 sm:px-8 lg:px-12"><div><p className="text-lg font-bold">{property.name}</p><p className="mt-2 max-w-md text-sm leading-6 text-white/60">{property.address}</p></div><div className="text-sm text-white/60 sm:text-right"><p>{property.phone ?? serverLocalize(locale, "Nomor telepon belum tersedia", "Phone number not available")}</p><p className="mt-2">{property.email ?? serverLocalize(locale, "Email belum tersedia", "Email not available")}</p></div></div><div className="mx-5 border-t border-white/10 py-5 text-xs text-white/45 sm:mx-8 lg:mx-12">© {new Date().getFullYear()} {property.name}</div></footer>
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-18px_50px_-34px_rgba(0,0,0,0.55)] lg:hidden">
+      <div className="mx-auto flex max-w-2xl items-center justify-between gap-4"><div className="min-w-0"><p className="truncate text-xs text-muted">{serverLocalize(locale, "Mulai dari", "From")}</p><p className="truncate font-bold tabular-nums">{formatMoney(room.price_per_night, locale)}<span className="ml-1 text-xs font-normal text-muted">/{serverLocalize(locale, "malam", "night")}</span></p></div><Link href={reservationHref} className="flex min-h-12 shrink-0 items-center justify-center rounded-sm bg-primary px-5 text-sm font-bold text-background">{canBook ? serverLocalize(locale, "Pesan sekarang", "Book now") : serverLocalize(locale, "Cek tanggal", "Check dates")}</Link></div>
+    </div>
+
   </div>;
 }

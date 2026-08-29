@@ -1,5 +1,6 @@
 import { BookingFlowHeader } from "@/components/public/booking-flow-header";
 import { BookingProgress } from "@/components/public/booking-progress";
+import { BookingSearchForm } from "@/components/public/booking-search-form";
 import { PublicBookingForm } from "@/components/public/public-booking-form";
 import { ArrowLeftIcon, BedIcon, CalendarIcon, CheckIcon, UsersIcon } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api/client";
@@ -46,12 +47,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
       <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-foreground"><ArrowLeftIcon className="size-4" />{serverLocalize(locale, "Kembali ke beranda", "Back to home")}</Link>
       <div className="mt-8 grid gap-10 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_32rem] lg:items-end"><div><p className="text-xs font-semibold tracking-[0.14em] text-secondary uppercase">{serverLocalize(locale, "Reservasi langsung", "Direct reservation")}</p><h1 className="mt-4 max-w-[13ch] text-balance text-[clamp(2.65rem,4.5vw,4.7rem)] leading-[0.96] font-semibold tracking-[-0.04em]">{serverLocalize(locale, "Pilih waktu dan ruang untuk menginap.", "Choose your dates and space to stay.")}</h1></div><BookingProgress current={currentStep} locale={locale} /></div>
 
-      <form action="/booking" className="mt-12 grid gap-4 bg-surface p-5 shadow-[0_22px_60px_-45px_rgba(0,0,0,0.45)] sm:grid-cols-2 sm:p-7 lg:grid-cols-[1fr_1fr_0.65fr_auto]">
-        <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{serverLocalize(locale, "Tanggal datang", "Arrival date")}<input required type="date" name="check_in" min={today} defaultValue={checkIn} className="mt-2 h-13 w-full border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none focus:border-primary" /></label>
-        <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{serverLocalize(locale, "Tanggal pulang", "Departure date")}<input required type="date" name="check_out" min={checkIn || today} defaultValue={checkOut} className="mt-2 h-13 w-full border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none focus:border-primary" /></label>
-        <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{serverLocalize(locale, "Tamu", "Guests")}<select name="guests" defaultValue={guests} className="mt-2 h-13 w-full border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none focus:border-primary">{[1,2,3,4,5,6].map((count) => <option key={count} value={count}>{count} {serverLocalize(locale, "tamu", "guests")}</option>)}</select></label>
-        <button className="h-13 self-end bg-primary px-7 text-sm font-bold text-background">{serverLocalize(locale, "Cari kamar", "Search rooms")}</button>
-      </form>
+      <BookingSearchForm today={today} checkIn={checkIn} checkOut={checkOut} guests={guests} locale={locale} />
 
       {!hasDates ? <section className="mt-8 grid min-h-80 place-items-center bg-background px-6 py-16 text-center"><div><CalendarIcon className="mx-auto size-10 text-secondary" /><h2 className="mt-6 text-2xl font-semibold">{serverLocalize(locale, "Tentukan tanggal menginap", "Choose your stay dates")}</h2><p className="mt-3 max-w-lg text-sm leading-6 text-muted">{serverLocalize(locale, "Kamar yang tersedia dan total harga akan muncul setelah tanggal dipilih.", "Available rooms and estimated totals will appear after you select dates.")}</p></div></section> : <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_26rem] xl:items-start">
         <section>
