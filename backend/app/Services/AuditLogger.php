@@ -17,7 +17,13 @@ use Illuminate\Support\Arr;
 class AuditLogger
 {
     /** @var array<int, string> */
-    private const EXCLUDED_FIELDS = ['password', 'remember_token', 'updated_at', 'deleted_at'];
+    private const EXCLUDED_FIELDS = [
+        'password',
+        'mail_password',
+        'remember_token',
+        'updated_at',
+        'deleted_at',
+    ];
 
     /** @param array<string, mixed> $oldValues
      * @param  array<string, mixed>  $newValues

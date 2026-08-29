@@ -16,6 +16,15 @@ class PublicBookingApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->withServerVariables([
+            'REMOTE_ADDR' => sprintf('10.%d.%d.%d', random_int(1, 254), random_int(1, 254), random_int(1, 254)),
+        ]);
+    }
+
     public function test_guest_can_create_pending_booking_without_login(): void
     {
         HomestaySetting::query()->create([

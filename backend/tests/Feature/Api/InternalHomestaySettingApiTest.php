@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\AuditLog;
 use App\Models\HomestaySetting;
 use App\Models\User;
 use Database\Seeders\AuthorizationSeeder;
@@ -79,6 +80,36 @@ class InternalHomestaySettingApiTest extends TestCase
         ])->assertUnprocessable()->assertJsonValidationErrors([
             'maps_url', 'timezone', 'currency', 'booking_code_prefix',
         ]);
+    }
+
+    public function test_smtp_password_is_encrypted_and_never_exposed_or_audited(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $secret = 'smtp-app-password-should-stay-secret';
+
+        $response = $this->putJson('/api/internal/settings', [
+            ...$this->payload(),
+            'mail_enabled' => true,
+            'mail_host' => 'smtp.example.com',
+            'mail_port' => 587,
+            'mail_username' => 'mailer@example.com',
+            'mail_password' => $secret,
+            'mail_encryption' => 'tls',
+            'mail_from_address' => 'reservasi@example.com',
+            'mail_from_name' => 'Prama Homestay',
+            'guest_email_locale' => 'id',
+        ])->assertOk()->assertJsonPath('data.mail_password_configured', true);
+
+        $this->assertArrayNotHasKey('mail_password', $response->json('data'));
+
+        $settings = HomestaySetting::query()->firstOrFail();
+        $this->assertSame($secret, $settings->mail_password);
+        $this->assertNotSame($secret, $settings->getRawOriginal('mail_password'));
+
+        $auditLog = AuditLog::query()->where('module', 'settings')->latest('id')->firstOrFail();
+        $this->assertArrayNotHasKey('mail_password', $auditLog->old_values ?? []);
+        $this->assertArrayNotHasKey('mail_password', $auditLog->new_values ?? []);
+        $this->assertStringNotContainsString($secret, $auditLog->toJson());
     }
 
     public function test_admin_can_upload_replace_and_remove_logo(): void
