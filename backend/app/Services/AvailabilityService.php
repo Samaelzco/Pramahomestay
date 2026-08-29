@@ -29,7 +29,11 @@ class AvailabilityService implements AvailabilityServiceInterface
             'month' => $start->addMonth(),
             default => $start->addDays(7),
         };
-        $rooms = $this->availability->roomsForPeriod($start, $end);
+        $allRooms = $this->availability->roomsForPeriod($start, $end);
+        $selectedRoomId = isset($filters['room_id']) ? (int) $filters['room_id'] : null;
+        $rooms = $selectedRoomId
+            ? $allRooms->where('id', $selectedRoomId)->values()
+            : $allRooms;
         $days = $start->diffInDays($end);
         $occupiedRoomDays = 0;
         $blockedRoomDays = 0;
@@ -90,6 +94,12 @@ class AvailabilityService implements AvailabilityServiceInterface
 
         return [
             'period' => ['view' => $view, 'start' => $start->toDateString(), 'end' => $end->toDateString(), 'days' => $days],
+            'filters' => ['room_id' => $selectedRoomId],
+            'room_options' => $allRooms->map(fn ($room): array => [
+                'id' => $room->id,
+                'name' => $room->name,
+                'is_active' => (bool) $room->is_active,
+            ])->values()->all(),
             'summary' => [
                 'active_rooms' => $activeRooms,
                 'occupied_room_days' => $occupiedRoomDays,

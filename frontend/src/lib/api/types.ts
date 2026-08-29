@@ -300,6 +300,8 @@ export type AvailabilityEntry = {
 
 export type AvailabilityCalendarData = {
   period: { view: "day" | "week" | "month"; start: string; end: string; days: number };
+  filters: { room_id: number | null };
+  room_options: Array<{ id: number; name: string; is_active: boolean }>;
   summary: {
     active_rooms: number;
     occupied_room_days: number;

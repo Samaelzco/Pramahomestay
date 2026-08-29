@@ -17,6 +17,7 @@ class IndexAvailabilityRequest extends FormRequest
         return [
             'start' => ['nullable', 'date_format:Y-m-d'],
             'view' => ['nullable', Rule::in(['day', 'week', 'month'])],
+            'room_id' => ['nullable', 'integer', 'exists:rooms,id'],
         ];
     }
 }

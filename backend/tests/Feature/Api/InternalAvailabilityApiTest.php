@@ -59,6 +59,36 @@ class InternalAvailabilityApiTest extends TestCase
             ->assertJsonPath('data.rooms.0.entries.1.type', 'block');
     }
 
+    public function test_calendar_can_be_filtered_to_one_room(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $selectedRoom = Room::factory()->create(['name' => 'Unit 201', 'is_active' => true]);
+        Room::factory()->create(['name' => 'Unit 202', 'is_active' => true]);
+        Booking::factory()->for($selectedRoom)->create([
+            'check_in' => '2026-09-02',
+            'check_out' => '2026-09-04',
+            'status' => 'confirmed',
+        ]);
+
+        $this->getJson("/api/internal/availability?view=week&start=2026-09-01&room_id={$selectedRoom->id}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data.rooms')
+            ->assertJsonCount(2, 'data.room_options')
+            ->assertJsonPath('data.filters.room_id', $selectedRoom->id)
+            ->assertJsonPath('data.rooms.0.id', $selectedRoom->id)
+            ->assertJsonPath('data.summary.active_rooms', 1)
+            ->assertJsonPath('data.summary.occupied_room_days', 2);
+    }
+
+    public function test_calendar_rejects_unknown_room_filter(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+
+        $this->getJson('/api/internal/availability?room_id=999999')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('room_id');
+    }
+
     public function test_admin_can_create_and_delete_non_overlapping_room_block(): void
     {
         Sanctum::actingAs($this->admin, ['internal']);

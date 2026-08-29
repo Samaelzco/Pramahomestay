@@ -11,7 +11,7 @@ function FieldError({ errors }: { errors?: string[] }) {
   return errors?.map((error) => <p key={error} className="mt-2 text-sm font-normal tracking-normal text-danger normal-case">{localizeApiMessage(locale, error)}</p>);
 }
 
-export function RoomBlockForm({ rooms, initialStart }: { rooms: Room[]; initialStart: string }) {
+export function RoomBlockForm({ rooms, initialStart, initialRoomId }: { rooms: Room[]; initialStart: string; initialRoomId: number | null }) {
   const locale = useLocale();
   const [state, action, pending] = useActionState<ActionState, FormData>(createRoomBlockAction, {});
   const [start, setStart] = useState(initialStart);
@@ -25,7 +25,7 @@ export function RoomBlockForm({ rooms, initialStart }: { rooms: Room[]; initialS
     <section className="grid gap-6 border-t py-8 lg:grid-cols-[220px_1fr]">
       <div><h2 className="text-lg font-semibold">{localize(locale, "Jadwal blok", "Block schedule")}</h2><p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Gunakan untuk perawatan, perbaikan, atau pemakaian internal.", "Use this for maintenance, repairs, or internal use.")}</p></div>
       <div className="grid gap-6 sm:grid-cols-2">
-        <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:col-span-2">{localize(locale, "Kamar", "Room")}<select name="room_id" required className={inputClass}><option value="">{localize(locale, "Pilih kamar", "Select a room")}</option>{rooms.map((room) => <option key={room.id} value={room.id}>{room.name}{!room.is_active ? ` · ${localize(locale, "nonaktif", "inactive")}` : ""}</option>)}</select><FieldError errors={state.errors?.room_id} /></label>
+        <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:col-span-2">{localize(locale, "Kamar", "Room")}<select name="room_id" required defaultValue={initialRoomId ?? ""} className={inputClass}><option value="">{localize(locale, "Pilih kamar", "Select a room")}</option>{rooms.map((room) => <option key={room.id} value={room.id}>{room.name}{!room.is_active ? ` · ${localize(locale, "nonaktif", "inactive")}` : ""}</option>)}</select><FieldError errors={state.errors?.room_id} /></label>
         <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{localize(locale, "Mulai", "Start")}<input name="start_date" type="date" required value={start} onChange={(event) => setStart(event.target.value)} className={inputClass} /><FieldError errors={state.errors?.start_date} /></label>
         <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{localize(locale, "Selesai", "End")}<input name="end_date" type="date" required min={minimumEnd} defaultValue={minimumEnd} key={minimumEnd} className={inputClass} /><p className="mt-2 text-xs font-normal leading-5 tracking-normal text-muted normal-case">{localize(locale, "Kamar tersedia kembali pada tanggal selesai.", "The room becomes available again on the end date.")}</p><FieldError errors={state.errors?.end_date} /></label>
         <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase sm:col-span-2">{localize(locale, "Alasan", "Reason")}<input name="title" required maxLength={120} placeholder={localize(locale, "Contoh: Perawatan AC", "Example: AC maintenance")} className={inputClass} /><FieldError errors={state.errors?.title} /></label>
