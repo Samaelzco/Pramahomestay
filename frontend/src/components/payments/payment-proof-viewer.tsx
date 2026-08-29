@@ -31,7 +31,7 @@ export function PaymentProofViewer({
         type="button"
         aria-haspopup="dialog"
         onClick={() => dialogRef.current?.showModal()}
-        className={`group relative block cursor-zoom-in overflow-hidden rounded-lg bg-surface-high text-left outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 ${className}`}
+        className={`group relative block min-w-0 max-w-full cursor-zoom-in overflow-hidden rounded-lg bg-surface-high text-left outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 ${className}`}
       >
         <Image
           src={src}

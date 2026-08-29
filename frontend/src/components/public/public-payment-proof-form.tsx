@@ -42,26 +42,26 @@ export function PublicPaymentProofForm({ token, locale }: { token: string; local
     ? `${new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", { maximumFractionDigits: 1 }).format(selectedFile.size / 1024 / 1024)} MB`
     : null;
 
-  return <form action={action}>
+  return <form action={action} className="min-w-0 max-w-full">
     <h2 className="text-xl font-semibold tracking-[-0.02em]">{localize(locale, "Kirim bukti transfer", "Submit transfer proof")}</h2>
     <p className="mt-2 text-sm leading-6 text-muted">{localize(locale, "Pastikan nominal dan rekening tujuan sudah benar sebelum mengunggah bukti.", "Confirm the amount and destination account before uploading your receipt.")}</p>
     {state.message && <div role="alert" className="mt-5 bg-[#ffdad6] px-4 py-3 text-sm text-[#93000a]">{localizeApiMessage(locale, state.message)}</div>}
-    <div className="mt-6 grid gap-5">
-      <label className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
+    <div className="mt-6 grid min-w-0 max-w-full gap-5">
+      <label className="min-w-0 max-w-full text-xs font-semibold tracking-[0.08em] text-muted uppercase">
         {localize(locale, "Nomor referensi", "Reference number")} <span className="font-normal tracking-normal normal-case">({localize(locale, "opsional", "optional")})</span>
-        <input name="reference_number" maxLength={120} className="mt-2 h-12 w-full border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none transition-colors focus:border-primary" />
+        <input name="reference_number" maxLength={120} className="mt-2 block h-12 min-w-0 w-full max-w-full border bg-surface px-4 text-sm font-normal tracking-normal normal-case outline-none transition-colors focus:border-primary" />
       </label>
-      <div>
+      <div className="min-w-0 max-w-full">
         <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">{localize(locale, "Bukti pembayaran", "Payment proof")}</p>
         {previewUrl && selectedFile ? (
-          <div className="mt-2 overflow-hidden rounded-lg bg-surface-low">
+          <div className="mt-2 min-w-0 max-w-full overflow-hidden rounded-lg bg-surface-low">
             <PaymentProofViewer
               src={previewUrl}
               alt={localize(locale, "Preview bukti pembayaran yang dipilih", "Preview of the selected payment receipt")}
               className="aspect-[4/3] w-full rounded-none"
               sizes="(max-width: 1024px) 100vw, 440px"
             />
-            <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{selectedFile.name}</p>
                 <p className="mt-1 text-xs text-muted" aria-live="polite">{fileSize} · {localize(locale, "Siap diunggah", "Ready to upload")}</p>
