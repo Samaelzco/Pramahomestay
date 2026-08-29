@@ -18,7 +18,7 @@ type LandingPageProps = { data: PublicLandingData; locale: Locale; today: string
 
 const copy = {
   id: {
-    navFacilities: "Fasilitas", navStay: "Galeri", navLocation: "Lokasi", check: "Cek ketersediaan",
+    navFacilities: "Fasilitas", navStay: "Galeri", navLocation: "Lokasi", navStatus: "Cek pesanan", check: "Cek ketersediaan",
     heroTitle: "Ruang tenang untuk pulang sejenak.",
     heroBody: "Menginap dengan ritme yang lebih pelan, fasilitas yang benar-benar berguna, dan akses mudah ke keseharian Bali.",
     explore: "Jelajahi ruang", arrival: "Tanggal datang", departure: "Tanggal pulang", guests: "Tamu", guestUnit: "tamu",
@@ -32,7 +32,7 @@ const copy = {
     footer: "Ruang menginap yang hangat di Bali.", menu: "Navigasi", contact: "Kontak", notAvailable: "Belum tersedia",
   },
   en: {
-    navFacilities: "Amenities", navStay: "Gallery", navLocation: "Location", check: "Check availability",
+    navFacilities: "Amenities", navStay: "Gallery", navLocation: "Location", navStatus: "Find booking", check: "Check availability",
     heroTitle: "A quiet space to return to, for a while.",
     heroBody: "Stay at a gentler pace, with amenities that matter and easy access to everyday Bali.",
     explore: "Explore the space", arrival: "Arrival date", departure: "Departure date", guests: "Guests", guestUnit: "guests",
@@ -214,6 +214,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
           <a className="public-nav-link" href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")}>{t.navFacilities}</a>
           <a className="public-nav-link" href="#stay" onClick={(event) => scrollToSection(event, "#stay")}>{t.navStay}</a>
           <a className="public-nav-link" href="#location" onClick={(event) => scrollToSection(event, "#location")}>{t.navLocation}</a>
+          <a className="public-nav-link" href="/booking/status">{t.navStatus}</a>
         </nav>
         <div className="public-header-tools flex items-center gap-2 lg:justify-self-end">
           <LanguageToggle />
@@ -226,6 +227,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
         <a href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navFacilities}</a>
         <a href="#stay" onClick={(event) => scrollToSection(event, "#stay")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navStay}</a>
         <a href="#location" onClick={(event) => scrollToSection(event, "#location")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navLocation}</a>
+        <a href="/booking/status" className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navStatus}</a>
         <a href="/booking" className="mt-2 flex min-h-12 items-center justify-center bg-primary px-5 text-sm font-bold text-background">{t.check}</a>
       </nav>}
     </header>
@@ -339,7 +341,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
     <footer className="bg-[#111313] text-white">
       <div className="grid w-full gap-12 px-5 py-16 sm:px-8 md:grid-cols-3 lg:px-12 xl:px-16">
         <div><p className="text-xl font-bold">{data.property.name}</p><p className="mt-3 max-w-xs text-sm leading-6 text-white/60">{t.footer}</p></div>
-        <div><p className="text-sm font-bold">{t.menu}</p><div className="mt-4 flex flex-col items-start gap-3 text-sm text-white/60"><a href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")}>{t.navFacilities}</a><a href="#stay" onClick={(event) => scrollToSection(event, "#stay")}>{t.navStay}</a><a href="#location" onClick={(event) => scrollToSection(event, "#location")}>{t.navLocation}</a></div></div>
+        <div><p className="text-sm font-bold">{t.menu}</p><div className="mt-4 flex flex-col items-start gap-3 text-sm text-white/60"><a href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")}>{t.navFacilities}</a><a href="#stay" onClick={(event) => scrollToSection(event, "#stay")}>{t.navStay}</a><a href="#location" onClick={(event) => scrollToSection(event, "#location")}>{t.navLocation}</a><a href="/booking/status">{t.navStatus}</a></div></div>
         <div><p className="text-sm font-bold">{t.contact}</p><div className="mt-4 space-y-2 text-sm text-white/60"><p>{data.property.phone ?? t.notAvailable}</p><p>{data.property.email ?? t.notAvailable}</p></div></div>
       </div>
       <div className="public-footer-divider mx-5 border-t py-6 text-xs text-white/45 sm:mx-8 lg:mx-12 xl:mx-16">© {new Date().getFullYear()} {data.property.name}</div>

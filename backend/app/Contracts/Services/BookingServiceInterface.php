@@ -16,6 +16,8 @@ interface BookingServiceInterface
 
     public function findPublicByToken(string $token): Booking;
 
+    public function recoverPublicAccess(string $bookingCode, string $contact): string;
+
     public function update(Booking $booking, array $attributes): Booking;
 
     public function cancel(Booking $booking, ?string $reason = null): Booking;

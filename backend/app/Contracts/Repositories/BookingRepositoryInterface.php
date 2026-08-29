@@ -20,6 +20,10 @@ interface BookingRepositoryInterface
 
     public function findByPublicTokenHash(string $tokenHash): Booking;
 
+    public function findByCode(string $code): ?Booking;
+
+    public function rotatePublicToken(Booking $booking, string $tokenHash): Booking;
+
     public function hasDateConflict(int $roomId, string $checkIn, string $checkOut, ?int $ignoreId = null): bool;
 
     public function codeExists(string $code): bool;

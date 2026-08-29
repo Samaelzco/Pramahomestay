@@ -27,6 +27,8 @@ Route::get('/public/landing', [PublicSiteController::class, 'landing'])
 
 Route::post('/public/bookings', [PublicBookingController::class, 'store'])
     ->middleware('throttle:public-bookings');
+Route::post('/public/bookings/recover', [PublicBookingController::class, 'recover'])
+    ->middleware('throttle:public-booking-recovery');
 
 Route::get('/public/payments/{token}', [PublicPaymentController::class, 'show'])
     ->middleware('throttle:public-payments');

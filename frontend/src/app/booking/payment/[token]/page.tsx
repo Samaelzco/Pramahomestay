@@ -43,7 +43,7 @@ export default async function PublicPaymentPage({ params, searchParams }: PagePr
   const date = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Makassar" });
 
   return <div className="booking-page min-h-screen bg-surface-low text-foreground">
-    <BookingFlowHeader propertyName={property.name} />
+    <BookingFlowHeader propertyName={property.name} locale={locale} />
     <main className="mx-auto max-w-[1600px] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-14">
       <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-foreground"><ArrowLeftIcon className="size-4" />{serverLocalize(locale, "Kembali ke beranda", "Back to home")}</Link>
       <div className="mt-8 grid gap-10 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_32rem] lg:items-end">

@@ -100,6 +100,33 @@ class BookingService implements BookingServiceInterface
         return $this->bookings->findByPublicTokenHash(hash('sha256', $token));
     }
 
+    public function recoverPublicAccess(string $bookingCode, string $contact): string
+    {
+        $booking = $this->bookings->findByCode(Str::upper(trim($bookingCode)));
+        $normalizedContact = mb_strtolower(trim($contact));
+        $matches = false;
+
+        if ($booking !== null) {
+            $matches = str_contains($normalizedContact, '@')
+                ? hash_equals(mb_strtolower(trim($booking->guest_email)), $normalizedContact)
+                : hash_equals(
+                    preg_replace('/\D+/', '', $booking->guest_phone) ?? '',
+                    preg_replace('/\D+/', '', $normalizedContact) ?? '',
+                );
+        }
+
+        if (! $matches) {
+            throw ValidationException::withMessages([
+                'contact' => 'Kode booking atau data kontak tidak cocok.',
+            ]);
+        }
+
+        $publicToken = Str::random(64);
+        $this->bookings->rotatePublicToken($booking, hash('sha256', $publicToken));
+
+        return $publicToken;
+    }
+
     public function update(Booking $booking, array $attributes): Booking
     {
         return DB::transaction(function () use ($booking, $attributes): Booking {

@@ -3,6 +3,7 @@
 import { ApiError, apiFetch } from "@/lib/api/client";
 import type { ApiItem, PublicBookingActionState, PublicBookingResult } from "@/lib/api/types";
 import { redirect } from "next/navigation";
+import { rememberPublicBooking } from "@/lib/public-booking-server";
 
 export async function createPublicBookingAction(_state: PublicBookingActionState, formData: FormData): Promise<PublicBookingActionState> {
   const payload = {
@@ -24,5 +25,6 @@ export async function createPublicBookingAction(_state: PublicBookingActionState
     return { message: "Permintaan booking belum dapat dikirim. Silakan coba lagi." };
   }
 
+  await rememberPublicBooking(booking.payment_token);
   redirect(`/booking/payment/${booking.payment_token}`);
 }

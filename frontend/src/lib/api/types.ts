@@ -71,6 +71,8 @@ export type PublicBookingResult = {
 
 export type PublicBookingActionState = ActionState & { booking?: PublicBookingResult };
 
+export type PublicBookingRecoveryResult = { payment_token: string };
+
 export type InternalUser = {
   id: number;
   name: string;

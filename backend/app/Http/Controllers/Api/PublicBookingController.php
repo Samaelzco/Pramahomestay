@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Bookings\StorePublicBookingRequest;
+use App\Http\Requests\Bookings\RecoverPublicBookingRequest;
 use Illuminate\Http\JsonResponse;
 
 class PublicBookingController extends Controller
@@ -30,5 +31,18 @@ class PublicBookingController extends Controller
                 'payment_due_at' => $booking->payment_due_at?->toIso8601String(),
             ],
         ], 201);
+    }
+
+    public function recover(RecoverPublicBookingRequest $request): JsonResponse
+    {
+        $token = $this->bookings->recoverPublicAccess(
+            (string) $request->validated('booking_code'),
+            (string) $request->validated('contact'),
+        );
+
+        return response()->json([
+            'message' => 'Pesanan berhasil ditemukan.',
+            'data' => ['payment_token' => $token],
+        ]);
     }
 }

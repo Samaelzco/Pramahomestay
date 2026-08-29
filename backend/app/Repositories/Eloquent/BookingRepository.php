@@ -66,6 +66,21 @@ class BookingRepository implements BookingRepositoryInterface
             ->firstOrFail();
     }
 
+    public function findByCode(string $code): ?Booking
+    {
+        return $this->model->newQuery()
+            ->with(['room.images', 'payment'])
+            ->where('booking_code', $code)
+            ->first();
+    }
+
+    public function rotatePublicToken(Booking $booking, string $tokenHash): Booking
+    {
+        $booking->updateOrFail(['public_access_token_hash' => $tokenHash]);
+
+        return $booking->refresh()->load(['room.images', 'payment']);
+    }
+
     public function hasDateConflict(int $roomId, string $checkIn, string $checkOut, ?int $ignoreId = null): bool
     {
         return $this->model->newQuery()

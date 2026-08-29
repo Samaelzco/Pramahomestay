@@ -105,6 +105,9 @@ const apiMessageTranslations: Record<string, string> = {
   "Pembayaran untuk booking yang dibatalkan tidak dapat diverifikasi.": "A payment for a cancelled booking cannot be verified.",
   "Nominal pembayaran harus lebih dari nol untuk diverifikasi.": "The payment amount must be greater than zero to be verified.",
   "Bukti pembayaran belum dapat dikirim. Periksa koneksi lalu coba lagi.": "The payment receipt could not be submitted. Check the connection and try again.",
+  "Kode booking atau data kontak tidak cocok.": "The booking code or contact detail does not match.",
+  "Terlalu banyak percobaan. Tunggu sebentar lalu coba kembali.": "Too many attempts. Wait a moment, then try again.",
+  "Pesanan belum dapat dicari. Periksa koneksi lalu coba kembali.": "The booking could not be found. Check the connection and try again.",
 };
 
 export function localizeApiMessage(locale: Locale, message: string): string {
