@@ -13,6 +13,8 @@ const actionTone: Record<AuditAction, string> = {
   deactivated: "bg-surface-high text-muted",
   cancelled: "bg-[#ffdad6] text-[#93000a]",
   refunded: "bg-[#f2e8dc] text-[#694b27]",
+  verified: "bg-[#edf4ef] text-[#28533b]",
+  rejected: "bg-[#ffdad6] text-[#93000a]",
   exported: "bg-[#e5edf4] text-[#244b67]",
 };
 

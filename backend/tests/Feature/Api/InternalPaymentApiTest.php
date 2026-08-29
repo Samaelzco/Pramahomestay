@@ -101,6 +101,74 @@ class InternalPaymentApiTest extends TestCase
         $this->assertStringContainsString('Alasan pengembalian: Booking dibatalkan tamu.', $payment->refresh()->notes);
     }
 
+    public function test_pending_payment_can_be_verified_and_confirms_a_fully_paid_booking(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $payment = Payment::factory()->for($this->booking)->create([
+            'status' => 'pending_verification',
+            'amount_paid' => 1800000,
+            'proof_path' => 'payment-proofs/receipt.png',
+            'proof_url' => 'http://localhost:8000/storage/payment-proofs/receipt.png',
+        ]);
+
+        $this->patchJson("/api/internal/payments/{$payment->id}/verify")
+            ->assertOk()
+            ->assertJsonPath('data.status', 'paid')
+            ->assertJsonPath('data.credited_amount', '1800000.00')
+            ->assertJsonPath('data.remaining_amount', '0.00');
+
+        $this->assertDatabaseHas('bookings', ['id' => $this->booking->id, 'status' => 'confirmed']);
+        $this->assertDatabaseHas('audit_logs', ['subject_id' => $payment->id, 'action' => 'verified']);
+    }
+
+    public function test_pending_payment_can_be_rejected_with_a_reason_and_receipt_is_retained(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $payment = Payment::factory()->for($this->booking)->create([
+            'status' => 'pending_verification',
+            'amount_paid' => 1800000,
+            'proof_path' => 'payment-proofs/receipt.png',
+            'proof_url' => 'http://localhost:8000/storage/payment-proofs/receipt.png',
+        ]);
+
+        $this->patchJson("/api/internal/payments/{$payment->id}/reject", ['reason' => 'Nominal tidak sesuai mutasi bank.'])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'failed')
+            ->assertJsonPath('data.credited_amount', '0.00')
+            ->assertJsonPath('data.proof_url', 'http://localhost:8000/storage/payment-proofs/receipt.png');
+
+        $payment->refresh();
+        $this->assertStringContainsString('Alasan penolakan: Nominal tidak sesuai mutasi bank.', $payment->notes);
+        $this->assertSame('payment-proofs/receipt.png', $payment->proof_path);
+        $this->assertDatabaseHas('audit_logs', ['subject_id' => $payment->id, 'action' => 'rejected']);
+    }
+
+    public function test_payment_review_requires_a_pending_payment_receipt_and_rejection_reason(): void
+    {
+        Sanctum::actingAs($this->admin, ['internal']);
+        $pendingWithoutProof = Payment::factory()->for($this->booking)->create([
+            'status' => 'pending_verification',
+            'amount_paid' => 1800000,
+            'proof_path' => null,
+        ]);
+
+        $this->patchJson("/api/internal/payments/{$pendingWithoutProof->id}/verify")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('proof');
+        $this->patchJson("/api/internal/payments/{$pendingWithoutProof->id}/reject", [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('reason');
+
+        $alreadyPaid = Payment::factory()->for(Booking::factory()->for(Room::factory()))->create([
+            'status' => 'paid',
+            'amount_paid' => 500000,
+            'proof_path' => 'payment-proofs/paid.png',
+        ]);
+        $this->patchJson("/api/internal/payments/{$alreadyPaid->id}/verify")
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('status');
+    }
+
     public function test_refund_requires_a_reason_and_a_credited_payment(): void
     {
         Sanctum::actingAs($this->admin, ['internal']);

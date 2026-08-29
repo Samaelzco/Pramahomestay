@@ -23,6 +23,8 @@ const actions: Array<{ value: AuditAction; label: string }> = [
   { value: "deactivated", label: "Dinonaktifkan" },
   { value: "cancelled", label: "Dibatalkan" },
   { value: "refunded", label: "Dikembalikan" },
+  { value: "verified", label: "Diverifikasi" },
+  { value: "rejected", label: "Ditolak" },
   { value: "deleted", label: "Dihapus" },
   { value: "exported", label: "Diekspor" },
 ];

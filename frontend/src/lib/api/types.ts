@@ -89,7 +89,7 @@ export type InternalUser = {
 
 export type PaginatedUsers = { data: InternalUser[]; meta: PaginationMeta };
 
-export type AuditAction = "created" | "updated" | "deleted" | "activated" | "deactivated" | "cancelled" | "refunded" | "exported";
+export type AuditAction = "created" | "updated" | "deleted" | "activated" | "deactivated" | "cancelled" | "refunded" | "verified" | "rejected" | "exported";
 export type AuditModule = "rooms" | "amenities" | "bookings" | "payments" | "guests" | "users" | "roles" | "settings" | "reports";
 
 export type AuditLog = {
@@ -269,6 +269,7 @@ export type Payment = {
   paid_at: string | null;
   notes: string | null;
   proof_url: string | null;
+  can_update: boolean;
   created_at: string;
   updated_at: string;
 };

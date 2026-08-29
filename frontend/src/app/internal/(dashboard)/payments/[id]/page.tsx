@@ -1,11 +1,12 @@
 import { PaymentStatus } from "@/components/payments/payment-status";
+import { PaymentReviewActions } from "@/components/payments/payment-review-actions";
+import { PaymentProofViewer } from "@/components/payments/payment-proof-viewer";
 import { ArrowLeftIcon } from "@/components/ui/icons";
 import { apiFetch } from "@/lib/api/client";
 import type { ApiItem, Payment } from "@/lib/api/types";
 import { paymentMethodLabel, paymentStatusLabel } from "@/lib/display-labels";
 import { localeCode, serverLocale, serverLocalize } from "@/lib/locale-server";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -87,12 +88,14 @@ export default async function PaymentDetailPage({
             )}
           </p>
         </div>
-        <Link
-          href={`/internal/payments/${payment.id}/edit`}
-          className="inline-flex h-12 items-center justify-center rounded-sm bg-primary px-6 text-sm font-semibold text-white hover:bg-[#2f3131]"
-        >
-          {t("Edit pembayaran", "Edit payment")}
-        </Link>
+        {payment.can_update && (
+          <Link
+            href={`/internal/payments/${payment.id}/edit`}
+            className="inline-flex h-12 items-center justify-center rounded-sm bg-primary px-6 text-sm font-semibold text-white hover:bg-[#2f3131]"
+          >
+            {t("Edit pembayaran", "Edit payment")}
+          </Link>
+        )}
       </div>
       {success === "updated" && (
         <div
@@ -104,6 +107,23 @@ export default async function PaymentDetailPage({
             "Payment changes were saved successfully.",
           )}
         </div>
+      )}
+      {(success === "verified" || success === "rejected") && (
+        <div
+          className="mt-8 rounded-sm bg-[#edf4ef] px-5 py-4 text-sm text-[#28533b]"
+          role="status"
+        >
+          {success === "verified"
+            ? t("Pembayaran berhasil diverifikasi dan status booking telah diperbarui.", "The payment was verified and the booking status was updated.")
+            : t("Bukti pembayaran ditolak. Pelanggan dapat mengirim bukti pengganti.", "The payment receipt was rejected. The guest can submit a replacement.")}
+        </div>
+      )}
+      {payment.can_update && payment.status === "pending_verification" && (
+        <PaymentReviewActions
+          id={payment.id}
+          paymentCode={payment.payment_code}
+          amountLabel={currency.format(Number(payment.amount_paid))}
+        />
       )}
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.3fr_0.8fr]">
         <section className="rounded-lg bg-surface p-6 shadow-[0_18px_42px_-28px_rgba(68,71,72,0.25)] sm:p-8">
@@ -166,18 +186,13 @@ export default async function PaymentDetailPage({
           {t("Bukti pembayaran", "Payment receipt")}
         </h2>
         {payment.proof_url ? (
-          <div className="relative mt-5 aspect-[16/9] max-w-2xl overflow-hidden rounded-lg bg-surface-high">
-            <Image
-              src={payment.proof_url}
-              alt={t(
-                `Bukti pembayaran ${payment.payment_code}`,
-                `Payment receipt ${payment.payment_code}`,
-              )}
-              fill
-              sizes="(max-width: 768px) 100vw, 672px"
-              className="object-contain"
-            />
-          </div>
+          <PaymentProofViewer
+            src={payment.proof_url}
+            alt={t(
+              `Bukti pembayaran ${payment.payment_code}`,
+              `Payment receipt ${payment.payment_code}`,
+            )}
+          />
         ) : (
           <p className="mt-3 text-sm leading-7 text-muted">
             {t(

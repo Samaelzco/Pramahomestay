@@ -30,6 +30,7 @@ class PaymentResource extends JsonResource
             'paid_at' => $this->paid_at?->toIso8601String(),
             'notes' => $this->notes,
             'proof_url' => $this->proof_url,
+            'can_update' => $request->user()?->can('payments.update') ?? false,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

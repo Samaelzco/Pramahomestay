@@ -21,6 +21,7 @@ class AuditLogResource extends JsonResource
                 'created' => 'Ditambahkan', 'updated' => 'Diperbarui', 'deleted' => 'Dihapus',
                 'activated' => 'Diaktifkan', 'deactivated' => 'Dinonaktifkan',
                 'cancelled' => 'Dibatalkan', 'refunded' => 'Dikembalikan',
+                'verified' => 'Diverifikasi', 'rejected' => 'Ditolak',
                 'exported' => 'Diekspor',
             ][$this->action] ?? ucfirst($this->action),
             'module' => $this->module,

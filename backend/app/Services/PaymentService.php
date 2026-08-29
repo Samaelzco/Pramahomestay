@@ -108,10 +108,12 @@ class PaymentService implements PaymentServiceInterface
 
                 if ($existing) {
                     $oldProofPath = $existing->proof_path;
+
                     return $this->payments->update($existing, $values);
                 }
 
                 $values['payment_code'] = $this->uniqueCode();
+
                 return $this->payments->create($values);
             });
         } catch (Throwable $exception) {
@@ -166,6 +168,56 @@ class PaymentService implements PaymentServiceInterface
         }
 
         return $updated;
+    }
+
+    public function verify(Payment $payment): Payment
+    {
+        return DB::transaction(function () use ($payment): Payment {
+            $locked = $this->payments->findForUpdate($payment->id);
+
+            if ($locked->status !== PaymentStatus::PendingVerification) {
+                throw ValidationException::withMessages(['status' => 'Hanya pembayaran yang menunggu verifikasi yang dapat diverifikasi.']);
+            }
+            if (! $locked->proof_path) {
+                throw ValidationException::withMessages(['proof' => 'Bukti pembayaran belum tersedia.']);
+            }
+
+            $booking = $this->bookings->findForUpdate($locked->booking_id);
+            if ($booking->status === BookingStatus::Cancelled) {
+                throw ValidationException::withMessages(['status' => 'Pembayaran untuk booking yang dibatalkan tidak dapat diverifikasi.']);
+            }
+
+            $amount = (string) $locked->amount_paid;
+            if (bccomp($amount, '0', 2) !== 1) {
+                throw ValidationException::withMessages(['amount_paid' => 'Nominal pembayaran harus lebih dari nol untuk diverifikasi.']);
+            }
+
+            $status = bccomp($amount, (string) $booking->total_amount, 2) === 0
+                ? PaymentStatus::Paid
+                : PaymentStatus::Partial;
+            $updated = $this->payments->update($locked, ['status' => $status->value]);
+            $this->confirmBookingWhenPaid($booking, $updated);
+
+            return $updated;
+        });
+    }
+
+    public function reject(Payment $payment, string $reason): Payment
+    {
+        return DB::transaction(function () use ($payment, $reason): Payment {
+            $locked = $this->payments->findForUpdate($payment->id);
+
+            if ($locked->status !== PaymentStatus::PendingVerification) {
+                throw ValidationException::withMessages(['status' => 'Hanya pembayaran yang menunggu verifikasi yang dapat ditolak.']);
+            }
+
+            $entry = 'Alasan penolakan: '.trim($reason);
+
+            return $this->payments->update($locked, [
+                'status' => PaymentStatus::Failed->value,
+                'notes' => trim(implode("\n\n", array_filter([$locked->notes, $entry]))),
+            ]);
+        });
     }
 
     public function refund(Payment $payment, string $reason): Payment

@@ -129,6 +129,7 @@ class AuditLogger
             'created' => 'ditambahkan', 'updated' => 'diperbarui', 'deleted' => 'dihapus',
             'activated' => 'diaktifkan', 'deactivated' => 'dinonaktifkan',
             'cancelled' => 'dibatalkan', 'refunded' => 'dikembalikan',
+            'verified' => 'diverifikasi', 'rejected' => 'ditolak',
             'exported' => 'diekspor',
         ][$action] ?? 'diubah';
 

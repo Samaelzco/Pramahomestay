@@ -12,9 +12,9 @@ use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\ReportController;
 use App\Http\Controllers\Api\Internal\RoomController;
 use App\Http\Controllers\Api\Internal\UserController;
-use App\Http\Controllers\Api\PublicSiteController;
 use App\Http\Controllers\Api\PublicBookingController;
 use App\Http\Controllers\Api\PublicPaymentController;
+use App\Http\Controllers\Api\PublicSiteController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -73,6 +73,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/payments', [PaymentController::class, 'store'])->middleware('permission:payments.create');
         Route::get('/payments/{payment}', [PaymentController::class, 'show'])->middleware('permission:payments.view');
         Route::match(['put', 'patch'], '/payments/{payment}', [PaymentController::class, 'update'])->middleware('permission:payments.update');
+        Route::patch('/payments/{payment}/verify', [PaymentController::class, 'verify'])->middleware('permission:payments.update');
+        Route::patch('/payments/{payment}/reject', [PaymentController::class, 'reject'])->middleware('permission:payments.update');
         Route::patch('/payments/{payment}/refund', [PaymentController::class, 'refund'])->middleware('permission:payments.update');
 
         Route::get('/bookings', [BookingController::class, 'index'])->middleware('permission:bookings.view');

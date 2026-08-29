@@ -19,5 +19,9 @@ interface PaymentServiceInterface
 
     public function update(Payment $payment, array $attributes): Payment;
 
+    public function verify(Payment $payment): Payment;
+
+    public function reject(Payment $payment, string $reason): Payment;
+
     public function refund(Payment $payment, string $reason): Payment;
 }

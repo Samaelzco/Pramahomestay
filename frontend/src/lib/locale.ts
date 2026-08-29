@@ -62,6 +62,8 @@ const apiMessageTranslations: Record<string, string> = {
   "Profil tamu belum dapat dihapus. Periksa koneksi lalu coba lagi.": "The guest profile could not be deleted. Check the connection and try again.",
   "Pembayaran belum dapat disimpan. Periksa koneksi lalu coba lagi.": "The payment could not be saved. Check the connection and try again.",
   "Pengembalian pembayaran belum dapat dicatat. Periksa koneksi lalu coba lagi.": "The refund could not be recorded. Check the connection and try again.",
+  "Pembayaran belum dapat diverifikasi. Periksa koneksi lalu coba lagi.": "The payment could not be verified. Check the connection and try again.",
+  "Bukti pembayaran belum dapat ditolak. Periksa koneksi lalu coba lagi.": "The payment receipt could not be rejected. Check the connection and try again.",
   "Pengaturan belum dapat disimpan. Periksa koneksi lalu coba lagi.": "The settings could not be saved. Check the connection and try again.",
   "Pengaturan homestay berhasil disimpan.": "Homestay settings were saved successfully.",
   "Kamar belum dapat disimpan. Periksa koneksi lalu coba lagi.": "The room could not be saved. Check the connection and try again.",
@@ -97,6 +99,11 @@ const apiMessageTranslations: Record<string, string> = {
   "Booking ini sudah dibatalkan.": "This booking has been cancelled.",
   "Batas waktu pembayaran telah berakhir. Hubungi pengelola untuk bantuan.": "The payment deadline has expired. Contact the property for assistance.",
   "Bukti pembayaran sudah dikirim dan sedang diproses.": "The payment receipt has already been submitted and is being processed.",
+  "Hanya pembayaran yang menunggu verifikasi yang dapat diverifikasi.": "Only payments awaiting review can be verified.",
+  "Hanya pembayaran yang menunggu verifikasi yang dapat ditolak.": "Only payments awaiting review can be rejected.",
+  "Bukti pembayaran belum tersedia.": "The payment receipt is not available yet.",
+  "Pembayaran untuk booking yang dibatalkan tidak dapat diverifikasi.": "A payment for a cancelled booking cannot be verified.",
+  "Nominal pembayaran harus lebih dari nol untuk diverifikasi.": "The payment amount must be greater than zero to be verified.",
   "Bukti pembayaran belum dapat dikirim. Periksa koneksi lalu coba lagi.": "The payment receipt could not be submitted. Check the connection and try again.",
 };
 

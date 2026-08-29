@@ -19,7 +19,7 @@ const paymentMethods: Record<string, [string, string]> = {
 const auditActions: Record<string, [string, string]> = {
   created: ["Ditambahkan", "Created"], updated: ["Diperbarui", "Updated"], activated: ["Diaktifkan", "Activated"],
   deactivated: ["Dinonaktifkan", "Deactivated"], cancelled: ["Dibatalkan", "Cancelled"], refunded: ["Dikembalikan", "Refunded"],
-  deleted: ["Dihapus", "Deleted"], exported: ["Diekspor", "Exported"],
+  verified: ["Diverifikasi", "Verified"], rejected: ["Ditolak", "Rejected"], deleted: ["Dihapus", "Deleted"], exported: ["Diekspor", "Exported"],
 };
 const modules: Record<string, [string, string]> = {
   dashboard: ["Ringkasan", "Overview"], reports: ["Laporan", "Reports"], rooms: ["Kamar", "Rooms"], amenities: ["Fasilitas", "Amenities"],
@@ -70,7 +70,7 @@ export function permissionLabel(name: string, fallback: string, locale: DisplayL
 export function auditDescription(action: string, module: string, subject: string | null | undefined, fallback: string, locale: DisplayLocale): string {
   if (locale === "id") return fallback;
   const target = subject || moduleLabel(module, module, locale);
-  const verbs: Record<string, string> = { created: "Created", updated: "Updated", activated: "Activated", deactivated: "Deactivated", cancelled: "Cancelled", refunded: "Refunded", deleted: "Deleted", exported: "Exported" };
+  const verbs: Record<string, string> = { created: "Created", updated: "Updated", activated: "Activated", deactivated: "Deactivated", cancelled: "Cancelled", refunded: "Refunded", verified: "Verified", rejected: "Rejected", deleted: "Deleted", exported: "Exported" };
   return `${verbs[action] ?? "Changed"} ${target}.`;
 }
 

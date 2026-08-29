@@ -45,6 +45,38 @@ export async function updatePaymentAction(id: number, _state: ActionState, formD
   redirect(`/internal/payments/${id}?success=updated`);
 }
 
+function revalidatePaymentReview(id: number) {
+  revalidatePath("/internal/dashboard");
+  revalidatePath("/internal/payments");
+  revalidatePath(`/internal/payments/${id}`);
+  revalidatePath("/internal/bookings");
+  revalidatePath("/booking/payment/[token]", "page");
+}
+
+export async function verifyPaymentAction(id: number, _state: ActionState, _formData: FormData): Promise<ActionState> {
+  void _state;
+  void _formData;
+  try {
+    await apiFetch(`/internal/payments/${id}/verify`, { method: "PATCH", body: JSON.stringify({}) });
+    revalidatePaymentReview(id);
+    redirect(`/internal/payments/${id}?success=verified`);
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Pembayaran belum dapat diverifikasi. Periksa koneksi lalu coba lagi." };
+  }
+}
+
+export async function rejectPaymentAction(id: number, _state: ActionState, formData: FormData): Promise<ActionState> {
+  try {
+    await apiFetch(`/internal/payments/${id}/reject`, { method: "PATCH", body: JSON.stringify({ reason: formData.get("reason") }) });
+    revalidatePaymentReview(id);
+    redirect(`/internal/payments/${id}?success=rejected`);
+  } catch (error) {
+    if (error instanceof ApiError) return { message: error.payload.message, errors: error.payload.errors };
+    return { message: "Bukti pembayaran belum dapat ditolak. Periksa koneksi lalu coba lagi." };
+  }
+}
+
 export async function refundPaymentAction(id: number, _state: ActionState, formData: FormData): Promise<ActionState> {
   try {
     const response = await apiFetch<{ message?: string }>(`/internal/payments/${id}/refund`, { method: "PATCH", body: JSON.stringify({ reason: formData.get("reason") }) });

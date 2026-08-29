@@ -121,7 +121,7 @@ export function PaymentProofInput({
                 )}
                 fill
                 sizes="260px"
-                unoptimized={previewUrl.startsWith("blob:")}
+                unoptimized
                 className="object-cover"
               />
               <button

@@ -6,6 +6,7 @@ use App\Contracts\Services\PaymentServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payments\IndexPaymentRequest;
 use App\Http\Requests\Payments\RefundPaymentRequest;
+use App\Http\Requests\Payments\RejectPaymentRequest;
 use App\Http\Requests\Payments\StorePaymentRequest;
 use App\Http\Requests\Payments\UpdatePaymentRequest;
 use App\Http\Resources\PaymentResource;
@@ -42,6 +43,20 @@ class PaymentController extends Controller
         $payment = $this->payments->update($payment, $request->validated());
 
         return (new PaymentResource($payment))->additional(['message' => 'Pembayaran berhasil diperbarui.']);
+    }
+
+    public function verify(Payment $payment): PaymentResource
+    {
+        $payment = $this->payments->verify($payment);
+
+        return (new PaymentResource($payment))->additional(['message' => 'Pembayaran berhasil diverifikasi.']);
+    }
+
+    public function reject(RejectPaymentRequest $request, Payment $payment): PaymentResource
+    {
+        $payment = $this->payments->reject($payment, $request->validated('reason'));
+
+        return (new PaymentResource($payment))->additional(['message' => 'Bukti pembayaran berhasil ditolak.']);
     }
 
     public function refund(RefundPaymentRequest $request, Payment $payment): PaymentResource

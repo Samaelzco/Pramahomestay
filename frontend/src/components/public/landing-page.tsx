@@ -205,17 +205,17 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
 
   return <div ref={root} className="public-site bg-background text-foreground">
     <header className="public-header fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,box-shadow] duration-300">
-      <div className="flex h-20 w-full items-center justify-between px-5 sm:px-8 lg:px-12 xl:px-16">
-        <a href="#top" onClick={(event) => scrollToSection(event, "#top")} className="public-brand flex items-center gap-3" aria-label={`${data.property.name} home`}>
+      <div className="flex h-20 w-full items-center justify-between px-5 sm:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:px-12 xl:px-16">
+        <a href="#top" onClick={(event) => scrollToSection(event, "#top")} className="public-brand flex min-w-0 items-center gap-3 lg:justify-self-start" aria-label={`${data.property.name} home`}>
           <span className="public-brand-mark grid size-10 place-items-center rounded-sm bg-primary text-background"><HomeIcon className="size-5" /></span>
           <span className="text-sm font-bold tracking-[-0.02em] sm:text-base">{data.property.name}</span>
         </a>
-        <nav className="hidden items-center gap-8 text-sm font-medium lg:flex" aria-label={t.menu}>
+        <nav className="hidden items-center gap-8 text-sm font-medium lg:flex lg:justify-self-center" aria-label={t.menu}>
           <a className="public-nav-link" href="#facilities" onClick={(event) => scrollToSection(event, "#facilities")}>{t.navFacilities}</a>
           <a className="public-nav-link" href="#stay" onClick={(event) => scrollToSection(event, "#stay")}>{t.navStay}</a>
           <a className="public-nav-link" href="#location" onClick={(event) => scrollToSection(event, "#location")}>{t.navLocation}</a>
         </nav>
-        <div className="public-header-tools flex items-center gap-2">
+        <div className="public-header-tools flex items-center gap-2 lg:justify-self-end">
           <LanguageToggle />
           <ThemeToggle />
           <a href="/booking" className="public-header-cta hidden h-11 items-center bg-primary px-5 text-sm font-bold text-background transition-transform hover:-translate-y-0.5 md:flex">{t.check}</a>
