@@ -4,7 +4,21 @@ import { cookies, headers as requestHeaders } from "next/headers";
 import { redirect } from "next/navigation";
 
 const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:8000/api";
+const configuredTimeout = Number(process.env.INTERNAL_API_TIMEOUT_MS);
+const apiTimeoutMs = Number.isFinite(configuredTimeout) && configuredTimeout >= 1_000
+  ? Math.min(configuredTimeout, 120_000)
+  : 12_000;
+const downloadTimeoutMs = 60_000;
 export const authCookieName = "prama_internal_token";
+
+function requestSignal(signal: AbortSignal | null | undefined, timeoutMs: number): AbortSignal {
+  const timeout = AbortSignal.timeout(timeoutMs);
+  return signal ? AbortSignal.any([signal, timeout]) : timeout;
+}
+
+function timeoutError(): ApiError {
+  return new ApiError(504, { message: "Layanan membutuhkan waktu terlalu lama untuk merespons. Silakan coba lagi." });
+}
 
 async function forwardBrowserContext(outgoingHeaders: Headers): Promise<void> {
   const incomingHeaders = await requestHeaders();
@@ -25,11 +39,18 @@ export async function apiFetch<T>(
   if (token) headers.set("Authorization", `Bearer ${token}`);
   await forwardBrowserContext(headers);
 
-  const response = await fetch(`${apiUrl}${path}`, {
-    ...init,
-    headers,
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${apiUrl}${path}`, {
+      ...init,
+      headers,
+      cache: "no-store",
+      signal: requestSignal(init.signal, apiTimeoutMs),
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") throw timeoutError();
+    throw error;
+  }
 
   if (response.status === 401 && redirectOnUnauthorized) redirect("/internal/login");
   const payload = await response.json().catch(() => ({}));
@@ -43,7 +64,16 @@ export async function apiDownload(path: string): Promise<Response> {
   if (token) headers.set("Authorization", `Bearer ${token}`);
   await forwardBrowserContext(headers);
 
-  return fetch(`${apiUrl}${path}`, { headers, cache: "no-store" });
+  try {
+    return await fetch(`${apiUrl}${path}`, {
+      headers,
+      cache: "no-store",
+      signal: requestSignal(undefined, downloadTimeoutMs),
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") throw timeoutError();
+    throw error;
+  }
 }
 
 export class ApiError extends Error {

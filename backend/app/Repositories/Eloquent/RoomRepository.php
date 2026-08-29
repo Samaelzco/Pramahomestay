@@ -125,4 +125,32 @@ class RoomRepository implements RoomRepositoryInterface
             ->orderBy('name')
             ->get();
     }
+
+    public function findActiveForPublic(int $id): ?Room
+    {
+        return $this->model
+            ->newQuery()
+            ->with(['amenities' => fn ($query) => $query->where('amenities.is_active', true), 'images'])
+            ->whereKey($id)
+            ->where('is_active', true)
+            ->where('status', '!=', 'maintenance')
+            ->first();
+    }
+
+    public function isAvailableForPublic(Room $room, ?string $checkIn = null, ?string $checkOut = null, int $guests = 1): bool
+    {
+        if ($room->capacity < $guests) {
+            return false;
+        }
+
+        if (! $checkIn || ! $checkOut) {
+            return true;
+        }
+
+        return ! $room->bookings()
+            ->where('status', '!=', 'cancelled')
+            ->where('check_in', '<', $checkOut)
+            ->where('check_out', '>', $checkIn)
+            ->exists();
+    }
 }

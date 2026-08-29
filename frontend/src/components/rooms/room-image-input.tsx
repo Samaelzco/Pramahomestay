@@ -2,6 +2,7 @@
 
 import { ImageIcon, PlusIcon, TrashIcon } from "@/components/ui/icons";
 import type { RoomGalleryImage } from "@/lib/api/types";
+import { shouldBypassImageOptimization } from "@/lib/image";
 import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -106,7 +107,7 @@ export function RoomImageInput({ currentImages = [], errors }: RoomImageInputPro
         {currentImages.map((image) => {
           const removed = removedImageIds.includes(image.id);
           return <figure key={image.id} className={`relative min-w-0 overflow-hidden rounded-lg bg-surface-high ${removed ? "opacity-55" : ""}`}>
-            <div className="relative aspect-[4/3]"><Image src={image.url} alt={localize(locale, "Foto kamar tersimpan", "Saved room photo")} fill sizes="(max-width: 640px) 50vw, 240px" className="object-cover" /></div>
+            <div className="relative aspect-[4/3]"><Image src={image.url} alt={localize(locale, "Foto kamar tersimpan", "Saved room photo")} fill sizes="(max-width: 640px) 50vw, 240px" unoptimized={shouldBypassImageOptimization(image.url)} className="object-cover" /></div>
             <figcaption className="flex min-h-12 items-center justify-between gap-2 px-3 py-2 text-xs"><span className="truncate font-semibold">{removed ? localize(locale, "Akan dihapus", "Will be deleted") : image.id === coverId ? "Cover" : localize(locale, "Tersimpan", "Saved")}</span><button type="button" onClick={() => toggleStoredImage(image.id)} className="inline-flex min-h-9 shrink-0 items-center gap-1.5 font-semibold text-secondary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">{removed ? localize(locale, "Batalkan", "Undo") : <><TrashIcon className="size-3.5" />{localize(locale, "Hapus", "Delete")}</>}</button></figcaption>
           </figure>;
         })}

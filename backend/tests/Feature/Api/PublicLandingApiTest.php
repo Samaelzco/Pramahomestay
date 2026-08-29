@@ -61,4 +61,56 @@ class PublicLandingApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors('check_out');
     }
+
+    public function test_public_room_detail_exposes_active_room_content_and_availability(): void
+    {
+        HomestaySetting::query()->create([
+            'name' => 'Prama Homestay',
+            'address' => 'Dalung, Bali',
+            'maps_url' => 'https://maps.example.test/prama',
+            'currency' => 'IDR',
+        ]);
+        $amenity = Amenity::query()->create([
+            'name' => 'Wi-Fi',
+            'name_en' => 'Wi-Fi',
+            'slug' => 'wi-fi',
+            'description' => 'Internet cepat.',
+            'is_active' => true,
+        ]);
+        $room = Room::factory()->create([
+            'name' => 'Unit 101',
+            'status' => 'ready',
+            'capacity' => 2,
+            'is_active' => true,
+        ]);
+        $room->amenities()->sync([$amenity->id]);
+        $room->images()->create(['url' => 'https://example.test/unit-101.jpg', 'sort_order' => 0]);
+        $checkIn = now()->addDays(10)->toDateString();
+        $checkOut = now()->addDays(12)->toDateString();
+        Booking::factory()->for($room)->create([
+            'check_in' => $checkIn,
+            'check_out' => $checkOut,
+            'status' => 'confirmed',
+        ]);
+
+        $this->getJson("/api/public/rooms/{$room->id}?check_in={$checkIn}&check_out={$checkOut}&guests=2")
+            ->assertOk()
+            ->assertJsonPath('data.property.name', 'Prama Homestay')
+            ->assertJsonPath('data.room.name', 'Unit 101')
+            ->assertJsonPath('data.room.amenities.0.description', 'Internet cepat.')
+            ->assertJsonPath('data.room.images.0.url', 'https://example.test/unit-101.jpg')
+            ->assertJsonPath('data.availability.checked', true)
+            ->assertJsonPath('data.availability.is_available', false)
+            ->assertJsonPath('data.availability.reason', 'dates')
+            ->assertJsonMissingPath('data.room.is_active');
+    }
+
+    public function test_public_room_detail_hides_inactive_and_maintenance_rooms(): void
+    {
+        $inactive = Room::factory()->create(['status' => 'ready', 'is_active' => false]);
+        $maintenance = Room::factory()->create(['status' => 'maintenance', 'is_active' => true]);
+
+        $this->getJson("/api/public/rooms/{$inactive->id}")->assertNotFound();
+        $this->getJson("/api/public/rooms/{$maintenance->id}")->assertNotFound();
+    }
 }

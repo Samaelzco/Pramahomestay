@@ -4,6 +4,7 @@ import { LanguageToggle } from "@/components/internal/language-toggle";
 import { ThemeToggle } from "@/components/internal/theme-toggle";
 import { ArrowRightIcon, BedIcon, CheckIcon, ExternalLinkIcon, HomeIcon, MapPinIcon, MenuIcon, UsersIcon, XIcon } from "@/components/ui/icons";
 import type { PublicAmenity, PublicLandingData } from "@/lib/api/types";
+import { shouldBypassImageOptimization } from "@/lib/image";
 import { localize, type Locale } from "@/lib/locale";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -26,7 +27,7 @@ const copy = {
     facilityEyebrow: "Fasilitas kamar", facilityTitle: "Yang membuat istirahat terasa mudah.", facilityBody: "Bukan daftar panjang yang dibuat untuk terlihat mewah. Hanya hal-hal penting yang membuat waktu di kamar terasa lebih nyaman.", facilityAvailable: "Tersedia di kamar",
     galleryTitle: "Galeri kamar.", galleryBody: "Lihat suasana, detail, dan sudut ruang yang akan menyambut waktu istirahatmu.",
     available: "unit tersedia", initialRooms: "unit aktif", perNight: "per malam", capacity: "kapasitas", bed: "tempat tidur",
-    noRooms: "Belum ada unit yang sesuai.", noRoomsBody: "Coba ubah tanggal atau jumlah tamu untuk melihat pilihan lainnya.",
+    noRooms: "Belum ada unit yang sesuai.", noRoomsBody: "Coba ubah tanggal atau jumlah tamu untuk melihat pilihan lainnya.", roomDetail: "Lihat detail",
     locationTitle: "Dekat dengan kota, tetap terasa tenang.", locationBody: "Gunakan petunjuk arah untuk melihat posisi Prama Homestay dan merencanakan perjalananmu.", openMaps: "Buka di Google Maps",
     finalTitle: "Datang untuk beristirahat. Pulang dengan energi baru.", finalBody: "Mulai dari tanggal yang cocok, lalu biarkan kami menyiapkan ruangnya.",
     footer: "Ruang menginap yang hangat di Bali.", menu: "Navigasi", contact: "Kontak", notAvailable: "Belum tersedia",
@@ -40,7 +41,7 @@ const copy = {
     facilityEyebrow: "Room amenities", facilityTitle: "Everything that makes rest feel effortless.", facilityBody: "Not a long list made to look luxurious. Just the essentials that make time in your room more comfortable.", facilityAvailable: "Available in the room",
     galleryTitle: "Room gallery.", galleryBody: "Explore the atmosphere, details, and spaces that will welcome your time to rest.",
     available: "units available", initialRooms: "active units", perNight: "per night", capacity: "capacity", bed: "bed",
-    noRooms: "No matching units yet.", noRoomsBody: "Try changing the dates or guest count to see other options.",
+    noRooms: "No matching units yet.", noRoomsBody: "Try changing the dates or guest count to see other options.", roomDetail: "View details",
     locationTitle: "Close to the city, still calm at heart.", locationBody: "Open directions to find Prama Homestay and plan your journey.", openMaps: "Open in Google Maps",
     finalTitle: "Arrive to rest. Leave with renewed energy.", finalBody: "Start with the right dates, then let us prepare the space.",
     footer: "A warm place to stay in Bali.", menu: "Navigation", contact: "Contact", notAvailable: "Not available yet",
@@ -238,7 +239,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
       <div className="hero-shell relative bg-background">
         <section className="hero-section relative isolate min-h-[620px] overflow-hidden sm:min-h-[720px] lg:min-h-[max(900px,100svh)]">
           <div data-hero-media-slot className="hero-media absolute inset-0 -z-20 overflow-hidden bg-[#26211b]">
-            {useHeroVideo ? <video ref={heroVideoRef} src={data.hero_media.video_url ?? undefined} poster={heroImage?.url} muted loop playsInline preload="metadata" className="hero-media-object size-full object-cover" /> : heroSlides.map((image, index) => <Image key={image.id} data-hero-slide src={image.url} alt={image.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="100vw" className={`hero-media-object object-cover ${index === 0 ? "opacity-100" : "opacity-0"}`} />)}
+            {useHeroVideo ? <video ref={heroVideoRef} src={data.hero_media.video_url ?? undefined} poster={heroImage?.url} muted loop playsInline preload="metadata" className="hero-media-object size-full object-cover" /> : heroSlides.map((image, index) => <Image key={image.id} data-hero-slide src={image.url} alt={image.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="100vw" unoptimized={shouldBypassImageOptimization(image.url)} className={`hero-media-object object-cover ${index === 0 ? "opacity-100" : "opacity-0"}`} />)}
             {!useHeroVideo && heroSlides.length === 0 && <div className="absolute inset-0 bg-[#26211b]" />}
           </div>
           <div className="hero-scrim absolute inset-0 -z-10" />
@@ -272,7 +273,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
       <section id="facilities" className="facilities grid w-full gap-12 bg-surface-warm px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20 lg:px-12 lg:py-32 xl:px-16">
         <div className="facility-visual lg:h-[calc(100vh-9rem)] lg:max-h-[46rem] lg:self-start">
           <figure className="relative h-[26rem] overflow-hidden bg-surface-low sm:h-[34rem] lg:h-full">
-            {facilityImage && <Image src={facilityImage.url} alt={facilityImage.alt} fill loading="eager" sizes="(min-width: 1024px) 42vw, 100vw" className="facility-image object-cover" />}
+            {facilityImage && <Image src={facilityImage.url} alt={facilityImage.alt} fill loading="eager" sizes="(min-width: 1024px) 42vw, 100vw" unoptimized={shouldBypassImageOptimization(facilityImage.url)} className="facility-image object-cover" />}
             {!facilityImage && <div className="absolute inset-0 bg-surface-high" />}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-black/10" />
             <figcaption className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
@@ -304,7 +305,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
               const layout = ["md:col-span-2 md:aspect-[16/9] lg:col-span-7 lg:row-span-2 lg:aspect-auto", "lg:col-span-5", "lg:col-span-5", "lg:col-span-5", "lg:col-span-7"][index] ?? "lg:col-span-4";
               const imageSizes = index === 0 ? "(min-width: 1024px) 58vw, (min-width: 768px) calc(100vw - 4rem), 100vw" : "(min-width: 1024px) 42vw, (min-width: 768px) calc(50vw - 2.5rem), 100vw";
               return <figure key={`${image.id}-${image.roomName}`} className={`gallery-media group relative min-h-64 overflow-hidden bg-surface-high md:aspect-[4/3] md:min-h-0 lg:aspect-auto ${layout}`}>
-                <Image src={image.url} alt={`${localize(locale, "Galeri kamar", "Room gallery")} · ${image.roomName}`} fill loading={index === 0 ? "eager" : "lazy"} sizes={imageSizes} className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]" />
+                <Image src={image.url} alt={`${localize(locale, "Galeri kamar", "Room gallery")} · ${image.roomName}`} fill loading={index === 0 ? "eager" : "lazy"} sizes={imageSizes} unoptimized={shouldBypassImageOptimization(image.url)} className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]" />
                 <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/10" />
               </figure>;
             })}
@@ -314,7 +315,10 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
 
       {hasSearch && <section aria-live="polite" className="w-full px-5 py-24 sm:px-8 lg:px-12 xl:px-16">
         <div className="flex flex-col justify-between gap-4 border-b pb-8 sm:flex-row sm:items-end"><div><h2 className="text-3xl font-semibold tracking-[-0.03em]">{data.rooms.length} {t.available}</h2><p className="mt-2 text-muted">{data.filters.check_in} / {data.filters.check_out} · {data.filters.guests} {t.guestUnit}</p></div><a href="#availability" onClick={(event) => scrollToSection(event, "#availability")} className="public-text-link text-sm font-semibold">{t.check}</a></div>
-        {data.rooms.length ? <div className="divide-y">{data.rooms.map((room) => <article key={room.id} className="grid gap-6 py-8 sm:grid-cols-[1fr_auto] sm:items-center"><div><h3 className="text-xl font-semibold">{room.name}</h3><p className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted"><span className="inline-flex items-center gap-2"><UsersIcon className="size-4" />{t.capacity} {room.capacity}</span><span className="inline-flex items-center gap-2"><BedIcon className="size-4" />{room.bed_count} {t.bed}</span></p></div><p className="text-lg font-bold">{formatMoney(room.price_per_night, locale)} <span className="text-sm font-normal text-muted">{t.perNight}</span></p></article>)}</div> : <div className="py-12"><h3 className="text-xl font-semibold">{t.noRooms}</h3><p className="mt-2 text-muted">{t.noRoomsBody}</p></div>}
+        {data.rooms.length ? <div className="divide-y">{data.rooms.map((room) => {
+          const roomQuery = new URLSearchParams({ check_in: data.filters.check_in ?? "", check_out: data.filters.check_out ?? "", guests: String(data.filters.guests) });
+          return <article key={room.id} className="grid gap-6 py-8 sm:grid-cols-[1fr_auto] sm:items-center"><div><h3 className="text-xl font-semibold">{room.name}</h3><p className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted"><span className="inline-flex items-center gap-2"><UsersIcon className="size-4" />{t.capacity} {room.capacity}</span><span className="inline-flex items-center gap-2"><BedIcon className="size-4" />{room.bed_count} {t.bed}</span></p></div><div className="flex items-center gap-5 sm:justify-end"><p className="text-lg font-bold">{formatMoney(room.price_per_night, locale)} <span className="text-sm font-normal text-muted">{t.perNight}</span></p><a href={`/rooms/${room.id}?${roomQuery}`} className="public-text-link text-sm font-semibold">{t.roomDetail}</a></div></article>;
+        })}</div> : <div className="py-12"><h3 className="text-xl font-semibold">{t.noRooms}</h3><p className="mt-2 text-muted">{t.noRoomsBody}</p></div>}
       </section>}
 
       <section id="location" className="grid w-full gap-10 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:px-12 lg:py-36 xl:px-16">
@@ -330,7 +334,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
       </section>
 
       <section className="final-cta relative min-h-[44rem] overflow-hidden text-white lg:min-h-[46rem]">
-        <div className="final-media absolute inset-0">{finalCtaImageUrl ? <Image src={finalCtaImageUrl} alt="" fill sizes="100vw" className="object-cover" /> : <div className="absolute inset-0 bg-[#312719]" />}</div>
+        <div className="final-media absolute inset-0">{finalCtaImageUrl ? <Image src={finalCtaImageUrl} alt="" fill sizes="100vw" unoptimized={shouldBypassImageOptimization(finalCtaImageUrl)} className="object-cover" /> : <div className="absolute inset-0 bg-[#312719]" />}</div>
         <div className="absolute inset-0 bg-black/55" />
         <div className="relative flex min-h-[44rem] w-full flex-col items-start px-5 pt-40 pb-24 sm:px-8 sm:pt-44 lg:min-h-[46rem] lg:px-12 lg:pt-48 xl:px-16">
           <h2 className="max-w-[13ch] text-balance text-[clamp(3rem,4.8vw,5rem)] leading-[0.98] font-semibold tracking-[-0.04em]">{t.finalTitle}</h2><p className="mt-7 max-w-xl text-lg leading-8 text-white/80">{t.finalBody}</p><a href="/booking" className="group mt-10 inline-flex h-13 items-center gap-3 bg-white px-6 text-sm font-bold text-black transition-transform hover:-translate-y-0.5">{t.check}<ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1" /></a>

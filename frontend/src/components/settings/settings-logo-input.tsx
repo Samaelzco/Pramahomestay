@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageIcon, TrashIcon } from "@/components/ui/icons";
+import { shouldBypassImageOptimization } from "@/lib/image";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
@@ -44,7 +45,7 @@ export function SettingsLogoInput({ currentLogoUrl, errors }: { currentLogoUrl?:
         {errors?.map((error) => <p key={error} className="mt-2 text-sm text-danger">{localizeApiMessage(locale, error)}</p>)}
       </div>
       <div className="relative grid min-h-48 place-items-center bg-surface-high p-6">
-        {previewUrl ? <><div className="relative size-28 overflow-hidden rounded-lg bg-surface"><Image src={previewUrl} alt={localize(locale, "Preview logo Prama Homestay", "Prama Homestay logo preview")} fill sizes="112px" unoptimized={previewUrl.startsWith("blob:")} className="object-contain p-2" /></div><button type="button" onClick={clearLogo} className="absolute top-3 right-3 inline-flex min-h-10 items-center gap-2 rounded-sm bg-primary px-3 text-xs font-semibold text-white"><TrashIcon className="size-4" />{localize(locale, "Hapus", "Remove")}</button></> : <p className="text-center text-sm leading-6 text-muted">{localize(locale, "Preview logo", "Logo preview")}</p>}
+        {previewUrl ? <><div className="relative size-28 overflow-hidden rounded-lg bg-surface"><Image src={previewUrl} alt={localize(locale, "Preview logo Prama Homestay", "Prama Homestay logo preview")} fill sizes="112px" unoptimized={shouldBypassImageOptimization(previewUrl)} className="object-contain p-2" /></div><button type="button" onClick={clearLogo} className="absolute top-3 right-3 inline-flex min-h-10 items-center gap-2 rounded-sm bg-primary px-3 text-xs font-semibold text-white"><TrashIcon className="size-4" />{localize(locale, "Hapus", "Remove")}</button></> : <p className="text-center text-sm leading-6 text-muted">{localize(locale, "Preview logo", "Logo preview")}</p>}
       </div>
     </div>
   </div>;

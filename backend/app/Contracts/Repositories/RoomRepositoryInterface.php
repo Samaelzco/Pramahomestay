@@ -48,4 +48,8 @@ interface RoomRepositoryInterface
 
     /** @return Collection<int, Room> */
     public function availableForPublic(?string $checkIn = null, ?string $checkOut = null, int $guests = 1): Collection;
+
+    public function findActiveForPublic(int $id): ?Room;
+
+    public function isAvailableForPublic(Room $room, ?string $checkIn = null, ?string $checkOut = null, int $guests = 1): bool;
 }

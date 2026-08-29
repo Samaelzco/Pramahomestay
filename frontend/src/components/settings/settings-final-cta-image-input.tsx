@@ -2,6 +2,7 @@
 
 import { ImageIcon, TrashIcon } from "@/components/ui/icons";
 import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
+import { shouldBypassImageOptimization } from "@/lib/image";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -35,7 +36,7 @@ export function SettingsFinalCtaImageInput({ currentImageUrl, errors }: { curren
     <input name="remove_final_cta_image" type="hidden" value={removeCurrent ? "1" : "0"} />
     <div className="overflow-hidden rounded-lg bg-surface-low">
       <div className="relative aspect-[16/7] min-h-56 bg-surface-high">
-        {previewUrl ? <Image src={previewUrl} alt={localize(locale, "Preview gambar CTA penutup", "Final CTA image preview")} fill sizes="(min-width: 768px) 740px, 100vw" unoptimized={previewUrl.startsWith("blob:")} className="object-cover" /> : <div className="absolute inset-0 grid place-items-center px-6 text-center"><div><span className="mx-auto grid size-11 place-items-center rounded-sm bg-surface text-secondary"><ImageIcon className="size-5" /></span><p className="mt-4 text-sm font-semibold">{localize(locale, "Menggunakan gambar hero sebagai fallback", "Using the hero image as fallback")}</p></div></div>}
+        {previewUrl ? <Image src={previewUrl} alt={localize(locale, "Preview gambar CTA penutup", "Final CTA image preview")} fill sizes="(min-width: 768px) 740px, 100vw" unoptimized={shouldBypassImageOptimization(previewUrl)} className="object-cover" /> : <div className="absolute inset-0 grid place-items-center px-6 text-center"><div><span className="mx-auto grid size-11 place-items-center rounded-sm bg-surface text-secondary"><ImageIcon className="size-5" /></span><p className="mt-4 text-sm font-semibold">{localize(locale, "Menggunakan gambar hero sebagai fallback", "Using the hero image as fallback")}</p></div></div>}
         {previewUrl && <button type="button" onClick={clearImage} className="absolute top-4 right-4 inline-flex min-h-10 items-center gap-2 rounded-sm bg-black/75 px-3 text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-black"><TrashIcon className="size-4" />{localize(locale, "Hapus", "Remove")}</button>}
       </div>
       <div className="flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center">

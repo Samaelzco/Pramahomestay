@@ -38,6 +38,7 @@ services:
       DB_USERNAME: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SANCTUM_STATEFUL_DOMAINS: localhost:${FRONTEND_PORT:-3000}
+      PHP_CLI_SERVER_WORKERS: ${PHP_CLI_SERVER_WORKERS:-4}
     command:
       - sh
       - -c
@@ -119,6 +120,7 @@ services:
     environment:
       NEXT_TELEMETRY_DISABLED: "1"
       INTERNAL_API_URL: http://backend:8000/api
+      INTERNAL_API_TIMEOUT_MS: ${INTERNAL_API_TIMEOUT_MS:-12000}
       NEXT_PUBLIC_API_URL: http://localhost:${BACKEND_PORT:-8000}/api
     command:
       - npm
@@ -140,7 +142,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - wget --quiet --output-document=- http://127.0.0.1:3000/ > /dev/null
+        - wget --quiet --output-document=- http://127.0.0.1:3000/internal/login > /dev/null
       interval: 10s
       timeout: 5s
       retries: 10

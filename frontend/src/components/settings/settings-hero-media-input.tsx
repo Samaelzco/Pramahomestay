@@ -2,6 +2,7 @@
 
 import { ImageIcon, TrashIcon, VideoIcon, XIcon } from "@/components/ui/icons";
 import type { HomestaySettings } from "@/lib/api/types";
+import { shouldBypassImageOptimization } from "@/lib/image";
 import { localize, localizeApiMessage, useLocale } from "@/lib/locale";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -95,7 +96,7 @@ export function SettingsHeroMediaInput({ settings, errors }: { settings: Homesta
       {Array.from(removedImageIds).map((id) => <input key={id} type="hidden" name="remove_hero_image_ids[]" value={id} />)}
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><h3 className="font-semibold">{localize(locale, "Gambar hero", "Hero images")}</h3><p className="mt-1 text-sm leading-6 text-muted">{localize(locale, "JPG, PNG, atau WebP hingga 8 MB per gambar. Urutan gambar tersimpan digunakan sebagai urutan carousel.", "JPG, PNG, or WebP up to 8 MB each. Saved order becomes the carousel order.")}</p></div><p className="shrink-0 text-sm font-semibold text-secondary">{retainedImages.length + selectedImages.length}/5</p></div>
       {(retainedImages.length > 0 || selectedImages.length > 0) && <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        {retainedImages.map((image, index) => <div key={image.id} className="group relative aspect-[4/3] overflow-hidden bg-surface-high"><Image src={image.url} alt={`${localize(locale, "Gambar hero", "Hero image")} ${index + 1}`} fill sizes="180px" className="object-cover" /><button type="button" onClick={() => setRemovedImageIds((current) => new Set(current).add(image.id))} aria-label={localize(locale, "Hapus gambar", "Remove image")} className="absolute top-2 right-2 grid size-9 place-items-center bg-primary text-white shadow-sm"><TrashIcon className="size-4" /></button><span className="absolute bottom-2 left-2 bg-black/65 px-2 py-1 text-[11px] font-semibold text-white">{index + 1}</span></div>)}
+        {retainedImages.map((image, index) => <div key={image.id} className="group relative aspect-[4/3] overflow-hidden bg-surface-high"><Image src={image.url} alt={`${localize(locale, "Gambar hero", "Hero image")} ${index + 1}`} fill sizes="180px" unoptimized={shouldBypassImageOptimization(image.url)} className="object-cover" /><button type="button" onClick={() => setRemovedImageIds((current) => new Set(current).add(image.id))} aria-label={localize(locale, "Hapus gambar", "Remove image")} className="absolute top-2 right-2 grid size-9 place-items-center bg-primary text-white shadow-sm"><TrashIcon className="size-4" /></button><span className="absolute bottom-2 left-2 bg-black/65 px-2 py-1 text-[11px] font-semibold text-white">{index + 1}</span></div>)}
         {selectedImages.map((image, index) => <div key={image.url} className="relative aspect-[4/3] overflow-hidden bg-surface-high"><Image src={image.url} alt={image.name} fill sizes="180px" unoptimized className="object-cover" /><span className="absolute bottom-2 left-2 bg-secondary px-2 py-1 text-[11px] font-semibold text-white">{localize(locale, "Baru", "New")} {index + 1}</span></div>)}
       </div>}
       <div className="mt-5 flex flex-wrap items-center gap-3">

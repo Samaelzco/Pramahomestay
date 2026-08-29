@@ -183,6 +183,13 @@ export type PublicRoom = Pick<Room, "id" | "name" | "slug" | "description" | "de
   amenities: Array<Pick<Amenity, "id" | "name" | "name_en" | "slug">>;
 };
 
+export type PublicRoomDetailData = {
+  property: Pick<HomestaySettings, "name" | "address" | "phone" | "email" | "logo_url" | "check_in_time" | "check_out_time" | "currency">;
+  room: Omit<PublicRoom, "amenities"> & { amenities: PublicAmenity[] };
+  filters: { check_in: string | null; check_out: string | null; guests: number };
+  availability: { checked: boolean; is_available: boolean; reason: "capacity" | "dates" | null };
+};
+
 export type PublicLandingData = {
   property: Pick<HomestaySettings, "name" | "address" | "maps_url" | "phone" | "email" | "logo_url" | "check_in_time" | "check_out_time" | "currency">;
   amenities: PublicAmenity[];

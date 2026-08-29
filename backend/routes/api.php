@@ -25,6 +25,9 @@ Route::post('/auth/login', [AuthController::class, 'login'])
 
 Route::get('/public/landing', [PublicSiteController::class, 'landing'])
     ->middleware('throttle:120,1');
+Route::get('/public/rooms/{room}', [PublicSiteController::class, 'room'])
+    ->whereNumber('room')
+    ->middleware('throttle:120,1');
 
 Route::post('/public/bookings', [PublicBookingController::class, 'store'])
     ->middleware('throttle:public-bookings');
