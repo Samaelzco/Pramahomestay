@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\Repositories\AvailabilityRepositoryInterface;
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\GuestRepositoryInterface;
 use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
@@ -22,6 +23,7 @@ class BookingService implements BookingServiceInterface
 {
     public function __construct(
         private readonly BookingRepositoryInterface $bookings,
+        private readonly AvailabilityRepositoryInterface $availability,
         private readonly RoomRepositoryInterface $rooms,
         private readonly GuestRepositoryInterface $guests,
         private readonly PaymentRepositoryInterface $payments,
@@ -234,6 +236,13 @@ class BookingService implements BookingServiceInterface
             && $this->bookings->hasDateConflict($roomId, $attributes['check_in'], $attributes['check_out'], $ignoreId)) {
             throw ValidationException::withMessages([
                 'check_in' => 'Kamar sudah memiliki booking pada rentang tanggal tersebut.',
+            ]);
+        }
+
+        if ($attributes['status'] !== BookingStatus::Cancelled->value
+            && $this->availability->hasBlockConflict($roomId, $attributes['check_in'], $attributes['check_out'])) {
+            throw ValidationException::withMessages([
+                'check_in' => 'Kamar diblokir pada rentang tanggal tersebut.',
             ]);
         }
 

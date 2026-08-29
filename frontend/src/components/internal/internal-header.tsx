@@ -12,6 +12,8 @@ export function InternalHeader({ userName, permissions }: { userName: string; pe
   const pathname = usePathname();
   const locale = useLocale();
   const booking = pathname.startsWith("/internal/bookings");
+  const availability = pathname.startsWith("/internal/availability");
+  const operations = pathname.startsWith("/internal/operations");
   const payment = pathname.startsWith("/internal/payments");
   const dashboard = pathname.startsWith("/internal/dashboard");
   const guest = pathname.startsWith("/internal/guests");
@@ -20,7 +22,7 @@ export function InternalHeader({ userName, permissions }: { userName: string; pe
   const reports = pathname.startsWith("/internal/reports");
   const auditLogs = pathname.startsWith("/internal/audit-logs");
   const settings = pathname.startsWith("/internal/settings");
-  const context = dashboard ? localize(locale, "Ringkasan operasional", "Operations overview") : booking ? localize(locale, "Operasional booking", "Booking operations") : payment ? localize(locale, "Administrasi pembayaran", "Payment administration") : guest ? localize(locale, "Hubungan tamu", "Guest relations") : users ? localize(locale, "Administrasi akses", "Access administration") : amenities ? localize(locale, "Master fasilitas", "Amenities catalog") : reports ? localize(locale, "Pelaporan operasional", "Operations reporting") : auditLogs ? localize(locale, "Riwayat aktivitas", "Activity history") : settings ? localize(locale, "Pengaturan properti", "Property settings") : localize(locale, "Inventori kamar", "Room inventory");
+  const context = dashboard ? localize(locale, "Ringkasan operasional", "Operations overview") : operations ? localize(locale, "Operasional harian", "Daily operations") : availability ? localize(locale, "Ketersediaan kamar", "Room availability") : booking ? localize(locale, "Operasional booking", "Booking operations") : payment ? localize(locale, "Administrasi pembayaran", "Payment administration") : guest ? localize(locale, "Hubungan tamu", "Guest relations") : users ? localize(locale, "Administrasi akses", "Access administration") : amenities ? localize(locale, "Master fasilitas", "Amenities catalog") : reports ? localize(locale, "Pelaporan operasional", "Operations reporting") : auditLogs ? localize(locale, "Riwayat aktivitas", "Activity history") : settings ? localize(locale, "Pengaturan properti", "Property settings") : localize(locale, "Inventori kamar", "Room inventory");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 

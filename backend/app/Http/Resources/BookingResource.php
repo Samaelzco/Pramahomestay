@@ -35,6 +35,8 @@ class BookingResource extends JsonResource
             'total_amount' => $this->total_amount,
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
+            'checked_in_at' => $this->checked_in_at?->toIso8601String(),
+            'checked_out_at' => $this->checked_out_at?->toIso8601String(),
             'can_delete' => in_array($this->status, [BookingStatus::Pending, BookingStatus::Cancelled], true) && ! $paymentExists,
             'delete_block_reason' => $paymentExists
                 ? 'Memiliki data pembayaran'

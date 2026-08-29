@@ -14,7 +14,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'booking_code', 'public_access_token_hash', 'room_id', 'guest_id', 'guest_name', 'guest_email', 'guest_phone',
     'check_in', 'check_out', 'guest_count', 'price_per_night', 'total_nights',
-    'total_amount', 'status', 'payment_due_at', 'special_requests', 'internal_notes', 'created_by',
+    'total_amount', 'status', 'checked_in_at', 'checked_in_by', 'checked_out_at', 'checked_out_by',
+    'payment_due_at', 'special_requests', 'internal_notes', 'created_by',
 ])]
 class Booking extends Model
 {
@@ -25,6 +26,8 @@ class Booking extends Model
     {
         return [
             'status' => BookingStatus::class,
+            'checked_in_at' => 'datetime',
+            'checked_out_at' => 'datetime',
             'check_in' => 'date',
             'check_out' => 'date',
             'guest_count' => 'integer',
@@ -48,6 +51,16 @@ class Booking extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function checkedInBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'checked_in_by');
+    }
+
+    public function checkedOutBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'checked_out_by');
     }
 
     public function payment(): HasOne

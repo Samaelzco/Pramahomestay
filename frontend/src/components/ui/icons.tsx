@@ -9,6 +9,8 @@ function Icon({ children, ...props }: IconProps & { children: ReactNode }) {
 export const HomeIcon = (props: IconProps) => <Icon {...props}><path d="m3 11 9-8 9 8" /><path d="M5 10v10h14V10M9 20v-6h6v6" /></Icon>;
 export const GridIcon = (props: IconProps) => <Icon {...props}><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></Icon>;
 export const CalendarIcon = (props: IconProps) => <Icon {...props}><rect x="3" y="5" width="18" height="16" /><path d="M8 3v4M16 3v4M3 10h18" /></Icon>;
+export const CalendarRangeIcon = (props: IconProps) => <Icon {...props}><rect x="3" y="5" width="18" height="16" /><path d="M8 3v4M16 3v4M3 10h18M7 14h3M14 14h3M7 18h3" /></Icon>;
+export const OperationsIcon = (props: IconProps) => <Icon {...props}><path d="M9 5h6M9 3h6v4H9z" /><path d="M7 5H5v16h14V5h-2M8 12l2 2 5-5M8 18h7" /></Icon>;
 export const BedIcon = (props: IconProps) => <Icon {...props}><path d="M3 19v-8M21 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2h18M7 11V7h5a3 3 0 0 1 3 3v1" /></Icon>;
 export const AmenitiesIcon = (props: IconProps) => <Icon {...props}><path d="M5 4v6M5 14v6M12 4v3M12 11v9M19 4v9M19 17v3" /><path d="M2 10h6M9 7h6M16 13h6" /></Icon>;
 export const SunIcon = (props: IconProps) => <Icon {...props}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" /></Icon>;

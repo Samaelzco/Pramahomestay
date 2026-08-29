@@ -246,6 +246,8 @@ export type Booking = {
   total_amount: string;
   status: BookingStatus;
   status_label: string;
+  checked_in_at: string | null;
+  checked_out_at: string | null;
   can_delete: boolean;
   delete_block_reason: string | null;
   special_requests: string | null;
@@ -255,6 +257,64 @@ export type Booking = {
 };
 
 export type PaginatedBookings = { data: Booking[]; meta: PaginationMeta };
+
+export type OperationBooking = {
+  id: number;
+  booking_code: string;
+  guest_name: string;
+  guest_phone: string;
+  room: { id: number; name: string };
+  check_in: string;
+  check_out: string;
+  guest_count: number;
+  status: BookingStatus;
+  status_label: string;
+  payment: { id: number | null; status: PaymentStatus; status_label: string };
+  checked_in_at: string | null;
+  checked_out_at: string | null;
+  can_check_in: boolean;
+  can_check_out: boolean;
+  action_block_reason: string | null;
+};
+
+export type DailyOperations = {
+  date: string;
+  today: string;
+  summary: { arrivals_due: number; departures_due: number; occupied_rooms: number; cleaning_rooms: number };
+  arrivals: OperationBooking[];
+  departures: OperationBooking[];
+  housekeeping: Array<{ id: number; name: string; status: RoomStatus; status_label: string; updated_at: string | null }>;
+};
+
+export type AvailabilityEntry = {
+  type: "booking" | "block";
+  id: number;
+  label: string;
+  code: string | null;
+  status: BookingStatus | "blocked";
+  status_label: string;
+  start: string;
+  end: string;
+  href: string | null;
+};
+
+export type AvailabilityCalendarData = {
+  period: { view: "day" | "week" | "month"; start: string; end: string; days: number };
+  summary: {
+    active_rooms: number;
+    occupied_room_days: number;
+    blocked_room_days: number;
+    available_room_days: number;
+    occupancy_rate: number;
+  };
+  rooms: Array<{
+    id: number;
+    name: string;
+    is_active: boolean;
+    status: RoomStatus;
+    entries: AvailabilityEntry[];
+  }>;
+};
 
 export type PaymentMethod = "cash" | "bank_transfer" | "qris" | "card";
 export type PaymentStatus = "unpaid" | "pending_verification" | "partial" | "paid" | "failed" | "refunded";

@@ -1,7 +1,7 @@
 "use client";
 
 import { logoutAction } from "@/app/internal/login/actions";
-import { AmenitiesIcon, BedIcon, CalendarIcon, ChartIcon, GridIcon, HistoryIcon, HomeIcon, LogOutIcon, MailIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
+import { AmenitiesIcon, BedIcon, CalendarIcon, CalendarRangeIcon, ChartIcon, GridIcon, HistoryIcon, HomeIcon, LogOutIcon, MailIcon, OperationsIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
 import { localize, useLocale } from "@/lib/locale";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,7 +9,9 @@ import { useEffect, useRef, type KeyboardEvent } from "react";
 
 const navItems = [
   { id: "Ringkasan", en: "Overview", href: "/internal/dashboard", icon: GridIcon, permission: "dashboard.view" },
+  { id: "Operasional", en: "Operations", href: "/internal/operations", icon: OperationsIcon, permission: "bookings.view" },
   { id: "Booking", en: "Bookings", href: "/internal/bookings", icon: CalendarIcon, permission: "bookings.view" },
+  { id: "Kalender", en: "Calendar", href: "/internal/availability", icon: CalendarRangeIcon, permission: "bookings.view" },
   { id: "Pembayaran", en: "Payments", href: "/internal/payments", icon: WalletIcon, permission: "payments.view" },
   { id: "Kamar", en: "Rooms", href: "/internal/rooms", icon: BedIcon, permission: "rooms.view" },
   { id: "Fasilitas", en: "Amenities", href: "/internal/amenities", icon: AmenitiesIcon, permission: "amenities.view" },

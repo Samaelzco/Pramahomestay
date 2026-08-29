@@ -4,11 +4,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Internal\AccessController;
 use App\Http\Controllers\Api\Internal\AmenityController;
 use App\Http\Controllers\Api\Internal\AuditLogController;
+use App\Http\Controllers\Api\Internal\AvailabilityController;
 use App\Http\Controllers\Api\Internal\BookingController;
 use App\Http\Controllers\Api\Internal\DashboardController;
 use App\Http\Controllers\Api\Internal\EmailNotificationController;
 use App\Http\Controllers\Api\Internal\GuestController;
 use App\Http\Controllers\Api\Internal\HomestaySettingController;
+use App\Http\Controllers\Api\Internal\OperationController;
 use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\ReportController;
 use App\Http\Controllers\Api\Internal\RoomController;
@@ -44,6 +46,13 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::prefix('internal')->group(function (): void {
+        Route::get('/availability', [AvailabilityController::class, 'index'])->middleware('permission:bookings.view');
+        Route::post('/availability/blocks', [AvailabilityController::class, 'storeBlock'])->middleware('permission:rooms.update');
+        Route::delete('/availability/blocks/{roomBlock}', [AvailabilityController::class, 'destroyBlock'])->middleware('permission:rooms.update');
+        Route::get('/operations', [OperationController::class, 'index'])->middleware('permission:bookings.view');
+        Route::patch('/operations/bookings/{booking}/check-in', [OperationController::class, 'checkIn'])->middleware('permission:bookings.update');
+        Route::patch('/operations/bookings/{booking}/check-out', [OperationController::class, 'checkOut'])->middleware('permission:bookings.update');
+        Route::patch('/operations/rooms/{room}/ready', [OperationController::class, 'markRoomReady'])->middleware('permission:rooms.update');
         Route::get('/amenities', [AmenityController::class, 'index'])->middleware('permission:amenities.view');
         Route::post('/amenities', [AmenityController::class, 'store'])->middleware('permission:amenities.create');
         Route::get('/amenities/{amenity}', [AmenityController::class, 'show'])->middleware('permission:amenities.view');

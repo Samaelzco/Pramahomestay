@@ -10,6 +10,7 @@ use App\Models\HomestaySetting;
 use App\Models\Payment;
 use App\Models\Role;
 use App\Models\Room;
+use App\Models\RoomBlock;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -98,7 +99,7 @@ class AuditLogger
     private function module(Model $subject): string
     {
         return match (true) {
-            $subject instanceof Room => 'rooms',
+            $subject instanceof Room, $subject instanceof RoomBlock => 'rooms',
             $subject instanceof Amenity => 'amenities',
             $subject instanceof Booking => 'bookings',
             $subject instanceof Payment => 'payments',
@@ -112,7 +113,7 @@ class AuditLogger
 
     private function subjectLabel(Model $subject): string
     {
-        foreach (['booking_code', 'payment_code', 'display_name', 'name', 'full_name', 'email'] as $attribute) {
+        foreach (['booking_code', 'payment_code', 'display_name', 'name', 'title', 'full_name', 'email'] as $attribute) {
             $value = $subject->getAttribute($attribute);
             if (is_string($value) && $value !== '') {
                 return $value;

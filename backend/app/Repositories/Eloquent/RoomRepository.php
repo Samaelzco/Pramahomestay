@@ -120,6 +120,8 @@ class RoomRepository implements RoomRepositoryInterface
                     ->where('status', '!=', 'cancelled')
                     ->where('check_in', '<', $checkOut)
                     ->where('check_out', '>', $checkIn);
+            })->whereDoesntHave('roomBlocks', function ($query) use ($checkIn, $checkOut): void {
+                $query->where('start_date', '<', $checkOut)->where('end_date', '>', $checkIn);
             }))
             ->orderBy('price_per_night')
             ->orderBy('name')
@@ -147,10 +149,17 @@ class RoomRepository implements RoomRepositoryInterface
             return true;
         }
 
-        return ! $room->bookings()
+        $hasBooking = $room->bookings()
             ->where('status', '!=', 'cancelled')
             ->where('check_in', '<', $checkOut)
             ->where('check_out', '>', $checkIn)
             ->exists();
+
+        $hasBlock = $room->roomBlocks()
+            ->where('start_date', '<', $checkOut)
+            ->where('end_date', '>', $checkIn)
+            ->exists();
+
+        return ! $hasBooking && ! $hasBlock;
     }
 }

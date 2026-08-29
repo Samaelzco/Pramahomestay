@@ -8,6 +8,7 @@ use App\Models\Guest;
 use App\Models\HomestaySetting;
 use App\Models\Payment;
 use App\Models\Room;
+use App\Models\RoomBlock;
 use App\Observers\AuditObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         ]);
         RateLimiter::for('public-payments', fn (Request $request): Limit => Limit::perMinute(10)->by((string) $request->ip()));
 
-        foreach ([Room::class, Amenity::class, Booking::class, Payment::class, Guest::class, HomestaySetting::class] as $model) {
+        foreach ([Room::class, RoomBlock::class, Amenity::class, Booking::class, Payment::class, Guest::class, HomestaySetting::class] as $model) {
             $model::observe(AuditObserver::class);
         }
     }
