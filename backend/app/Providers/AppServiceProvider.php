@@ -9,10 +9,10 @@ use App\Models\HomestaySetting;
 use App\Models\Payment;
 use App\Models\Room;
 use App\Observers\AuditObserver;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

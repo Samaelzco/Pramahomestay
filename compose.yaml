@@ -30,6 +30,7 @@ services:
       - ./backend/.env
     environment:
       APP_URL: http://localhost:${BACKEND_PORT:-8000}
+      FRONTEND_URL: http://localhost:${FRONTEND_PORT:-3000}
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
@@ -61,6 +62,54 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+
+  queue:
+    build:
+      context: ./backend
+      target: development
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      FRONTEND_URL: http://localhost:${FRONTEND_PORT:-3000}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-prama_homestay}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    command: ["php", "artisan", "queue:work", "--queue=emails", "--tries=3", "--timeout=60", "--sleep=3"]
+    volumes:
+      - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor
+    depends_on:
+      backend:
+        condition: service_healthy
+        restart: true
+
+  scheduler:
+    build:
+      context: ./backend
+      target: development
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      FRONTEND_URL: http://localhost:${FRONTEND_PORT:-3000}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB:-prama_homestay}
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    command: ["php", "artisan", "schedule:work"]
+    volumes:
+      - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor
+    depends_on:
+      backend:
+        condition: service_healthy
+        restart: true
 
   frontend:
     build:

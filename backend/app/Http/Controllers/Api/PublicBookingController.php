@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\Services\BookingServiceInterface;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Bookings\StorePublicBookingRequest;
 use App\Http\Requests\Bookings\RecoverPublicBookingRequest;
+use App\Http\Requests\Bookings\StorePublicBookingRequest;
 use Illuminate\Http\JsonResponse;
 
 class PublicBookingController extends Controller

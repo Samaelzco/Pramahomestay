@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
+use App\Contracts\Services\EmailNotificationServiceInterface;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentMethod;
@@ -26,6 +27,7 @@ class PaymentService implements PaymentServiceInterface
         private readonly PaymentRepositoryInterface $payments,
         private readonly BookingRepositoryInterface $bookings,
         private readonly HomestaySettingRepositoryInterface $settings,
+        private readonly EmailNotificationServiceInterface $emailNotifications,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -125,6 +127,8 @@ class PaymentService implements PaymentServiceInterface
             $this->deleteProof($oldProofPath);
         }
 
+        $this->emailNotifications->paymentProofSubmitted($payment);
+
         return $payment;
     }
 
@@ -172,7 +176,7 @@ class PaymentService implements PaymentServiceInterface
 
     public function verify(Payment $payment): Payment
     {
-        return DB::transaction(function () use ($payment): Payment {
+        $payment = DB::transaction(function () use ($payment): Payment {
             $locked = $this->payments->findForUpdate($payment->id);
 
             if ($locked->status !== PaymentStatus::PendingVerification) {
@@ -200,11 +204,15 @@ class PaymentService implements PaymentServiceInterface
 
             return $updated;
         });
+
+        $this->emailNotifications->paymentVerified($payment);
+
+        return $payment;
     }
 
     public function reject(Payment $payment, string $reason): Payment
     {
-        return DB::transaction(function () use ($payment, $reason): Payment {
+        $payment = DB::transaction(function () use ($payment, $reason): Payment {
             $locked = $this->payments->findForUpdate($payment->id);
 
             if ($locked->status !== PaymentStatus::PendingVerification) {
@@ -218,6 +226,10 @@ class PaymentService implements PaymentServiceInterface
                 'notes' => trim(implode("\n\n", array_filter([$locked->notes, $entry]))),
             ]);
         });
+
+        $this->emailNotifications->paymentRejected($payment, $reason);
+
+        return $payment;
     }
 
     public function refund(Payment $payment, string $reason): Payment

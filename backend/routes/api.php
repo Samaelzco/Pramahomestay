@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Internal\AmenityController;
 use App\Http\Controllers\Api\Internal\AuditLogController;
 use App\Http\Controllers\Api\Internal\BookingController;
 use App\Http\Controllers\Api\Internal\DashboardController;
+use App\Http\Controllers\Api\Internal\EmailNotificationController;
 use App\Http\Controllers\Api\Internal\GuestController;
 use App\Http\Controllers\Api\Internal\HomestaySettingController;
 use App\Http\Controllers\Api\Internal\PaymentController;
@@ -50,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
         Route::match(['put', 'patch'], '/settings', [HomestaySettingController::class, 'update'])->middleware('permission:settings.update');
         Route::get('/audit-logs', [AuditLogController::class, 'index'])->middleware('permission:audit_logs.view');
         Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->middleware('permission:audit_logs.view');
+        Route::get('/email-notifications', [EmailNotificationController::class, 'index'])->middleware('permission:notifications.view');
         Route::get('/access/roles', [AccessController::class, 'index'])->middleware('permission:roles.view');
         Route::post('/access/roles', [AccessController::class, 'store'])->middleware('permission:roles.update');
         Route::get('/access/roles/{role}', [AccessController::class, 'show'])->middleware('permission:roles.view');

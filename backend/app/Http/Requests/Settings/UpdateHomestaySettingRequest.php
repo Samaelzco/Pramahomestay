@@ -46,6 +46,15 @@ class UpdateHomestaySettingRequest extends FormRequest
             'payment_code_prefix' => ['required', 'string', 'min:2', 'max:10', 'regex:/^[A-Z0-9-]+$/'],
             'cancellation_policy' => ['nullable', 'string', 'max:5000'],
             'payment_instructions' => ['nullable', 'string', 'max:5000'],
+            'mail_enabled' => ['sometimes', 'boolean'],
+            'mail_host' => ['nullable', 'required_if:mail_enabled,1', 'string', 'max:255'],
+            'mail_port' => ['nullable', 'required_if:mail_enabled,1', 'integer', 'min:1', 'max:65535'],
+            'mail_username' => ['nullable', 'string', 'max:255'],
+            'mail_password' => ['nullable', 'string', 'max:1000'],
+            'mail_encryption' => ['nullable', Rule::in(['tls', 'ssl'])],
+            'mail_from_address' => ['nullable', 'required_if:mail_enabled,1', 'email', 'max:255'],
+            'mail_from_name' => ['nullable', 'string', 'max:120'],
+            'guest_email_locale' => ['sometimes', Rule::in(['id', 'en'])],
         ];
     }
 }

@@ -8,6 +8,7 @@ use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Services\BookingServiceInterface;
+use App\Contracts\Services\EmailNotificationServiceInterface;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\Guest;
@@ -25,6 +26,7 @@ class BookingService implements BookingServiceInterface
         private readonly GuestRepositoryInterface $guests,
         private readonly PaymentRepositoryInterface $payments,
         private readonly HomestaySettingRepositoryInterface $settings,
+        private readonly EmailNotificationServiceInterface $emailNotifications,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -57,7 +59,7 @@ class BookingService implements BookingServiceInterface
 
     public function createPublic(array $attributes): Booking
     {
-        return DB::transaction(function () use ($attributes): Booking {
+        $booking = DB::transaction(function () use ($attributes): Booking {
             $publicToken = Str::random(64);
             $email = mb_strtolower(trim((string) $attributes['email']));
             $guest = $this->guests->findByEmailForUpdate($email);
@@ -91,6 +93,10 @@ class BookingService implements BookingServiceInterface
 
             return $booking->setAttribute('public_access_token', $publicToken);
         });
+
+        $this->emailNotifications->bookingCreated($booking, (string) $booking->getAttribute('public_access_token'));
+
+        return $booking;
     }
 
     public function findPublicByToken(string $token): Booking
@@ -167,7 +173,7 @@ class BookingService implements BookingServiceInterface
 
     public function cancel(Booking $booking, ?string $reason = null): Booking
     {
-        return DB::transaction(function () use ($booking, $reason): Booking {
+        $booking = DB::transaction(function () use ($booking, $reason): Booking {
             $locked = $this->bookings->findForUpdate($booking->id);
 
             if ($locked->status === BookingStatus::Cancelled) {
@@ -184,6 +190,10 @@ class BookingService implements BookingServiceInterface
 
             return $this->bookings->update($locked, $attributes);
         });
+
+        $this->emailNotifications->bookingCancelled($booking, $reason);
+
+        return $booking;
     }
 
     public function delete(Booking $booking): void

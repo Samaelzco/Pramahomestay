@@ -192,14 +192,18 @@ class ReportService implements ReportServiceInterface
 
     private function paymentMethodLabel(?string $method, string $fallback, bool $en): string
     {
-        if (! $en) return $fallback;
+        if (! $en) {
+            return $fallback;
+        }
 
         return ['cash' => 'Cash', 'bank_transfer' => 'Bank transfer', 'qris' => 'QRIS', 'card' => 'Card'][$method] ?? $fallback;
     }
 
     private function paymentStatusLabel(string $status, string $fallback, bool $en): string
     {
-        if (! $en) return $fallback;
+        if (! $en) {
+            return $fallback;
+        }
 
         return ['unpaid' => 'Unpaid', 'pending_verification' => 'Pending verification', 'partial' => 'Partially paid', 'paid' => 'Paid', 'failed' => 'Failed', 'refunded' => 'Refunded'][$status] ?? $fallback;
     }

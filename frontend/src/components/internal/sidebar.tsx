@@ -1,7 +1,7 @@
 "use client";
 
 import { logoutAction } from "@/app/internal/login/actions";
-import { AmenitiesIcon, BedIcon, CalendarIcon, ChartIcon, GridIcon, HistoryIcon, HomeIcon, LogOutIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
+import { AmenitiesIcon, BedIcon, CalendarIcon, ChartIcon, GridIcon, HistoryIcon, HomeIcon, LogOutIcon, MailIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
 import { localize, useLocale } from "@/lib/locale";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +16,7 @@ const navItems = [
   { id: "Tamu", en: "Guests", href: "/internal/guests", icon: UsersIcon, permission: "guests.view" },
   { id: "Laporan", en: "Reports", href: "/internal/reports", icon: ChartIcon, permission: "reports.view" },
   { id: "User & akses", en: "Users & access", href: "/internal/users", icon: ShieldIcon, permission: "users.view" },
+  { id: "Notifikasi email", en: "Email notifications", href: "/internal/email-notifications", icon: MailIcon, permission: "notifications.view" },
   { id: "Audit Log", en: "Audit log", href: "/internal/audit-logs", icon: HistoryIcon, permission: "audit_logs.view" },
   { id: "Pengaturan", en: "Settings", href: "/internal/settings", icon: SettingsIcon, permission: "settings.view" },
 ];

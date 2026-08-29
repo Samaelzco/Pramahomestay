@@ -28,6 +28,7 @@ class AccessService implements AccessServiceInterface
             'payments' => ['label' => 'Pembayaran', 'permissions' => ['payments.view' => 'Lihat pembayaran', 'payments.create' => 'Tambah pembayaran', 'payments.update' => 'Ubah pembayaran']],
             'guests' => ['label' => 'Tamu', 'permissions' => ['guests.view' => 'Lihat tamu', 'guests.create' => 'Tambah tamu', 'guests.update' => 'Ubah tamu']],
             'audit_logs' => ['label' => 'Audit Log', 'permissions' => ['audit_logs.view' => 'Lihat riwayat aktivitas']],
+            'notifications' => ['label' => 'Notifikasi email', 'permissions' => ['notifications.view' => 'Lihat riwayat email']],
             'settings' => ['label' => 'Pengaturan', 'permissions' => ['settings.view' => 'Lihat pengaturan', 'settings.update' => 'Ubah pengaturan']],
         ];
     }

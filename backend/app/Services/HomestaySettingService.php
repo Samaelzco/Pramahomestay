@@ -24,6 +24,9 @@ class HomestaySettingService implements HomestaySettingServiceInterface
 
     public function update(array $attributes): HomestaySetting
     {
+        if (array_key_exists('mail_password', $attributes) && blank($attributes['mail_password'])) {
+            unset($attributes['mail_password']);
+        }
         $logo = $attributes['logo'] ?? null;
         $removeLogo = (bool) ($attributes['remove_logo'] ?? false);
         $heroImageUploads = array_values(array_filter($attributes['hero_images'] ?? [], fn (mixed $file): bool => $file instanceof UploadedFile));

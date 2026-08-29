@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
     'check_in_time', 'check_out_time', 'timezone', 'currency', 'bank_name',
     'bank_account_number', 'bank_account_holder', 'qris_notes', 'booking_code_prefix',
     'payment_code_prefix', 'cancellation_policy', 'payment_instructions',
+    'mail_enabled', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption',
+    'mail_from_address', 'mail_from_name', 'guest_email_locale',
 ])]
 class HomestaySetting extends Model
 {
@@ -22,6 +24,9 @@ class HomestaySetting extends Model
         return [
             'hero_images' => 'array',
             'hero_cycle_seconds' => 'integer',
+            'mail_enabled' => 'boolean',
+            'mail_port' => 'integer',
+            'mail_password' => 'encrypted',
         ];
     }
 }

@@ -142,8 +142,39 @@ export type HomestaySettings = {
   payment_code_prefix: string;
   cancellation_policy: string | null;
   payment_instructions: string | null;
+  mail_enabled: boolean;
+  mail_host: string | null;
+  mail_port: number | null;
+  mail_username: string | null;
+  mail_password_configured: boolean;
+  mail_encryption: "tls" | "ssl" | null;
+  mail_from_address: string | null;
+  mail_from_name: string | null;
+  guest_email_locale: "id" | "en";
   updated_at: string;
 };
+
+export type EmailNotification = {
+  id: number;
+  type: "booking_created" | "payment_proof_submitted" | "payment_verified" | "payment_rejected" | "booking_cancelled" | "payment_expired";
+  type_label: string;
+  status: "queued" | "sent" | "failed";
+  status_label: string;
+  locale: "id" | "en";
+  recipient_name: string;
+  recipient_email: string;
+  subject: string;
+  booking_code: string | null;
+  payment_code: string | null;
+  attempts: number;
+  error_message: string | null;
+  queued_at: string | null;
+  sent_at: string | null;
+  failed_at: string | null;
+  created_at: string;
+};
+
+export type PaginatedEmailNotifications = { data: EmailNotification[]; meta: PaginationMeta };
 
 export type PublicAmenity = Pick<Amenity, "id" | "name" | "name_en" | "slug" | "description" | "description_en">;
 
