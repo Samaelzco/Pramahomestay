@@ -15,7 +15,7 @@ export default async function InternalLayout({ children }: LayoutProps<"/interna
   return (
     <div className="min-h-screen bg-background">
       <Sidebar userName={user.name} permissions={user.permissions} />
-      <InternalHeader userName={user.name} permissions={user.permissions} notificationSummary={notificationResponse.data} />
+      <InternalHeader userId={user.id} userName={user.name} permissions={user.permissions} notificationSummary={notificationResponse.data} />
       <div className="xl:ml-[264px]">{children}</div>
     </div>
   );

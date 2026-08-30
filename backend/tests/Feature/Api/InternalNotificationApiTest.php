@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Contracts\Services\InternalNotificationServiceInterface;
 use App\Enums\BookingStatus;
+use App\Events\InternalNotificationCreated;
 use App\Models\Booking;
 use App\Models\HomestaySetting;
 use App\Models\InternalNotification;
@@ -12,6 +13,7 @@ use App\Models\User;
 use Database\Seeders\AuthorizationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -22,10 +24,52 @@ class InternalNotificationApiTest extends TestCase
 
     public function test_notifications_require_authentication(): void
     {
+        $this->postJson('/api/broadcasting/auth', [
+            'socket_id' => '123.456',
+            'channel_name' => 'private-internal-users.1',
+        ])->assertUnauthorized();
         $this->getJson('/api/internal/notifications')->assertUnauthorized();
         $this->getJson('/api/internal/notifications/summary')->assertUnauthorized();
         $this->postJson('/api/internal/notifications/read-all')->assertUnauthorized();
         $this->postJson('/api/internal/notifications/1/read')->assertUnauthorized();
+    }
+
+    public function test_user_can_only_authorize_their_own_private_realtime_channel(): void
+    {
+        config()->set('broadcasting.default', 'reverb');
+        config()->set('broadcasting.connections.reverb', [
+            'driver' => 'reverb',
+            'key' => 'test-key',
+            'secret' => 'test-secret',
+            'app_id' => 'test-app',
+            'options' => ['host' => 'localhost', 'port' => 8080, 'scheme' => 'http', 'useTLS' => false],
+        ]);
+        Broadcast::forgetDrivers();
+        require base_path('routes/channels.php');
+        $user = User::factory()->create(['is_active' => true]);
+        $other = User::factory()->create(['is_active' => true]);
+        Sanctum::actingAs($user, ['internal']);
+
+        $this->postJson('/api/broadcasting/auth', [
+            'socket_id' => '123.456',
+            'channel_name' => "private-internal-users.{$user->id}",
+        ])->assertOk()->assertJsonStructure(['auth']);
+
+        $this->postJson('/api/broadcasting/auth', [
+            'socket_id' => '123.456',
+            'channel_name' => "private-internal-users.{$other->id}",
+        ])->assertForbidden();
+    }
+
+    public function test_realtime_event_targets_the_notification_owner_with_public_payload(): void
+    {
+        $notification = $this->notification(User::factory()->create(), 'booking:9:created');
+        $event = new InternalNotificationCreated($notification);
+
+        $this->assertSame("private-internal-users.{$notification->user_id}", $event->broadcastOn()->name);
+        $this->assertSame('internal.notification.created', $event->broadcastAs());
+        $this->assertSame($notification->id, $event->broadcastWith()['notification']['id']);
+        $this->assertArrayNotHasKey('user_id', $event->broadcastWith()['notification']);
     }
 
     public function test_user_can_list_and_mark_only_their_own_notifications_as_read(): void

@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Contracts\Repositories\InternalNotificationRepositoryInterface;
+use App\Events\InternalNotificationCreated;
 use App\Models\InternalNotification;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -53,7 +54,10 @@ class InternalNotificationRepository implements InternalNotificationRepositoryIn
                     ['user_id' => $user->id, 'event_key' => $attributes['event_key']],
                     [...$attributes, 'user_id' => $user->id],
                 );
-                $created += $notification->wasRecentlyCreated ? 1 : 0;
+                if ($notification->wasRecentlyCreated) {
+                    InternalNotificationCreated::dispatch($notification);
+                    $created++;
+                }
             });
 
         return $created;

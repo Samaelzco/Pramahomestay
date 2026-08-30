@@ -8,8 +8,10 @@ import {
 import { BellIcon, CalendarIcon, OperationsIcon, WalletIcon } from "@/components/ui/icons";
 import type { InternalNotification, InternalNotificationSummary, InternalNotificationType } from "@/lib/api/types";
 import { localize, useLocale } from "@/lib/locale";
+import { getRealtimeEcho } from "@/lib/realtime/echo";
 import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 const notificationIcons = {
   booking_created: CalendarIcon,
@@ -52,13 +54,64 @@ function NotificationRow({ notification, timezone }: { notification: InternalNot
   );
 }
 
-export function NotificationCenter({ initialSummary }: { initialSummary: InternalNotificationSummary }) {
+type RealtimePayload = { notification?: InternalNotification };
+
+export function NotificationCenter({ userId, initialSummary }: { userId: number; initialSummary: InternalNotificationSummary }) {
   const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
   const [summary, setSummary] = useState(initialSummary);
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const refreshSummary = useCallback(async () => {
+    try {
+      setSummary(await getInternalNotificationSummaryAction());
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    const realtime = getRealtimeEcho();
+    if (!realtime) return;
+
+    const channelName = `internal-users.${userId}`;
+    const channel = realtime.private(channelName);
+    const unsubscribeConnection = realtime.connector.onConnectionChange((status) => {
+      if (status !== "connected") return;
+      void refreshSummary();
+    });
+
+    channel.listen(".internal.notification.created", (payload: RealtimePayload) => {
+      const notification = payload.notification;
+      if (!notification) return;
+
+      setSummary((current) => {
+        if (current.notifications.some((item) => item.id === notification.id)) return current;
+        return {
+          ...current,
+          unread_count: current.unread_count + 1,
+          notifications: [notification, ...current.notifications].slice(0, 5),
+        };
+      });
+
+      if (pathname.startsWith("/internal/notifications")) router.refresh();
+    });
+
+    const syncWhenVisible = () => {
+      if (document.visibilityState === "visible") void refreshSummary();
+    };
+    window.addEventListener("online", refreshSummary);
+    document.addEventListener("visibilitychange", syncWhenVisible);
+
+    return () => {
+      unsubscribeConnection();
+      window.removeEventListener("online", refreshSummary);
+      document.removeEventListener("visibilitychange", syncWhenVisible);
+      realtime.leave(channelName);
+    };
+  }, [pathname, refreshSummary, router, userId]);
 
   useEffect(() => {
     if (!open) return;
@@ -83,9 +136,7 @@ export function NotificationCenter({ initialSummary }: { initialSummary: Interna
     setOpen(next);
     if (next) {
       startTransition(async () => {
-        try {
-          setSummary(await getInternalNotificationSummaryAction());
-        } catch {}
+        await refreshSummary();
       });
     }
   }
@@ -93,11 +144,7 @@ export function NotificationCenter({ initialSummary }: { initialSummary: Interna
   function markAllRead() {
     startTransition(async () => {
       await markAllInternalNotificationsReadAction();
-      setSummary((current) => ({
-        ...current,
-        unread_count: 0,
-        notifications: current.notifications.map((item) => ({ ...item, is_read: true })),
-      }));
+      await refreshSummary();
     });
   }
 
@@ -118,6 +165,9 @@ export function NotificationCenter({ initialSummary }: { initialSummary: Interna
             {summary.unread_count > 99 ? "99+" : summary.unread_count}
           </span>
         )}
+        <span className="sr-only" aria-live="polite">
+          {localize(locale, `${summary.unread_count} notifikasi belum dibaca`, `${summary.unread_count} unread notifications`)}
+        </span>
       </button>
 
       {open && (

@@ -38,6 +38,13 @@ services:
       DB_USERNAME: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       SANCTUM_STATEFUL_DOMAINS: localhost:${FRONTEND_PORT:-3000}
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: ${REVERB_APP_ID:-prama-homestay}
+      REVERB_APP_KEY: ${REVERB_APP_KEY:-prama-homestay-local-key}
+      REVERB_APP_SECRET: ${REVERB_APP_SECRET:-prama-homestay-local-secret}
+      REVERB_HOST: reverb
+      REVERB_PORT: 8080
+      REVERB_SCHEME: http
       PHP_CLI_SERVER_WORKERS: ${PHP_CLI_SERVER_WORKERS:-4}
     command:
       - sh
@@ -79,6 +86,13 @@ services:
       DB_DATABASE: ${POSTGRES_DB:-prama_homestay}
       DB_USERNAME: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: ${REVERB_APP_ID:-prama-homestay}
+      REVERB_APP_KEY: ${REVERB_APP_KEY:-prama-homestay-local-key}
+      REVERB_APP_SECRET: ${REVERB_APP_SECRET:-prama-homestay-local-secret}
+      REVERB_HOST: reverb
+      REVERB_PORT: 8080
+      REVERB_SCHEME: http
     command: ["php", "artisan", "queue:work", "--queue=emails", "--tries=3", "--timeout=60", "--sleep=3"]
     volumes:
       - ./backend:/var/www/html
@@ -103,7 +117,44 @@ services:
       DB_DATABASE: ${POSTGRES_DB:-prama_homestay}
       DB_USERNAME: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: ${REVERB_APP_ID:-prama-homestay}
+      REVERB_APP_KEY: ${REVERB_APP_KEY:-prama-homestay-local-key}
+      REVERB_APP_SECRET: ${REVERB_APP_SECRET:-prama-homestay-local-secret}
+      REVERB_HOST: reverb
+      REVERB_PORT: 8080
+      REVERB_SCHEME: http
     command: ["php", "artisan", "schedule:work"]
+    volumes:
+      - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor
+    depends_on:
+      backend:
+        condition: service_healthy
+        restart: true
+
+  reverb:
+    build:
+      context: ./backend
+      target: development
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      APP_URL: http://localhost:${BACKEND_PORT:-8000}
+      FRONTEND_URL: http://localhost:${FRONTEND_PORT:-3000}
+      REVERB_APP_ID: ${REVERB_APP_ID:-prama-homestay}
+      REVERB_APP_KEY: ${REVERB_APP_KEY:-prama-homestay-local-key}
+      REVERB_APP_SECRET: ${REVERB_APP_SECRET:-prama-homestay-local-secret}
+      REVERB_HOST: reverb
+      REVERB_PORT: 8080
+      REVERB_SCHEME: http
+      REVERB_SERVER_HOST: 0.0.0.0
+      REVERB_SERVER_PORT: 8080
+      REVERB_ALLOWED_ORIGINS: localhost,127.0.0.1
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    ports:
+      - "${REVERB_PORT:-8080}:8080"
     volumes:
       - ./backend:/var/www/html
       - backend_vendor:/var/www/html/vendor
@@ -122,6 +173,10 @@ services:
       INTERNAL_API_URL: http://backend:8000/api
       INTERNAL_API_TIMEOUT_MS: ${INTERNAL_API_TIMEOUT_MS:-12000}
       NEXT_PUBLIC_API_URL: http://localhost:${BACKEND_PORT:-8000}/api
+      NEXT_PUBLIC_REVERB_APP_KEY: ${REVERB_APP_KEY:-prama-homestay-local-key}
+      NEXT_PUBLIC_REVERB_HOST: localhost
+      NEXT_PUBLIC_REVERB_PORT: ${REVERB_PORT:-8080}
+      NEXT_PUBLIC_REVERB_SCHEME: http
     command:
       - npm
       - run
@@ -139,6 +194,8 @@ services:
       backend:
         condition: service_healthy
         restart: true
+      reverb:
+        condition: service_started
     healthcheck:
       test:
         - CMD-SHELL
