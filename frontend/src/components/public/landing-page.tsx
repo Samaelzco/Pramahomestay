@@ -230,7 +230,6 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
         <div className="public-header-tools flex items-center gap-2 lg:justify-self-end">
           <LanguageToggle />
           <ThemeToggle />
-          <a href="/booking" className="public-header-cta hidden h-11 items-center bg-primary px-5 text-sm font-bold text-background transition-transform hover:-translate-y-0.5 md:flex">{t.check}</a>
           <button type="button" onClick={() => setMobileNavOpen((open) => !open)} aria-expanded={mobileNavOpen} aria-controls="public-mobile-navigation" aria-label={mobileNavOpen ? localize(locale, "Tutup navigasi", "Close navigation") : localize(locale, "Buka navigasi", "Open navigation")} className="grid size-11 place-items-center rounded-sm border bg-surface-low lg:hidden">{mobileNavOpen ? <XIcon className="size-5" /> : <MenuIcon className="size-5" />}</button>
         </div>
       </div>
@@ -239,7 +238,6 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
         <a href="#stay" onClick={(event) => scrollToSection(event, "#stay")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navStay}</a>
         <a href="#location" onClick={(event) => scrollToSection(event, "#location")} className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navLocation}</a>
         <a href="/booking/status" className="px-4 py-3 text-sm font-semibold hover:bg-surface-low">{t.navStatus}</a>
-        <a href="/booking" className="mt-2 flex min-h-12 items-center justify-center bg-primary px-5 text-sm font-bold text-background">{t.check}</a>
       </nav>}
     </header>
 
