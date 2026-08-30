@@ -71,7 +71,7 @@ export default async function RoomDetailPage({ params, searchParams }: PageProps
   const reservationHref = canBook ? `/booking?${bookingQuery}#guest-details` : "#room-reservation";
 
   return <div className="booking-page min-h-screen bg-background text-foreground">
-    <BookingFlowHeader propertyName={property.name} locale={locale} />
+    <BookingFlowHeader propertyName={property.name} logoUrl={property.logo_url} locale={locale} />
 
     <main className="mx-auto w-full max-w-[1440px] px-5 pt-7 pb-28 sm:px-8 sm:pt-10 lg:px-12 lg:pt-12 lg:pb-24">
       <Link href={`/booking?${stayQuery}`} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-foreground"><ArrowLeftIcon className="size-4" />{serverLocalize(locale, "Kembali pilih kamar", "Back to room selection")}</Link>

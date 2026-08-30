@@ -155,6 +155,8 @@ export type HomestaySettings = {
   updated_at: string;
 };
 
+export type PublicBrandingData = Pick<HomestaySettings, "name" | "logo_url">;
+
 export type EmailNotification = {
   id: number;
   type: "booking_created" | "payment_proof_submitted" | "payment_verified" | "payment_rejected" | "booking_cancelled" | "payment_expired" | "check_in_due" | "check_out_due";
@@ -355,6 +357,7 @@ export type PaymentStatus = "unpaid" | "pending_verification" | "partial" | "pai
 export type PublicPaymentData = {
   property: {
     name: string;
+    logo_url: string | null;
     phone: string | null;
     email: string | null;
     bank_name: string | null;

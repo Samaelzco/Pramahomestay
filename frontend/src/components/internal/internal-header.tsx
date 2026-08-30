@@ -10,7 +10,7 @@ import { localize, useLocale } from "@/lib/locale";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 
-export function InternalHeader({ userId, userName, permissions, notificationSummary }: { userId: number; userName: string; permissions: string[]; notificationSummary: InternalNotificationSummary }) {
+export function InternalHeader({ userId, userName, permissions, notificationSummary, propertyName, logoUrl }: { userId: number; userName: string; permissions: string[]; notificationSummary: InternalNotificationSummary; propertyName: string; logoUrl?: string | null }) {
   const pathname = usePathname();
   const locale = useLocale();
   const booking = pathname.startsWith("/internal/bookings");
@@ -40,6 +40,6 @@ export function InternalHeader({ userId, userName, permissions, notificationSumm
       <p className="hidden text-sm font-medium sm:block">{context}</p>
       <div className="ml-auto flex items-center gap-2"><NotificationCenter userId={userId} initialSummary={notificationSummary} /><LanguageToggle /><ThemeToggle /></div>
     </header>
-    <div id="mobile-navigation"><MobileSidebar open={menuOpen} onClose={closeMenu} userName={userName} permissions={permissions} /></div>
+    <div id="mobile-navigation"><MobileSidebar open={menuOpen} onClose={closeMenu} userName={userName} permissions={permissions} propertyName={propertyName} logoUrl={logoUrl} /></div>
   </>;
 }

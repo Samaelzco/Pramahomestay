@@ -28,6 +28,8 @@ Route::post('/auth/login', [AuthController::class, 'login'])
 
 Route::get('/public/landing', [PublicSiteController::class, 'landing'])
     ->middleware('throttle:120,1');
+Route::get('/public/branding', [PublicSiteController::class, 'branding'])
+    ->middleware('throttle:120,1');
 Route::get('/public/rooms/{room}', [PublicSiteController::class, 'room'])
     ->whereNumber('room')
     ->middleware('throttle:120,1');

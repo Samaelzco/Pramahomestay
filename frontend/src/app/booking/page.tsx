@@ -41,7 +41,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
   const keepQuery = new URLSearchParams({ check_in: checkIn, check_out: checkOut, guests: String(guests) });
 
   return <div className="booking-page min-h-screen bg-surface-low text-foreground">
-    <BookingFlowHeader propertyName={data.property.name} locale={locale} />
+    <BookingFlowHeader propertyName={data.property.name} logoUrl={data.property.logo_url} locale={locale} />
 
     <main className="mx-auto max-w-[1600px] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-14">
       <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-foreground"><ArrowLeftIcon className="size-4" />{serverLocalize(locale, "Kembali ke beranda", "Back to home")}</Link>

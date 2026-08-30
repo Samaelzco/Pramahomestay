@@ -25,6 +25,8 @@ export const UsersIcon = (props: IconProps) => <Icon {...props}><path d="M16 21v
 export const ShieldIcon = (props: IconProps) => <Icon {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></Icon>;
 export const ChartIcon = (props: IconProps) => <Icon {...props}><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></Icon>;
 export const SearchIcon = (props: IconProps) => <Icon {...props}><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></Icon>;
+export const EyeIcon = (props: IconProps) => <Icon {...props}><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.75" /></Icon>;
+export const EyeOffIcon = (props: IconProps) => <Icon {...props}><path d="m3 3 18 18M10.6 6.15A10.9 10.9 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-2.1 2.75M6.6 6.6C3.9 8.3 2.5 12 2.5 12s3.5 6 9.5 6a10.7 10.7 0 0 0 4.05-.78M9.9 9.9A3 3 0 0 0 14.1 14.1" /></Icon>;
 export const PlusIcon = (props: IconProps) => <Icon {...props}><path d="M12 5v14M5 12h14" /></Icon>;
 export const ArrowLeftIcon = (props: IconProps) => <Icon {...props}><path d="m15 18-6-6 6-6" /></Icon>;
 export const LogOutIcon = (props: IconProps) => <Icon {...props}><path d="M10 17l5-5-5-5M15 12H3M15 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" /></Icon>;

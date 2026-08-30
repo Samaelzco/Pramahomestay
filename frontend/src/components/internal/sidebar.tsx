@@ -1,7 +1,8 @@
 "use client";
 
 import { logoutAction } from "@/app/internal/login/actions";
-import { AmenitiesIcon, BedIcon, CalendarIcon, CalendarRangeIcon, ChartIcon, GridIcon, HistoryIcon, HomeIcon, LogOutIcon, MailIcon, OperationsIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
+import { BrandMark } from "@/components/ui/brand-mark";
+import { AmenitiesIcon, BedIcon, CalendarIcon, CalendarRangeIcon, ChartIcon, GridIcon, HistoryIcon, LogOutIcon, MailIcon, OperationsIcon, SettingsIcon, ShieldIcon, UsersIcon, WalletIcon, XIcon } from "@/components/ui/icons";
 import { localize, useLocale } from "@/lib/locale";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -39,12 +40,14 @@ function AccountFooter({ userName }: { userName: string }) {
   return <div className="border-t pt-5"><p className="truncate px-3 text-sm font-medium">{userName}</p><p className="px-3 pt-1 text-xs text-muted">{localize(locale, "Tim internal", "Internal team")}</p><form action={logoutAction} className="mt-4"><button className="flex min-h-11 w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-muted transition-colors hover:bg-surface-low hover:text-primary active:bg-surface-high"><LogOutIcon className="size-4" />{localize(locale, "Keluar", "Sign out")}</button></form></div>;
 }
 
-export function Sidebar({ userName, permissions }: { userName: string; permissions: string[] }) {
+type SidebarBrandProps = { propertyName: string; logoUrl?: string | null };
+
+export function Sidebar({ userName, permissions, propertyName, logoUrl }: { userName: string; permissions: string[] } & SidebarBrandProps) {
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-[264px] border-r bg-surface px-4 py-6 xl:flex xl:flex-col">
       <div className="flex items-center gap-3 px-3">
-        <span className="grid size-12 shrink-0 place-items-center rounded-md bg-primary text-white"><HomeIcon className="size-6" /></span>
-        <div><p className="text-lg leading-tight font-semibold tracking-[-0.02em]">Prama Homestay</p><p className="mt-1 text-[10px] font-semibold tracking-[0.13em] text-muted uppercase">Management</p></div>
+        <BrandMark logoUrl={logoUrl} propertyName={propertyName} className="size-12" fallbackClassName="bg-primary text-white" iconClassName="size-6" />
+        <div className="min-w-0"><p className="truncate text-lg leading-tight font-semibold tracking-[-0.02em]">{propertyName}</p><p className="mt-1 text-[10px] font-semibold tracking-[0.13em] text-muted uppercase">Management</p></div>
       </div>
       <div className="mt-14 flex-1"><InternalNavigation permissions={permissions} /></div>
       <AccountFooter userName={userName} />
@@ -52,7 +55,7 @@ export function Sidebar({ userName, permissions }: { userName: string; permissio
   );
 }
 
-export function MobileSidebar({ open, onClose, userName, permissions }: { open: boolean; onClose: () => void; userName: string; permissions: string[] }) {
+export function MobileSidebar({ open, onClose, userName, permissions, propertyName, logoUrl }: { open: boolean; onClose: () => void; userName: string; permissions: string[] } & SidebarBrandProps) {
   const locale = useLocale();
   const dialogRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -79,7 +82,7 @@ export function MobileSidebar({ open, onClose, userName, permissions }: { open: 
   return <div aria-hidden={!open} className={`fixed inset-0 z-50 xl:hidden ${open ? "pointer-events-auto" : "pointer-events-none"}`}>
     <button type="button" tabIndex={-1} aria-label={localize(locale, "Tutup menu navigasi", "Close navigation menu")} onClick={onClose} className={`absolute inset-0 bg-primary/40 transition-opacity duration-200 ease-out motion-reduce:transition-none ${open ? "opacity-100" : "opacity-0"}`} />
     <aside ref={dialogRef} inert={!open} role="dialog" aria-modal="true" aria-label={localize(locale, "Menu navigasi", "Navigation menu")} onKeyDown={handleKeyDown} className={`absolute inset-y-0 left-0 flex w-[min(320px,86vw)] flex-col bg-surface px-4 py-6 shadow-[18px_0_48px_-24px_rgba(17,17,17,0.45)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${open ? "translate-x-0" : "-translate-x-full"}`}>
-      <div className="flex items-center justify-between gap-4 px-3"><div className="flex items-center gap-3"><span className="grid size-12 place-items-center rounded-md bg-primary text-white"><HomeIcon className="size-5" /></span><div><p className="font-semibold tracking-[-0.02em]">Prama Homestay</p><p className="mt-1 text-[10px] font-semibold tracking-[0.12em] text-muted uppercase">Management</p></div></div><button ref={closeRef} type="button" onClick={onClose} aria-label={localize(locale, "Tutup menu", "Close menu")} className="grid size-12 shrink-0 place-items-center rounded-sm text-muted transition-colors hover:bg-surface-low hover:text-primary active:bg-surface-high"><XIcon className="size-5" /></button></div>
+      <div className="flex items-center justify-between gap-4 px-3"><div className="flex min-w-0 items-center gap-3"><BrandMark logoUrl={logoUrl} propertyName={propertyName} className="size-12" fallbackClassName="bg-primary text-white" /><div className="min-w-0"><p className="truncate font-semibold tracking-[-0.02em]">{propertyName}</p><p className="mt-1 text-[10px] font-semibold tracking-[0.12em] text-muted uppercase">Management</p></div></div><button ref={closeRef} type="button" onClick={onClose} aria-label={localize(locale, "Tutup menu", "Close menu")} className="grid size-12 shrink-0 place-items-center rounded-sm text-muted transition-colors hover:bg-surface-low hover:text-primary active:bg-surface-high"><XIcon className="size-5" /></button></div>
       <div className="mt-10 flex-1 overflow-y-auto"><InternalNavigation permissions={permissions} onNavigate={onClose} /></div>
       <AccountFooter userName={userName} />
     </aside>

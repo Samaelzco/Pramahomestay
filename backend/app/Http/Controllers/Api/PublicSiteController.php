@@ -17,6 +17,16 @@ class PublicSiteController extends Controller
         private readonly AmenityRepositoryInterface $amenities,
     ) {}
 
+    public function branding(): JsonResponse
+    {
+        $settings = $this->settings->current();
+
+        return response()->json(['data' => [
+            'name' => $settings->name,
+            'logo_url' => $settings->logo_url,
+        ]]);
+    }
+
     public function landing(Request $request): JsonResponse
     {
         $filters = $request->validate([

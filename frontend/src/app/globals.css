@@ -78,13 +78,18 @@ input::placeholder, textarea::placeholder { color: #747878; opacity: 1; }
   box-shadow: none;
   backdrop-filter: none;
 }
-.public-header:not(.is-scrolled) .public-brand-mark,
-.public-header.is-over-media .public-brand-mark {
+.public-header:not(.is-scrolled) .public-brand-mark:not([data-has-logo]),
+.public-header.is-over-media .public-brand-mark:not([data-has-logo]) {
   border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 0.125rem;
   background: rgb(10 10 10 / 0.3) !important;
   color: #ffffff;
   box-shadow: 0 10px 28px -20px rgb(0 0 0 / 0.8);
   backdrop-filter: blur(12px);
+}
+.public-header:not(.is-scrolled) .public-brand-mark[data-has-logo],
+.public-header.is-over-media .public-brand-mark[data-has-logo] {
+  filter: drop-shadow(0 2px 7px rgb(0 0 0 / 0.42));
 }
 .public-header:not(.is-scrolled) .public-nav-link,
 .public-header.is-over-media .public-nav-link { color: rgb(255 255 255 / 0.78); }

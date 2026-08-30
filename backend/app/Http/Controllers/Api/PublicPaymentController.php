@@ -45,6 +45,7 @@ class PublicPaymentController extends Controller
         return [
             'property' => [
                 'name' => $settings->name,
+                'logo_url' => $settings->logo_url,
                 'phone' => $settings->phone,
                 'email' => $settings->email,
                 'bank_name' => $settings->bank_name,

@@ -2,7 +2,8 @@
 
 import { LanguageToggle } from "@/components/internal/language-toggle";
 import { ThemeToggle } from "@/components/internal/theme-toggle";
-import { ArrowRightIcon, BedIcon, CheckIcon, ExternalLinkIcon, HomeIcon, MapPinIcon, MenuIcon, UsersIcon, XIcon } from "@/components/ui/icons";
+import { BrandMark } from "@/components/ui/brand-mark";
+import { ArrowRightIcon, BedIcon, CheckIcon, ExternalLinkIcon, MapPinIcon, MenuIcon, UsersIcon, XIcon } from "@/components/ui/icons";
 import type { PublicAmenity, PublicLandingData } from "@/lib/api/types";
 import { nextDate } from "@/lib/date";
 import { shouldBypassImageOptimization } from "@/lib/image";
@@ -217,7 +218,7 @@ export function LandingPage({ data, locale, today }: LandingPageProps) {
     <header className="public-header fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color,box-shadow] duration-300">
       <div className="flex h-20 w-full items-center justify-between px-5 sm:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:px-12 xl:px-16">
         <a href="#top" onClick={(event) => scrollToSection(event, "#top")} className="public-brand flex min-w-0 items-center gap-3 lg:justify-self-start" aria-label={`${data.property.name} home`}>
-          <span className="public-brand-mark grid size-10 place-items-center rounded-sm bg-primary text-background"><HomeIcon className="size-5" /></span>
+          <BrandMark logoUrl={data.property.logo_url} propertyName={data.property.name} className="public-brand-mark size-10" />
           <span className="text-sm font-bold tracking-[-0.02em] sm:text-base">{data.property.name}</span>
         </a>
         <nav className="hidden items-center gap-8 text-sm font-medium lg:flex lg:justify-self-center" aria-label={t.menu}>
