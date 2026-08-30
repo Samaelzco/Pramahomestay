@@ -14,7 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'is_active', 'last_login_at'])]
+#[Fillable(['name', 'email', 'password', 'is_active', 'receives_internal_email_notifications', 'last_login_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -41,6 +41,11 @@ class User extends Authenticatable
         return $this->hasMany(InternalNotification::class);
     }
 
+    public function emailNotifications(): HasMany
+    {
+        return $this->hasMany(EmailNotification::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -51,6 +56,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'is_active' => 'boolean',
+            'receives_internal_email_notifications' => 'boolean',
             'last_login_at' => 'datetime',
             'password' => 'hashed',
         ];

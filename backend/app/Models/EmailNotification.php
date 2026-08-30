@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'booking_id', 'payment_id', 'event_key', 'type', 'status', 'locale', 'recipient_name',
+    'booking_id', 'payment_id', 'user_id', 'event_key', 'type', 'status', 'recipient_scope', 'locale', 'recipient_name',
     'recipient_email', 'subject', 'action_url', 'payload', 'attempts', 'error_message',
     'queued_at', 'sent_at', 'failed_at',
 ])]
@@ -37,5 +37,10 @@ class EmailNotification extends Model
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

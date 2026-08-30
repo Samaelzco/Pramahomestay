@@ -4,6 +4,7 @@ namespace App\Contracts\Repositories;
 
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 interface UserRepositoryInterface
 {
@@ -36,4 +37,7 @@ interface UserRepositoryInterface
     public function hasOperationalRelations(int $userId): bool;
 
     public function countActiveAdmins(): int;
+
+    /** @return Collection<int, User> */
+    public function internalEmailRecipients(string $permission): Collection;
 }

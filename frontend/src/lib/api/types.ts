@@ -81,6 +81,7 @@ export type InternalUser = {
   role_labels: string[];
   permissions: string[];
   is_active: boolean;
+  receives_internal_email_notifications: boolean;
   is_self: boolean;
   can_change_status: boolean;
   can_delete: boolean;
@@ -156,10 +157,11 @@ export type HomestaySettings = {
 
 export type EmailNotification = {
   id: number;
-  type: "booking_created" | "payment_proof_submitted" | "payment_verified" | "payment_rejected" | "booking_cancelled" | "payment_expired";
+  type: "booking_created" | "payment_proof_submitted" | "payment_verified" | "payment_rejected" | "booking_cancelled" | "payment_expired" | "check_in_due" | "check_out_due";
   type_label: string;
   status: "queued" | "sent" | "failed";
   status_label: string;
+  recipient_scope: "guest" | "internal";
   locale: "id" | "en";
   recipient_name: string;
   recipient_email: string;

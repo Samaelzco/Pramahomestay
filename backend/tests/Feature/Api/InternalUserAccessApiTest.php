@@ -47,9 +47,11 @@ class InternalUserAccessApiTest extends TestCase
             'password_confirmation' => 'password123',
             'role' => 'staff',
             'is_active' => true,
+            'receives_internal_email_notifications' => true,
         ])->assertCreated()
             ->assertJsonPath('data.name', 'Made Staff')
-            ->assertJsonPath('data.roles.0', 'staff');
+            ->assertJsonPath('data.roles.0', 'staff')
+            ->assertJsonPath('data.receives_internal_email_notifications', true);
 
         $id = $created->json('data.id');
         $this->getJson('/api/internal/users?search=Made&role=staff&is_active=1')
@@ -62,7 +64,9 @@ class InternalUserAccessApiTest extends TestCase
             'password' => '',
             'password_confirmation' => '',
             'role' => 'staff',
-        ])->assertOk()->assertJsonPath('data.name', 'Made Supervisor');
+            'receives_internal_email_notifications' => false,
+        ])->assertOk()->assertJsonPath('data.name', 'Made Supervisor')
+            ->assertJsonPath('data.receives_internal_email_notifications', false);
 
         $this->assertTrue(Hash::check('password123', User::findOrFail($id)->password));
     }

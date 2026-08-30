@@ -6,6 +6,7 @@ use App\Contracts\Services\InternalNotificationServiceInterface;
 use App\Enums\BookingStatus;
 use App\Events\InternalNotificationCreated;
 use App\Models\Booking;
+use App\Models\EmailNotification;
 use App\Models\HomestaySetting;
 use App\Models\InternalNotification;
 use App\Models\Room;
@@ -14,6 +15,7 @@ use Database\Seeders\AuthorizationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -109,10 +111,16 @@ class InternalNotificationApiTest extends TestCase
 
     public function test_daily_reminders_are_created_once_for_staff_with_operational_permission(): void
     {
+        Queue::fake();
         $this->seed(AuthorizationSeeder::class);
         $this->travelTo(now()->setDate(2026, 8, 30)->setTime(8, 0));
-        $this->settings();
-        $staff = User::factory()->create();
+        $this->settings()->update([
+            'mail_enabled' => true,
+            'mail_host' => 'smtp.example.test',
+            'mail_port' => 587,
+            'mail_from_address' => 'booking@example.test',
+        ]);
+        $staff = User::factory()->create(['receives_internal_email_notifications' => true]);
         $staff->assignRole('staff');
         $room = Room::factory()->create(['name' => 'Unit 101', 'status' => 'ready']);
         Booking::factory()->create([
@@ -134,6 +142,7 @@ class InternalNotificationApiTest extends TestCase
         $this->assertDatabaseCount('internal_notifications', 2);
         $this->assertDatabaseHas('internal_notifications', ['user_id' => $staff->id, 'type' => 'check_in_due']);
         $this->assertDatabaseHas('internal_notifications', ['user_id' => $staff->id, 'type' => 'check_out_due']);
+        $this->assertSame(2, EmailNotification::query()->where('recipient_scope', 'internal')->count());
     }
 
     public function test_public_booking_and_payment_proof_create_notifications_for_operational_staff(): void

@@ -34,6 +34,7 @@ class UserResource extends JsonResource
             'role_labels' => $this->roles->map(fn ($role) => $role->display_name ?? Str::headline($role->name))->values(),
             'permissions' => $this->getAllPermissions()->pluck('name')->values(),
             'is_active' => $this->is_active,
+            'receives_internal_email_notifications' => $this->receives_internal_email_notifications,
             'is_self' => $isSelf,
             'can_change_status' => ! $isSelf && ! $isLastActiveAdmin,
             'can_delete' => ! $isSelf && ! $isLastActiveAdmin && $relationCount === 0,

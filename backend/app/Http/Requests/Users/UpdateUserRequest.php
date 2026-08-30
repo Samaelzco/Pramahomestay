@@ -24,6 +24,7 @@ class UpdateUserRequest extends FormRequest
             'email' => ['required', 'email:rfc', 'max:255', Rule::unique('users', 'email')->ignore($user)],
             'password' => ['nullable', 'confirmed', Password::min(8)->letters()->numbers()],
             'role' => ['required', 'string', Rule::exists('roles', 'name')->where('guard_name', 'web')],
+            'receives_internal_email_notifications' => ['sometimes', 'boolean'],
         ];
     }
 }

@@ -25,6 +25,14 @@ interface EmailNotificationServiceInterface
 
     public function paymentExpired(Booking $booking): void;
 
+    public function internalBookingCreated(Booking $booking): void;
+
+    public function internalPaymentProofSubmitted(Payment $payment): void;
+
+    public function internalCheckInDue(Booking $booking, string $date): void;
+
+    public function internalCheckOutDue(Booking $booking, string $date): void;
+
     public function send(int $notificationId): void;
 
     public function markFailed(int $notificationId, string $message): void;

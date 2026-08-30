@@ -12,6 +12,7 @@ class EmailNotificationResource extends JsonResource
         return [
             'id' => $this->id, 'type' => $this->type->value, 'type_label' => $this->type->label(),
             'status' => $this->status->value, 'status_label' => $this->status->label(), 'locale' => $this->locale,
+            'recipient_scope' => $this->recipient_scope,
             'recipient_name' => $this->recipient_name, 'recipient_email' => $this->recipient_email, 'subject' => $this->subject,
             'booking_code' => $this->booking?->booking_code, 'payment_code' => $this->payment?->payment_code,
             'attempts' => $this->attempts, 'error_message' => $this->error_message,

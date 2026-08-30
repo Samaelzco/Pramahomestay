@@ -21,6 +21,7 @@ class StoreUserRequest extends FormRequest
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
             'role' => ['required', 'string', Rule::exists('roles', 'name')->where('guard_name', 'web')],
             'is_active' => ['required', 'boolean'],
+            'receives_internal_email_notifications' => ['sometimes', 'boolean'],
         ];
     }
 }

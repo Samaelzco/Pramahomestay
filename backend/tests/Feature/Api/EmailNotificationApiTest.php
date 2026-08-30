@@ -104,4 +104,46 @@ class EmailNotificationApiTest extends TestCase
         $this->assertDatabaseHas('email_notifications', ['type' => 'payment_verified', 'status' => 'queued']);
         $this->assertSame(3, EmailNotification::query()->count());
     }
+
+    public function test_critical_internal_email_only_targets_opted_in_active_users_with_matching_permission(): void
+    {
+        Queue::fake();
+        $this->seed(AuthorizationSeeder::class);
+        HomestaySetting::query()->create([
+            'name' => 'Prama Homestay', 'address' => 'Bali', 'maps_url' => 'https://maps.example.test',
+            'currency' => 'IDR', 'booking_code_prefix' => 'PRM', 'payment_code_prefix' => 'PAY',
+            'mail_enabled' => true, 'mail_host' => 'smtp.example.test', 'mail_port' => 587,
+            'mail_from_address' => 'booking@example.test', 'guest_email_locale' => 'id',
+        ]);
+        $recipient = User::factory()->create([
+            'email' => 'staff@prama.test',
+            'receives_internal_email_notifications' => true,
+        ]);
+        $recipient->assignRole('staff');
+        $optedOut = User::factory()->create(['receives_internal_email_notifications' => false]);
+        $optedOut->assignRole('staff');
+        $inactive = User::factory()->create(['is_active' => false, 'receives_internal_email_notifications' => true]);
+        $inactive->assignRole('staff');
+        $room = Room::factory()->create(['is_active' => true, 'status' => 'ready', 'capacity' => 2]);
+
+        $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.81'])->postJson('/api/public/bookings', [
+            'room_id' => $room->id,
+            'check_in' => now()->addDays(3)->toDateString(),
+            'check_out' => now()->addDays(4)->toDateString(),
+            'guest_count' => 1,
+            'full_name' => 'Guest Internal Mail',
+            'email' => 'guest-internal@example.com',
+            'phone' => '6281234567890',
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('email_notifications', [
+            'user_id' => $recipient->id,
+            'recipient_scope' => 'internal',
+            'recipient_email' => 'staff@prama.test',
+            'type' => 'booking_created',
+        ]);
+        $this->assertDatabaseMissing('email_notifications', ['user_id' => $optedOut->id]);
+        $this->assertDatabaseMissing('email_notifications', ['user_id' => $inactive->id]);
+        $this->assertSame(1, EmailNotification::query()->where('recipient_scope', 'internal')->count());
+    }
 }

@@ -10,6 +10,8 @@ enum EmailNotificationType: string
     case PaymentRejected = 'payment_rejected';
     case BookingCancelled = 'booking_cancelled';
     case PaymentExpired = 'payment_expired';
+    case CheckInDue = 'check_in_due';
+    case CheckOutDue = 'check_out_due';
 
     public function label(): string
     {
@@ -20,6 +22,8 @@ enum EmailNotificationType: string
             self::PaymentRejected => 'Pembayaran ditolak',
             self::BookingCancelled => 'Booking dibatalkan',
             self::PaymentExpired => 'Batas pembayaran berakhir',
+            self::CheckInDue => 'Check-in hari ini',
+            self::CheckOutDue => 'Check-out hari ini',
         };
     }
 }

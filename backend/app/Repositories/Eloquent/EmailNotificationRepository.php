@@ -12,7 +12,7 @@ class EmailNotificationRepository implements EmailNotificationRepositoryInterfac
 
     public function paginate(array $filters = [], int $perPage = 20): LengthAwarePaginator
     {
-        return $this->model->newQuery()->with(['booking:id,booking_code', 'payment:id,payment_code'])
+        return $this->model->newQuery()->with(['booking:id,booking_code', 'payment:id,payment_code', 'user:id,name,email'])
             ->when($filters['search'] ?? null, function ($query, string $search): void {
                 $term = '%'.mb_strtolower($search).'%';
                 $query->where(fn ($query) => $query->whereRaw('LOWER(recipient_name) LIKE ?', [$term])
@@ -35,7 +35,7 @@ class EmailNotificationRepository implements EmailNotificationRepositoryInterfac
 
     public function find(int $id): EmailNotification
     {
-        return $this->model->newQuery()->with(['booking:id,booking_code', 'payment:id,payment_code'])->findOrFail($id);
+        return $this->model->newQuery()->with(['booking:id,booking_code', 'payment:id,payment_code', 'user:id,name,email'])->findOrFail($id);
     }
 
     public function update(EmailNotification $notification, array $attributes): EmailNotification

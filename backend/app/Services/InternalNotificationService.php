@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
 use App\Contracts\Repositories\InternalNotificationRepositoryInterface;
 use App\Contracts\Repositories\OperationRepositoryInterface;
+use App\Contracts\Services\EmailNotificationServiceInterface;
 use App\Contracts\Services\InternalNotificationServiceInterface;
 use App\Enums\BookingStatus;
 use App\Enums\InternalNotificationType;
@@ -21,6 +22,7 @@ class InternalNotificationService implements InternalNotificationServiceInterfac
         private readonly InternalNotificationRepositoryInterface $notifications,
         private readonly OperationRepositoryInterface $operations,
         private readonly HomestaySettingRepositoryInterface $settings,
+        private readonly EmailNotificationServiceInterface $emailNotifications,
     ) {}
 
     public function paginate(User $user, array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -49,6 +51,7 @@ class InternalNotificationService implements InternalNotificationServiceInterfac
             'message_en' => "{$booking->guest_name} created booking {$booking->booking_code} for {$booking->room->name}.",
             'action_url' => "/internal/bookings/{$booking->id}",
         ]);
+        $this->emailNotifications->internalBookingCreated($booking);
     }
 
     public function paymentProofSubmitted(Payment $payment): void
@@ -65,6 +68,7 @@ class InternalNotificationService implements InternalNotificationServiceInterfac
             'message_en' => "{$booking->guest_name} uploaded payment proof for {$booking->booking_code}.",
             'action_url' => "/internal/payments/{$payment->id}",
         ]);
+        $this->emailNotifications->internalPaymentProofSubmitted($payment);
     }
 
     public function queueDailyReminders(): int
@@ -73,6 +77,7 @@ class InternalNotificationService implements InternalNotificationServiceInterfac
         $today = CarbonImmutable::today($timezone);
         $snapshot = $this->operations->snapshot($today);
         $created = 0;
+        $sendEmail = CarbonImmutable::now($timezone)->hour >= 7;
 
         foreach ($snapshot['arrivals'] as $booking) {
             if ($booking->status !== BookingStatus::Confirmed || $booking->check_in->toDateString() !== $today->toDateString()) {
@@ -87,6 +92,9 @@ class InternalNotificationService implements InternalNotificationServiceInterfac
                 'message_en' => "{$booking->guest_name} is scheduled to check in to {$booking->room->name} today.",
                 'action_url' => "/internal/operations?date={$today->toDateString()}",
             ]);
+            if ($sendEmail) {
+                $this->emailNotifications->internalCheckInDue($booking, $today->toDateString());
+            }
         }
 
         foreach ($snapshot['departures'] as $booking) {
@@ -102,6 +110,9 @@ class InternalNotificationService implements InternalNotificationServiceInterfac
                 'message_en' => "{$booking->guest_name} is scheduled to check out from {$booking->room->name} today.",
                 'action_url' => "/internal/operations?date={$today->toDateString()}",
             ]);
+            if ($sendEmail) {
+                $this->emailNotifications->internalCheckOutDue($booking, $today->toDateString());
+            }
         }
 
         return $created;

@@ -11,6 +11,7 @@ const userPayload = (formData: FormData, editing = false) => ({
   password: formData.get("password") || null,
   password_confirmation: formData.get("password_confirmation") || null,
   role: formData.get("role"),
+  receives_internal_email_notifications: formData.get("receives_internal_email_notifications") === "1",
   ...(editing ? {} : { is_active: formData.get("is_active") === "1" }),
 });
 

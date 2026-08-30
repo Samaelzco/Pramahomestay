@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -77,5 +78,17 @@ class UserRepository implements UserRepositoryInterface
     public function countActiveAdmins(): int
     {
         return $this->model->newQuery()->where('is_active', true)->role('admin')->count();
+    }
+
+    public function internalEmailRecipients(string $permission): Collection
+    {
+        return $this->model->newQuery()
+            ->where('is_active', true)
+            ->where('receives_internal_email_notifications', true)
+            ->where(function ($query) use ($permission): void {
+                $query->whereHas('roles.permissions', fn ($query) => $query->where('name', $permission))
+                    ->orWhereHas('permissions', fn ($query) => $query->where('name', $permission));
+            })
+            ->get();
     }
 }
