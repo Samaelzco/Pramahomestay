@@ -36,6 +36,11 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class, 'created_by');
     }
 
+    public function internalNotifications(): HasMany
+    {
+        return $this->hasMany(InternalNotification::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

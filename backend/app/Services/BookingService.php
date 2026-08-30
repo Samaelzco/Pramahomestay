@@ -10,6 +10,7 @@ use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Repositories\RoomRepositoryInterface;
 use App\Contracts\Services\BookingServiceInterface;
 use App\Contracts\Services\EmailNotificationServiceInterface;
+use App\Contracts\Services\InternalNotificationServiceInterface;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\Guest;
@@ -29,6 +30,7 @@ class BookingService implements BookingServiceInterface
         private readonly PaymentRepositoryInterface $payments,
         private readonly HomestaySettingRepositoryInterface $settings,
         private readonly EmailNotificationServiceInterface $emailNotifications,
+        private readonly InternalNotificationServiceInterface $internalNotifications,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -97,6 +99,7 @@ class BookingService implements BookingServiceInterface
         });
 
         $this->emailNotifications->bookingCreated($booking, (string) $booking->getAttribute('public_access_token'));
+        $this->internalNotifications->bookingCreated($booking);
 
         return $booking;
     }

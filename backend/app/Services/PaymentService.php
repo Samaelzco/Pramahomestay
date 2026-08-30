@@ -6,6 +6,7 @@ use App\Contracts\Repositories\BookingRepositoryInterface;
 use App\Contracts\Repositories\HomestaySettingRepositoryInterface;
 use App\Contracts\Repositories\PaymentRepositoryInterface;
 use App\Contracts\Services\EmailNotificationServiceInterface;
+use App\Contracts\Services\InternalNotificationServiceInterface;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentMethod;
@@ -28,6 +29,7 @@ class PaymentService implements PaymentServiceInterface
         private readonly BookingRepositoryInterface $bookings,
         private readonly HomestaySettingRepositoryInterface $settings,
         private readonly EmailNotificationServiceInterface $emailNotifications,
+        private readonly InternalNotificationServiceInterface $internalNotifications,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 15): LengthAwarePaginator
@@ -128,6 +130,7 @@ class PaymentService implements PaymentServiceInterface
         }
 
         $this->emailNotifications->paymentProofSubmitted($payment);
+        $this->internalNotifications->paymentProofSubmitted($payment);
 
         return $payment;
     }

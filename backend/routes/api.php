@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Internal\DashboardController;
 use App\Http\Controllers\Api\Internal\EmailNotificationController;
 use App\Http\Controllers\Api\Internal\GuestController;
 use App\Http\Controllers\Api\Internal\HomestaySettingController;
+use App\Http\Controllers\Api\Internal\InternalNotificationController;
 use App\Http\Controllers\Api\Internal\OperationController;
 use App\Http\Controllers\Api\Internal\PaymentController;
 use App\Http\Controllers\Api\Internal\ReportController;
@@ -46,6 +47,10 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::prefix('internal')->group(function (): void {
+        Route::get('/notifications', [InternalNotificationController::class, 'index']);
+        Route::get('/notifications/summary', [InternalNotificationController::class, 'summary']);
+        Route::post('/notifications/read-all', [InternalNotificationController::class, 'readAll']);
+        Route::post('/notifications/{notification}/read', [InternalNotificationController::class, 'read'])->whereNumber('notification');
         Route::get('/availability', [AvailabilityController::class, 'index'])->middleware('permission:bookings.view');
         Route::post('/availability/blocks', [AvailabilityController::class, 'storeBlock'])->middleware('permission:rooms.update');
         Route::delete('/availability/blocks/{roomBlock}', [AvailabilityController::class, 'destroyBlock'])->middleware('permission:rooms.update');

@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('notifications:queue-expired')->everyFifteenMinutes()->withoutOverlapping();
+Schedule::command('internal-notifications:queue-daily')->everyFifteenMinutes()->withoutOverlapping();

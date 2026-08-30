@@ -176,6 +176,35 @@ export type EmailNotification = {
 
 export type PaginatedEmailNotifications = { data: EmailNotification[]; meta: PaginationMeta };
 
+export type InternalNotificationType = "booking_created" | "payment_proof_submitted" | "check_in_due" | "check_out_due";
+
+export type InternalNotification = {
+  id: number;
+  type: InternalNotificationType;
+  type_label: string;
+  title: string;
+  title_en: string;
+  message: string;
+  message_en: string;
+  action_url: string;
+  is_read: boolean;
+  read_at: string | null;
+  created_at: string;
+};
+
+export type InternalNotificationSummary = {
+  unread_count: number;
+  notifications: InternalNotification[];
+  timezone: string;
+};
+
+export type PaginatedInternalNotifications = {
+  data: InternalNotification[];
+  meta: PaginationMeta;
+  unread_count: number;
+  timezone: string;
+};
+
 export type PublicAmenity = Pick<Amenity, "id" | "name" | "name_en" | "slug" | "description" | "description_en">;
 
 export type PublicRoom = Pick<Room, "id" | "name" | "slug" | "description" | "description_en" | "price_per_night" | "capacity" | "bed_count"> & {
