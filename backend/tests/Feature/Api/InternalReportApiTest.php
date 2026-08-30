@@ -82,6 +82,35 @@ class InternalReportApiTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['module' => 'reports', 'action' => 'exported']);
     }
 
+    public function test_report_transactions_are_paginated_without_changing_metrics(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        Sanctum::actingAs($admin, ['internal']);
+        $room = Room::factory()->create(['is_active' => true]);
+
+        foreach (range(1, 18) as $index) {
+            $booking = Booking::factory()->for($room)->create([
+                'status' => BookingStatus::Confirmed,
+                'created_at' => "2026-08-{$index} 09:00:00",
+            ]);
+            Payment::factory()->for($booking)->create([
+                'status' => PaymentStatus::Paid,
+                'amount_paid' => 100000,
+                'paid_at' => "2026-08-{$index} 10:00:00",
+                'created_at' => "2026-08-{$index} 10:00:00",
+            ]);
+        }
+
+        $this->getJson('/api/internal/reports?date_from=2026-08-01&date_to=2026-08-23&per_page=15&page=2')
+            ->assertOk()
+            ->assertJsonCount(3, 'data.transactions')
+            ->assertJsonPath('data.transaction_meta.current_page', 2)
+            ->assertJsonPath('data.transaction_meta.per_page', 15)
+            ->assertJsonPath('data.transaction_meta.total', 18)
+            ->assertJsonPath('data.metrics.payments', 18);
+    }
+
     public function test_report_validates_date_range_and_export_format(): void
     {
         $admin = User::factory()->create();
@@ -89,6 +118,7 @@ class InternalReportApiTest extends TestCase
         Sanctum::actingAs($admin, ['internal']);
 
         $this->getJson('/api/internal/reports?date_from=2026-08-23&date_to=2026-08-01')->assertUnprocessable()->assertJsonValidationErrors('date_to');
+        $this->getJson('/api/internal/reports?per_page=100')->assertUnprocessable()->assertJsonValidationErrors('per_page');
         $this->getJson('/api/internal/reports/export?format=xlsx')->assertUnprocessable()->assertJsonValidationErrors('format');
     }
 }

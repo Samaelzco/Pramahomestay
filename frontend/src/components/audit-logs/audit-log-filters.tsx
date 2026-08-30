@@ -37,13 +37,15 @@ type Props = {
   dateFrom?: string;
   dateTo?: string;
   actors: Array<{ id: number; name: string }>;
+  perPage?: string;
 };
 
-export function AuditLogFilters({ search, module, action, actorId, dateFrom, dateTo, actors }: Props) {
+export function AuditLogFilters({ search, module, action, actorId, dateFrom, dateTo, actors, perPage }: Props) {
   const locale = useLocale();
   const selectClass = "h-12 w-full rounded-sm border bg-surface px-4 text-sm outline-none focus:border-primary";
 
   return <form className="mt-10 grid gap-3 border-y py-6 sm:grid-cols-2 xl:grid-cols-[minmax(260px,1fr)_170px_170px_200px_auto]">
+    <input type="hidden" name="per_page" value={perPage} />
     <label className="relative sm:col-span-2 xl:col-span-1"><span className="sr-only">{localize(locale, "Cari aktivitas", "Search activity")}</span><SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-muted" /><input name="search" defaultValue={search} placeholder={localize(locale, "Cari target, aktivitas, atau user", "Search target, activity, or user")} className="h-12 w-full rounded-sm border bg-surface pr-4 pl-12 text-sm outline-none focus:border-primary" /></label>
     <label><span className="sr-only">{localize(locale, "Filter modul", "Filter by module")}</span><select name="module" defaultValue={module ?? ""} className={selectClass}><option value="">{localize(locale, "Semua modul", "All modules")}</option>{modules.map((item) => <option key={item.value} value={item.value}>{moduleLabel(item.value, item.label, locale)}</option>)}</select></label>
     <label><span className="sr-only">{localize(locale, "Filter aktivitas", "Filter by activity")}</span><select name="action" defaultValue={action ?? ""} className={selectClass}><option value="">{localize(locale, "Semua aktivitas", "All activities")}</option>{actions.map((item) => <option key={item.value} value={item.value}>{auditActionLabel(item.value, item.label, locale)}</option>)}</select></label>

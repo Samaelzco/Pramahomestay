@@ -16,6 +16,8 @@ class IndexReportRequest extends FormRequest
         return [
             'date_from' => ['nullable', 'date_format:Y-m-d', 'required_with:date_to'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'required_with:date_from', 'after_or_equal:date_from'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
+            'page' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }

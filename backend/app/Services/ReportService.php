@@ -25,6 +25,7 @@ class ReportService implements ReportServiceInterface
         $previousStart = $previousEnd->subDays($days - 1);
         $current = $this->snapshot($start, $end);
         $previous = $this->snapshot($previousStart, $previousEnd);
+        $transactions = $this->transactions($start, $end, $filters);
 
         return [
             'period' => ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'days' => $days],
@@ -39,7 +40,8 @@ class ReportService implements ReportServiceInterface
             ],
             'rooms' => $current['rooms'],
             'payment_methods' => $current['payment_methods'],
-            'transactions' => $current['transactions'],
+            'transactions' => $transactions['data'],
+            'transaction_meta' => $transactions['meta'],
         ];
     }
 
@@ -97,7 +99,6 @@ class ReportService implements ReportServiceInterface
         $rooms = Room::query()->where('is_active', true)->orderBy('name')->get();
         $bookings = Booking::query()->with('room')->whereBetween('created_at', [$start->startOfDay(), $end->endOfDay()])->get();
         $stays = Booking::query()->with('room')->whereIn('status', $validStatuses)->whereDate('check_in', '<=', $end)->whereDate('check_out', '>', $start)->get();
-        $payments = Payment::query()->with('booking.room')->whereBetween('created_at', [$start->startOfDay(), $end->endOfDay()])->orderByDesc('created_at')->get();
         $credited = Payment::query()->with('booking.room')->whereIn('status', $creditedStatuses)->whereBetween('paid_at', [$start->startOfDay(), $end->endOfDay()])->get();
         $capacity = $rooms->count() * ($start->diffInDays($end) + 1);
         $occupied = $this->occupiedNights($stays, $start, $end);
@@ -133,15 +134,64 @@ class ReportService implements ReportServiceInterface
 
                 return ['method' => $method->value, 'label' => $method->label(), 'count' => $items->count(), 'amount' => $this->money($items->sum('amount_paid'))];
             })->all(),
-            'transactions' => $payments->map(fn (Payment $payment): array => [
-                'id' => $payment->id, 'payment_code' => $payment->payment_code,
-                'paid_at' => $payment->paid_at?->toDateString(), 'created_at' => $payment->created_at->toDateString(),
-                'booking_id' => $payment->booking_id, 'booking_code' => $payment->booking?->booking_code,
-                'guest_name' => $payment->booking?->guest_name, 'room_name' => $payment->booking?->room?->name,
-                'method' => $payment->method?->value, 'method_label' => $payment->method?->label() ?? 'Belum dipilih',
-                'status' => $payment->status->value, 'status_label' => $payment->status->label(),
-                'amount' => $this->money($payment->amount_paid),
-            ])->values()->all(),
+        ];
+    }
+
+    private function transactions(CarbonImmutable $start, CarbonImmutable $end, array $filters): array
+    {
+        $query = Payment::query()
+            ->with('booking.room')
+            ->whereBetween('created_at', [$start->startOfDay(), $end->endOfDay()])
+            ->orderByDesc('created_at');
+
+        if (isset($filters['per_page'])) {
+            $paginator = $query->paginate(
+                (int) $filters['per_page'],
+                ['*'],
+                'page',
+                (int) ($filters['page'] ?? 1),
+            );
+            $rows = $paginator->getCollection()->map(fn (Payment $payment): array => $this->transactionRow($payment));
+
+            return [
+                'data' => $rows->values()->all(),
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'from' => $paginator->firstItem(),
+                    'last_page' => $paginator->lastPage(),
+                    'per_page' => $paginator->perPage(),
+                    'to' => $paginator->lastItem(),
+                    'total' => $paginator->total(),
+                ],
+            ];
+        }
+
+        $rows = $query->get()->map(fn (Payment $payment): array => $this->transactionRow($payment));
+        $total = $rows->count();
+
+        return [
+            'data' => $rows->values()->all(),
+            'meta' => [
+                'current_page' => 1,
+                'from' => $total ? 1 : null,
+                'last_page' => 1,
+                'per_page' => max(1, $total),
+                'to' => $total ?: null,
+                'total' => $total,
+            ],
+        ];
+    }
+
+    private function transactionRow(Payment $payment): array
+    {
+        return [
+            'id' => $payment->id, 'payment_code' => $payment->payment_code,
+            'paid_at' => $payment->paid_at?->toDateString(), 'created_at' => $payment->created_at->toDateString(),
+            'booking_id' => $payment->booking_id, 'booking_code' => $payment->booking?->booking_code,
+            'guest_name' => $payment->booking?->guest_name, 'room_name' => $payment->booking?->room?->name,
+            'method' => $payment->method?->value, 'method_label' => $payment->method?->label() ?? 'Belum dipilih',
+            'status' => $payment->status->value, 'status_label' => $payment->status->label(),
+            'amount' => $this->money($payment->amount_paid),
         ];
     }
 

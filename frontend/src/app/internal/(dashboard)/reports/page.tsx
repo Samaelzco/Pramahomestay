@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api/client";
 import type { ApiItem, ReportSummary } from "@/lib/api/types";
+import { Pagination } from "@/components/ui/pagination";
 import { paymentMethodLabel, paymentStatusLabel } from "@/lib/display-labels";
 import {
   localeCode,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/locale-server";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageSize } from "@/lib/pagination";
 
 export const metadata: Metadata = { title: "Laporan" };
 
@@ -74,7 +76,7 @@ function Status({ status, label }: { status: string; label: string }) {
 export default async function ReportsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ date_from?: string; date_to?: string }>;
+  searchParams: Promise<{ date_from?: string; date_to?: string; per_page?: string; page?: string }>;
 }) {
   const locale = await serverLocale();
   const t = (id: string, en: string) => serverLocalize(locale, id, en);
@@ -96,11 +98,16 @@ export default async function ReportsPage({
     validDate(params.date_from) &&
     validDate(params.date_to) &&
     params.date_from! <= params.date_to!;
-  const query = custom
-    ? `date_from=${params.date_from}&date_to=${params.date_to}`
-    : "";
+  const reportQuery = {
+    date_from: custom ? params.date_from : undefined,
+    date_to: custom ? params.date_to : undefined,
+    per_page: pageSize(params.per_page),
+    page: params.page,
+  };
+  const apiParams = new URLSearchParams();
+  Object.entries(reportQuery).forEach(([key, value]) => { if (value) apiParams.set(key, value); });
   const { data } = await apiFetch<ApiItem<ReportSummary>>(
-    `/internal/reports${query ? `?${query}` : ""}`,
+    `/internal/reports?${apiParams.toString()}`,
   );
   const exportQuery = `date_from=${data.period.start}&date_to=${data.period.end}`;
   const totalPayments = data.payment_methods.reduce(
@@ -141,6 +148,7 @@ export default async function ReportsPage({
       </div>
 
       <form className="grid gap-4 border-b py-6 sm:grid-cols-2 lg:grid-cols-[220px_220px_auto] lg:items-end">
+        <input type="hidden" name="per_page" value={reportQuery.per_page} />
         <label className="text-[10px] font-semibold tracking-[0.09em] text-muted uppercase">
           {t("Dari tanggal", "From date")}
           <input
@@ -329,8 +337,8 @@ export default async function ReportsPage({
           </h2>
           <p className="mt-2 text-sm text-muted">
             {t(
-              `${data.transactions.length} catatan pembayaran dibuat pada rentang terpilih.`,
-              `${data.transactions.length} payment records were created in the selected range.`,
+              `${data.transaction_meta.total} catatan pembayaran dibuat pada rentang terpilih.`,
+              `${data.transaction_meta.total} payment records were created in the selected range.`,
             )}
           </p>
         </div>
@@ -408,6 +416,7 @@ export default async function ReportsPage({
             </p>
           </div>
         )}
+        <Pagination meta={data.transaction_meta} query={reportQuery} resourceName="transaksi" resourceNameEn="transactions" />
       </section>
     </main>
   );

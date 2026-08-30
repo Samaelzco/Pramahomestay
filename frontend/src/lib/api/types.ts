@@ -450,5 +450,6 @@ export type ReportSummary = {
   rooms: Array<{ id: number; name: string; bookings: number; occupied_nights: number; occupancy_rate: number; booking_value: string; revenue: string }>;
   payment_methods: Array<{ method: PaymentMethod; label: string; count: number; amount: string }>;
   transactions: Array<{ id: number; payment_code: string; paid_at: string | null; created_at: string; booking_id: number; booking_code: string; guest_name: string; room_name: string; method: PaymentMethod | null; method_label: string; status: PaymentStatus; status_label: string; amount: string }>;
+  transaction_meta: PaginationMeta;
   can_export: boolean;
 };
