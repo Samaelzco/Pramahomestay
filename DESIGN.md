@@ -126,6 +126,11 @@ The palette is rooted in a high-contrast urban foundation, balanced by organic w
 - **Secondary (Oak/Walnut):** A warm, sophisticated wood tone used sparingly for interactive highlights, active states, and premium call-outs to evoke the homestay’s physical interior.
 - **Tertiary (Slate Gray):** A muted, professional tone used for secondary text, icons, and borders to provide depth without adding visual noise.
 - **Neutral/Crisp White:** The primary canvas. Use pure white for surfaces and a very light gray (#F9F9F9) for subtle section differentiation.
+- **Dark mode:** Use warm charcoal layers (`#111313`, `#191B1B`, `#202323`) instead of pure black, with soft off-white text (`#F2F1EF`) and a brighter wood accent (`#D8AE7B`). Preserve tonal separation between the page, cards, controls, and inverse primary actions.
+
+The internal header exposes the theme control in its trailing edge: opposite the menu trigger on compact screens and after the page context on desktop. The first visit follows the operating-system preference; an explicit light or dark choice is persisted for future visits.
+
+The language selector sits immediately before the theme control and shows the active locale (`ID` or `EN`) with a short menu for Bahasa Indonesia and English. Bahasa Indonesia is the default and saved choices persist in the browser. Guest-facing room descriptions and amenity content store both languages; when English content is missing, the Indonesian source is shown as a deliberate fallback rather than an empty value.
 
 ## Typography
 
@@ -164,7 +169,8 @@ While the layout is modern and "linear," strictly sharp corners are avoided to e
 
 - **Buttons:** Primary buttons are Solid Charcoal with White text. Secondary buttons are Outline (Slate Gray) or Ghost. The "Warm Wood" color is reserved for high-intent "Book Now" actions or active selection states.
 - **Inputs:** Minimalist bottom-border only or very light Slate Gray outlines. On focus, the border transitions to Deep Charcoal. Labels use the `label-caps` style.
-- **Cards:** Use white backgrounds with "Whisper Shadows." Photography should always be the dominant element, typically taking up the top 60-70% of the card area.
+- **Cards:** Use white backgrounds with "Whisper Shadows." Public and editorial cards remain photography-led, typically giving imagery the top 60-70% of the card area. Internal operational cards are data-led: use tonal surfaces, fine dividers, tabular numerals, and restrained ambient shadow instead of forcing imagery into analytical content.
 - **Chips/Tags:** Used for amenities (e.g., "High-speed Wi-Fi"). Use a light gray fill with Slate Gray text; no borders.
 - **Lists:** Clean, high-contrast list items separated by thin 1px lines in light slate (#E1E4E8).
-- **Navigation:** A persistent, minimal top-bar with plenty of padding. Use the Secondary (Wood) color for the active page indicator—a simple 2px bottom bar or a small dot.
+- **Navigation:** Public navigation uses a persistent, minimal top-bar with plenty of padding. Internal tools use a persistent sidebar from `1280px` upward; phone and tablet layouts use the modal drawer so operational content keeps full width. Retain the Secondary (Wood) active state, `aria-current`, keyboard dismissal, focus containment, and focus return.
+- **Tablet adaptation:** Between `640px` and `1279px`, filters and labeled data cards use two-column reflow, forms keep comfortable field widths, and landscape layouts may promote data cards back to full tables when content fits without horizontal scroll.

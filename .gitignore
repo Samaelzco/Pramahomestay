@@ -6,11 +6,17 @@
 
 # Monorepo migration archive
 .monorepo-migration/
+.impeccable/chrome-profile/
+.impeccable/review/
+.chrome-review/
 
 # Root tooling
 node_modules/
 coverage/
 *.log
+
+# Markdown documentation
+*.md
 
 # Editors and operating systems
 .DS_Store

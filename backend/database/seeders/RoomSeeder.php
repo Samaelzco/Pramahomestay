@@ -1,0 +1,69 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Contracts\Services\RoomServiceInterface;
+use App\Models\Amenity;
+use Illuminate\Database\Seeder;
+
+class RoomSeeder extends Seeder
+{
+    public function __construct(private readonly RoomServiceInterface $rooms) {}
+
+    public function run(): void
+    {
+        foreach ($this->rooms() as $attributes) {
+            $amenities = $attributes['amenities'];
+            unset($attributes['amenities']);
+            $attributes['amenity_ids'] = Amenity::query()->whereIn('name', $amenities)->pluck('id')->all();
+            $room = $this->rooms->findByName($attributes['name']);
+
+            $room === null
+                ? $this->rooms->create($attributes)
+                : $this->rooms->update($room, $attributes);
+        }
+    }
+
+    /** @return array<int, array<string, mixed>> */
+    private function rooms(): array
+    {
+        return [
+            [
+                'name' => 'Unit 101',
+                'status' => 'ready',
+                'description' => 'Studio tenang dengan cahaya alami dan sentuhan kayu hangat.',
+                'description_en' => 'A quiet studio filled with natural light and warm wood accents.',
+                'price_per_night' => 650000,
+                'capacity' => 2,
+                'bed_count' => 1,
+                'image_url' => 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=85',
+                'amenities' => ['Wi-Fi', 'AC', 'City view'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Unit 204',
+                'status' => 'occupied',
+                'description' => 'Loft premium dengan area duduk luas untuk tamu yang menginap lebih lama.',
+                'description_en' => 'A premium loft with a spacious sitting area for longer stays.',
+                'price_per_night' => 1250000,
+                'capacity' => 4,
+                'bed_count' => 2,
+                'image_url' => 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=85',
+                'amenities' => ['Wi-Fi', 'AC', 'Workspace', 'Smart TV'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Unit 102',
+                'status' => 'cleaning',
+                'description' => 'Kamar deluxe dengan kamar mandi lapang dan suasana yang terang.',
+                'description_en' => 'A bright deluxe room with a spacious bathroom.',
+                'price_per_night' => 850000,
+                'capacity' => 2,
+                'bed_count' => 1,
+                'image_url' => 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=85',
+                'amenities' => ['Wi-Fi', 'AC', 'Bathtub'],
+                'is_active' => true,
+            ],
+        ];
+    }
+}

@@ -1,0 +1,16 @@
+# Internal Dashboard Surface
+
+- Mode: Operate.
+- Audience: admin dan staff yang memantau performa homestay serta menentukan tindak lanjut operasional harian.
+- Job: membaca performa lintas periode, memeriksa agenda kedatangan dan keberangkatan, mengenali distribusi status, lalu membuka booking atau pembayaran yang membutuhkan tindakan.
+- Entry and access: login internal berhasil mengarah ke `/internal/dashboard`; item “Ringkasan” aktif pada navigasi desktop dan mobile. Data dashboard dilindungi permission `dashboard.view`.
+- Period control: filter 7, 30, dan 90 hari menggunakan query `days`, ditambah “Rentang” dengan tanggal mulai/akhir melalui query `from` dan `to` agar URL dapat dibagikan. Rentang tidak memiliki batas durasi; tanggal akhir tidak boleh mendahului tanggal awal. Pemilih tampil inline selebar kontainer pada mobile dan sebagai panel berlapis pada tablet/desktop.
+- Hierarchy: header dan filter periode, strip empat KPI berbasis border, panel pergerakan usaha, agenda hari ini berwarna charcoal, distribusi status booking dan pembayaran, booking terbaru, lalu daftar pembayaran yang perlu ditagih.
+- Metrics: pendapatan dan booking mengikuti periode; okupansi, kamar terisi, kedatangan, serta keberangkatan menyatakan kondisi hari ini; sisa tagihan berasal dari booking aktif.
+- Charts: pendapatan dan okupansi menggunakan SVG responsif dengan garis oak, area fill tipis, sumbu, marker bertitel, serta judul dan deskripsi aksesibel. Seri dikelompokkan harian untuk ≤90 hari, mingguan untuk 91 hari–2 tahun, dan bulanan untuk rentang lebih panjang; total KPI tetap menghitung seluruh rentang. Satu tombol adaptif membuka tabel gabungan periode, pendapatan, dan okupansi untuk kedua grafik. Okupansi memakai skala tetap 0–100%; pendapatan mengikuti nilai maksimum periode.
+- Action paths: agenda, booking terbaru, dan follow-up pembayaran membuka detail booking; tautan “Semua booking” membuka indeks booking dan “Kelola pembayaran” membuka indeks pembayaran.
+- Empty states: agenda, booking terbaru, dan follow-up pembayaran memiliki pesan kosong khusus; status nol tetap mempertahankan jalur dan label distribusi agar struktur tidak bergeser.
+- Direction: established-world extension dari Urban Sanctuary—grid tegas, ruang lapang, permukaan putih, charcoal untuk fokus operasional, dan oak untuk data aktif serta jalur tindak lanjut.
+- Responsive moment: kontrol periode memenuhi lebar header sampai desktop lebar agar tablet tidak terjepit; KPI berpindah dari satu kolom ke 2×2 lalu empat kolom; panel tren dan agenda menjadi dua kolom hanya pada layar lebar; dua grafik berbagi kolom pada layar besar; bagian lain kembali ke satu kolom pada mobile. SVG tetap memenuhi lebar kontainer dan daftar memindahkan metadata ke bawah saat ruang menyempit.
+- Interaction and motion: dashboard mengutamakan pemuatan server dan navigasi halaman; motion dibatasi pada perubahan warna hover/focus. Navigasi mobile mempertahankan focus trap, penutupan Escape, penguncian scroll, dan pengembalian fokus ke tombol menu.
+- Constraints: tampilkan hanya agregat dari transaksi tersimpan; jangan mengarang prediksi, target, atau data demo. Angka finansial memakai Rupiah Indonesia, tanggal memakai locale `id-ID`, dan angka operasional menggunakan tabular numerals.

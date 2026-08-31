@@ -1,0 +1,3 @@
+export default function RoomDetailLoading() {
+  return <div className="min-h-screen bg-background"><div className="h-20 border-b bg-surface" /><main className="mx-auto max-w-[1600px] animate-pulse px-5 py-8 sm:px-8 lg:px-12"><div className="h-5 w-40 bg-surface-high" /><div className="mt-8 h-16 max-w-xl bg-surface-high" /><div className="mt-5 h-6 max-w-2xl bg-surface-low" /><div className="mt-10 h-[28rem] bg-surface-high lg:h-[38rem]" /><div className="mt-14 grid gap-10 lg:grid-cols-[1fr_24rem]"><div className="space-y-5"><div className="h-24 bg-surface-low" /><div className="h-72 bg-surface-low" /></div><div className="h-96 bg-surface" /></div></main></div>;
+}

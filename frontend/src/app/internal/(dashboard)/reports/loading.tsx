@@ -1,0 +1,31 @@
+import { serverLocale, serverLocalize } from "@/lib/locale-server";
+export default async function ReportsLoading() {
+  const locale = await serverLocale();
+  return (
+    <main
+      aria-busy="true"
+      aria-label={serverLocalize(locale, "Memuat laporan", "Loading reports")}
+      className="mx-auto min-h-screen max-w-[1440px] animate-pulse px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16"
+    >
+      <div className="h-12 w-72 rounded bg-surface-high" />
+      <div className="mt-4 h-5 w-full max-w-xl rounded bg-surface-high" />
+      <div className="mt-10 h-24 border-y bg-surface-low" />
+      <div className="mt-8 grid border-y sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className="h-32 border-b p-6 sm:border-l xl:border-b-0"
+          >
+            <div className="h-4 w-24 rounded bg-surface-high" />
+            <div className="mt-4 h-8 w-36 rounded bg-surface-high" />
+          </div>
+        ))}
+      </div>
+      <div className="mt-10 grid gap-8 xl:grid-cols-[1.45fr_0.55fr]">
+        <div className="h-[360px] rounded-lg bg-surface-high" />
+        <div className="h-[360px] rounded-lg bg-surface-high" />
+      </div>
+      <div className="mt-12 h-[320px] rounded-lg bg-surface-high" />
+    </main>
+  );
+}

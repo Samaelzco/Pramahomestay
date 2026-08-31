@@ -1,0 +1,34 @@
+import { serverLocale, serverLocalize } from "@/lib/locale-server";
+export default async function AmenitiesLoading() {
+  const locale = await serverLocale();
+  return (
+    <main
+      aria-busy="true"
+      aria-label={serverLocalize(locale, "Memuat fasilitas", "Loading amenities")}
+      className="mx-auto min-h-[calc(100vh-64px)] max-w-[1440px] animate-pulse px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16"
+    >
+      <div className="flex flex-col gap-6 sm:flex-row sm:justify-between">
+        <div>
+          <div className="h-12 w-72 rounded-sm bg-surface-high" />
+          <div className="mt-4 h-5 w-[min(520px,80vw)] rounded-sm bg-surface-high" />
+        </div>
+        <div className="h-12 w-44 rounded-sm bg-surface-high" />
+      </div>
+      <div className="mt-10 h-24 rounded-sm bg-surface-high" />
+      <div className="mt-8 h-5 w-40 rounded-sm bg-surface-high" />
+      <div className="mt-5 overflow-hidden rounded-lg bg-surface">
+        <div className="h-12 bg-surface-low" />
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={index}
+            className="grid gap-4 border-t px-6 py-6 sm:grid-cols-2 md:grid-cols-4"
+          >
+            {Array.from({ length: 4 }).map((__, cell) => (
+              <div key={cell} className="h-5 rounded-sm bg-surface-high" />
+            ))}
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}

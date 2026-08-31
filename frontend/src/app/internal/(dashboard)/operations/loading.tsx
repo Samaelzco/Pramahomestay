@@ -1,0 +1,56 @@
+function Line({ className = "" }: { className?: string }) {
+  return <span className={`block rounded-sm bg-surface-high ${className}`} />;
+}
+
+export default function OperationsLoading() {
+  return (
+    <main
+      aria-busy="true"
+      className="mx-auto min-h-[calc(100vh-64px)] max-w-[1440px] animate-pulse px-6 py-10 sm:px-8 md:px-10 md:py-12 xl:px-16"
+    >
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="w-full">
+          <Line className="h-12 w-80 max-w-full" />
+          <Line className="mt-4 h-5 w-[min(100%,600px)]" />
+        </div>
+        <Line className="h-12 w-full shrink-0 lg:w-48" />
+      </div>
+
+      <div className="mt-8 flex justify-between border-y py-5">
+        <Line className="h-11 w-52" />
+        <Line className="h-5 w-56" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-5 border-b py-6 sm:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div key={index}>
+            <Line className="h-3 w-24" />
+            <Line className="mt-3 h-9 w-12" />
+            <Line className="mt-2 h-3 w-20" />
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 grid gap-8 xl:grid-cols-2">
+        {Array.from({ length: 2 }, (_, section) => (
+          <div key={section}>
+            <Line className="h-8 w-40" />
+            <Line className="mt-3 h-4 w-72 max-w-full" />
+            <div className="mt-5 divide-y rounded-lg bg-surface">
+              {Array.from({ length: 3 }, (_, row) => (
+                <div key={row} className="grid gap-4 p-6 lg:grid-cols-[1fr_160px_130px]">
+                  <div>
+                    <Line className="h-4 w-36" />
+                    <Line className="mt-2 h-3 w-52" />
+                  </div>
+                  <Line className="h-10 w-28" />
+                  <Line className="h-11 w-32" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}
